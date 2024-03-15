@@ -1,0 +1,70 @@
+part of 'get_bank_cubit.dart';
+
+sealed class GetBankState extends Equatable {
+  const GetBankState({this.error});
+  final String? error;
+  @override
+  List<Object> get props => error != null ? [error!] : [];
+}
+
+final class GetBankLoading extends GetBankState {
+  const GetBankLoading({super.error});
+}
+
+final class GetBankSelecteMaterial extends GetBankState {
+  final List<String> materials;
+
+  const GetBankSelecteMaterial({
+    required this.materials,
+    super.error,
+  });
+  @override
+  List<Object> get props => [materials];
+}
+
+final class GetBankSelecteClass extends GetBankState {
+  final List<(String, int)> classes;
+
+  const GetBankSelecteClass({
+    required this.classes,
+    super.error,
+  });
+  @override
+  List<Object> get props => [classes];
+}
+
+final class GetBankSelecteTeacher extends GetBankState {
+  final List<(String, int)> teachers;
+
+  const GetBankSelecteTeacher({
+    required this.teachers,
+    super.error,
+  });
+  @override
+  List<Object> get props => [teachers];
+}
+
+final class GetBankSelecteBank extends GetBankState {
+  final List<(Bank, int)> banks;
+  final String teacher;
+
+  const GetBankSelecteBank({
+    required this.teacher,
+    required this.banks,
+    super.error,
+  });
+  @override
+  List<Object> get props => [banks];
+}
+
+final class GetBankDone extends GetBankState {
+  final Bank bank;
+
+  const GetBankDone({
+    required this.bank,
+    super.error,
+  });
+  @override
+  List<Object> get props => [bank];
+}
+

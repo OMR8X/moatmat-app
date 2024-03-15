@@ -1,0 +1,62 @@
+import 'package:dartz/dartz.dart';
+import 'package:moatmat_app/User/Core/errors/exceptions.dart';
+import 'package:moatmat_app/User/Features/banks/data/data_sources/banks_ds.dart';
+import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
+import 'package:moatmat_app/User/Features/banks/domain/repository/repository.dart';
+
+class BanksRepositoryImpl implements BanksRepository {
+  final BanksDataSource dataSource;
+
+  BanksRepositoryImpl({required this.dataSource});
+  @override
+  Future<Either<Failure, List<(String, int)>>> getMaterialBankClasses(
+      {required String material}) async {
+    try {
+      var res = await dataSource.getMaterialBankClasses(material: material);
+      return right(res);
+    } on Exception {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<(String, int)>>> getMaterialBanksTeachers(
+      {required String clas, required String material}) async {
+    try {
+      var res = await dataSource.getMaterialBanksTeachers(
+        clas: clas,
+        material: material,
+      );
+      return right(res);
+    } on Exception {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<(Bank, int)>>> getTeacherBanks(
+      {required String teacher,
+      required String clas,
+      required String material}) async {
+    try {
+      var res = await dataSource.getTeacherBanks(
+        teacher: teacher,
+        clas: clas,
+        material: material,
+      );
+      return right(res);
+    } on Exception {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Bank>> getBankById({required int id}) async {
+    try {
+      var res = await dataSource.getBankById(id: id);
+      return right(res);
+    } on Exception catch (e) {
+      return left(const AnonFailure());
+    }
+  }
+}
