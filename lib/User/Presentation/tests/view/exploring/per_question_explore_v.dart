@@ -46,6 +46,7 @@ class _TestPerQuestionExploreViewState
         body: BlocBuilder<TestPerQuestionExploreCubit, PerQuestionExploreState>(
           builder: (context, state) {
             if (state is PerQuestionExploreQuestion) {
+
               return TestQuestionView(
                 test: widget.test,
                 title: "${state.currentQ + 1} / ${state.length}",
@@ -103,11 +104,11 @@ class _TestPerQuestionExploreViewState
                 wrongAnswers: "${state.wrong.length}",
                 result: state.result,
               );
+            } else {
+              return const Center(
+                child: CupertinoActivityIndicator(),
+              );
             }
-
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
           },
         ),
       ),

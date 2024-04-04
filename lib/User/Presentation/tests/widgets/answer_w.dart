@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/answer.dart';
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/shadows_r.dart';
@@ -79,19 +80,18 @@ class _TestQuestionAnswerWidgetState extends State<TestQuestionAnswerWidget> {
                     }
                   : onAnswer(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: SizesResources.s3,
-                  horizontal: SizesResources.s4,
-                ),
+                padding: widget.selected == true
+                    ? const EdgeInsets.symmetric(
+                        vertical: SizesResources.s3 - 2,
+                        horizontal: SizesResources.s4 - 2,
+                      )
+                    : const EdgeInsets.symmetric(
+                        vertical: SizesResources.s3,
+                        horizontal: SizesResources.s4,
+                      ),
                 child: Row(
                   children: [
-                    Expanded(
-                      flex: 5,
-                      child: Text(
-                        widget.answer.answer,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                    getContentWidget(),
                   ],
                 ),
               ),
@@ -99,6 +99,70 @@ class _TestQuestionAnswerWidgetState extends State<TestQuestionAnswerWidget> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget getContentWidget() {
+    List<Widget> widgets = [];
+    if (widget.answer.answer != null && widget.answer.answer != "") {
+      widgets.add(
+        SizedBox(
+          width: SpacingResources.mainWidth(context) - (SizesResources.s8),
+          child: Text(
+            widget.answer.answer!,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    if ((widget.answer.answer != null && widget.answer.answer != "") &&
+        (widget.answer.equation != null && widget.answer.equation != "")) {
+      widgets.add(const SizedBox(height: SizesResources.s3));
+    }
+    if (widget.answer.equation != null) {
+      widgets.add(
+        Center(
+          child: SizedBox(
+            width: SpacingResources.mainWidth(context) - (SizesResources.s8),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.black,
+                  fontFamily: "Almarai",
+                  height: 2,
+                ),
+                children: List.generate(
+                  fixTheError(widget.answer.equation!).length,
+                  (index) {
+                    if (!containsArabic(
+                        fixTheError(widget.answer.equation!)[index])) {
+                      return WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: SizedBox(
+                          child: Math.tex(
+                            fixTheError(widget.answer.equation!)[index],
+                            textStyle: const TextStyle(fontSize: 17),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return TextSpan(
+                        text:
+                            " ${fixTheError(widget.answer.equation!)[index]}  ",
+                        style: const TextStyle(fontSize: 14),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return Column(
+      children: widgets,
     );
   }
 
@@ -138,4 +202,16 @@ class _TestQuestionAnswerWidgetState extends State<TestQuestionAnswerWidget> {
       ),
     );
   }
+}
+
+bool containsArabic(String word) {
+  // Regular expression to match Arabic characters
+  RegExp arabicRegExp = RegExp(r'[\u0600-\u06FF]');
+  // Check if the word contains any Arabic characters
+  return arabicRegExp.hasMatch(word) || word == "\n" || word == ":";
+}
+
+List<String> fixTheError(String latexAndArabic) {
+  List<String> words = latexAndArabic.split("++++");
+  return words;
 }

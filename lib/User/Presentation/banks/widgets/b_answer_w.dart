@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/b_question_answer.dart';
 
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/shadows_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
+import '../../tests/widgets/answer_w.dart';
 
 class BankQuestionAnswerWidget extends StatefulWidget {
   const BankQuestionAnswerWidget({
@@ -89,10 +91,7 @@ class _BankQuestionAnswerWidgetState extends State<BankQuestionAnswerWidget> {
                     ),
                     Expanded(
                       flex: 5,
-                      child: Text(
-                        widget.answer.answer,
-                        textAlign: TextAlign.center,
-                      ),
+                      child: getContentWidget(),
                     ),
                     Expanded(
                       flex: 1,
@@ -110,6 +109,63 @@ class _BankQuestionAnswerWidgetState extends State<BankQuestionAnswerWidget> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget getContentWidget() {
+    List<Widget> widgets = [];
+    if (widget.answer.answer != null) {
+      widgets.add(
+        Text(
+          widget.answer.answer!,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    if (widget.answer.equation != null) {
+      widgets.add(
+        Center(
+          child: SizedBox(
+            width: SpacingResources.mainWidth(context) - (SizesResources.s8),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.black,
+                  fontFamily: "Almarai",
+                  height: 2,
+                ),
+                children: List.generate(
+                  fixTheError(widget.answer.equation!).length,
+                  (index) {
+                    if (!containsArabic(
+                        fixTheError(widget.answer.equation!)[index])) {
+                      return WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: SizedBox(
+                          child: Math.tex(
+                            fixTheError(widget.answer.equation!)[index],
+                            textStyle: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return TextSpan(
+                        text:
+                            " ${fixTheError(widget.answer.equation!)[index]}  ",
+                        style: const TextStyle(fontSize: 14),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return Column(
+      children: widgets,
     );
   }
 

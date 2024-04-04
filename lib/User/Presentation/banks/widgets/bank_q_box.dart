@@ -12,6 +12,7 @@ import '../../../Core/resources/shadows_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
 import '../../../Features/banks/domain/entites/bank_q.dart';
+import '../../tests/widgets/answer_w.dart';
 
 class BankQuestionBox extends StatefulWidget {
   const BankQuestionBox({
@@ -236,10 +237,45 @@ class BankQuestionBodyWidget extends StatelessWidget {
             ),
           ),
         if (question.equation != null) ...[
-          const SizedBox(height: SizesResources.s3),
           SizedBox(
-            child: Math.tex(
-              "${question.equation}",
+            width: SpacingResources.mainWidth(context),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.black,
+                  fontFamily: "Almarai",
+                  height: 2,
+                ),
+                children: List.generate(
+                  fixTheError(question.equation!).length,
+                  (index) {
+                    if (!containsArabic(
+                        fixTheError(question.equation!)[index])) {
+                      return WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 2.5,
+                            vertical: 2,
+                          ),
+                          child: SizedBox(
+                            child: Math.tex(
+                              fixTheError(question.equation!)[index],
+                              textStyle: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return TextSpan(
+                        text: " ${fixTheError(question.equation!)[index]}  ",
+                        style: const TextStyle(fontSize: 14),
+                      );
+                    }
+                  },
+                ),
+              ),
             ),
           ),
         ]

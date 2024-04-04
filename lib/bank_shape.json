@@ -1,0 +1,17 @@
+{
+  "question": "",
+  "image": null,
+  "explain": null,
+  "equation": null,
+  "answers": [
+    {
+      "answer": "صح",
+      "equation": "",
+      "is_correct": true
+    },
+    {
+      "answer": "غلط",
+      "is_correct": false
+    }
+  ]
+}

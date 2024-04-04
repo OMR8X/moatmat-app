@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/ast.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
+import 'package:moatmat_app/User/Presentation/tests/widgets/answer_w.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../Core/injection/app_inj.dart';
@@ -185,10 +186,10 @@ class TestQuestionBodyWidget extends StatelessWidget {
                           child: Shimmer.fromColors(
                               baseColor: Colors.grey[400]!,
                               highlightColor: Colors.grey[300]!,
-                              child: Container(
+                              child: const SizedBox(
                                 width: 200,
                                 height: 100,
-                                color: ColorsResources.background,
+                                // color: ColorsResources.background,
                               )),
                         );
                       } else {
@@ -233,10 +234,55 @@ class TestQuestionBodyWidget extends StatelessWidget {
               ),
             ),
           ),
-        if (question.equation != null) ...[
+        if (question.equation != null &&
+            question.equation != "" &&
+            question.question != null &&
+            question.question != "")
           const SizedBox(height: SizesResources.s3),
+        if (question.equation != null) ...[
           SizedBox(
-            child: Math.tex(question.equation!, mathStyle: MathStyle.display),
+            width: SpacingResources.mainWidth(context),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.black,
+                  fontFamily: "Almarai",
+                  height: 2,
+                ),
+                children: List.generate(
+                  fixTheError(question.equation!).length,
+                  (index) {
+                    if (!containsArabic(
+                        fixTheError(question.equation!)[index])) {
+                      return WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 2.5,
+                            vertical: 2,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: SizedBox(
+                              child: Math.tex(
+                                fixTheError(question.equation!)[index],
+                                textStyle: const TextStyle(fontSize: 17),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return TextSpan(
+                        text: " ${fixTheError(question.equation!)[index]}  ",
+                        style: const TextStyle(fontSize: 14),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
           ),
         ]
       ],

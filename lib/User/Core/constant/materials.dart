@@ -43,4 +43,16 @@ List<Map<String, String>> materialsLst = [
     "name": "التربية الدينية المسيحية",
     "image": "assets/images/materials/altar.gif",
   },
+  {
+    "name": "الجغرافيا",
+    "image": "assets/images/materials/mountain.gif",
+  },
+  {
+    "name": "التاريخ",
+    "image": "assets/images/materials/old-scroll.gif",
+  },
+  {
+    "name": "الفلسفة",
+    "image": "assets/images/materials/philosopher.png",
+  },
 ];

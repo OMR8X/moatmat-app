@@ -174,11 +174,11 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     for (var d in didNotAnswer) {
       String value = "";
       value += d.$1.image ?? "";
-      value += d.$1.answers.first.answer;
+      value += d.$1.answers.first.answer ?? d.$1.answers.first.equation!;
       correct.removeWhere((e) {
         String value2 = "";
         value2 += e.$1.image ?? "";
-        value2 += e.$1.answers.first.answer;
+        value2 += d.$1.answers.first.answer ?? d.$1.answers.first.equation!;
         return value == value2;
       });
     }
