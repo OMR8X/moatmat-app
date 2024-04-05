@@ -22,12 +22,28 @@ class TestFullTimeExploreView extends StatefulWidget {
       _TestFullTimeExploreViewState();
 }
 
-class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
+class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView>
+    with WidgetsBindingObserver {
   bool submit = true;
   @override
   void initState() {
     context.read<TestFullTimeExploreCubit>().init(widget.test, widget.minutes);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  AppLifecycleState? _notification;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
+      context.read<TestFullTimeExploreCubit>().finish();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

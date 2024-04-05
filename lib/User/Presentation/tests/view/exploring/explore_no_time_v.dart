@@ -18,12 +18,29 @@ class TestExploreNoTimeView extends StatefulWidget {
   State<TestExploreNoTimeView> createState() => _TestExploreNoTimeViewState();
 }
 
-class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView> {
+class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView>
+    with WidgetsBindingObserver {
   bool submit = true;
+
   @override
   void initState() {
-    context.read<TestNoTimeExploreCubit>().init(widget.test);
     super.initState();
+    context.read<TestNoTimeExploreCubit>().init(widget.test);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  AppLifecycleState? _notification;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
+       context.read<TestNoTimeExploreCubit>().finish();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

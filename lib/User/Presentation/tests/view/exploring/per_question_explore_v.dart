@@ -21,15 +21,30 @@ class TestPerQuestionExploreView extends StatefulWidget {
       _TestPerQuestionExploreViewState();
 }
 
-class _TestPerQuestionExploreViewState
-    extends State<TestPerQuestionExploreView> {
+class _TestPerQuestionExploreViewState extends State<TestPerQuestionExploreView>
+    with WidgetsBindingObserver {
   bool submit = true;
   @override
   void initState() {
     context
         .read<TestPerQuestionExploreCubit>()
         .init(widget.test, widget.minutes);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  AppLifecycleState? _notification;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
+      context.read<TestPerQuestionExploreCubit>().finish();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -46,7 +61,6 @@ class _TestPerQuestionExploreViewState
         body: BlocBuilder<TestPerQuestionExploreCubit, PerQuestionExploreState>(
           builder: (context, state) {
             if (state is PerQuestionExploreQuestion) {
-
               return TestQuestionView(
                 test: widget.test,
                 title: "${state.currentQ + 1} / ${state.length}",
