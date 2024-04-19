@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moatmat_app/User/Core/injection/app_inj.dart';
-import 'package:moatmat_app/User/Features/result/domain/entities/result.dart';
-import 'package:moatmat_app/User/Features/result/domain/usecases/add_result_uc.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/no_time_explore/no_time_explore_cubit.dart';
 
 import '../../../../Features/tests/domain/entities/test.dart';
@@ -29,7 +26,6 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView>
     WidgetsBinding.instance.addObserver(this);
   }
 
-  AppLifecycleState? _notification;
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.inactive) {
