@@ -5,16 +5,16 @@ class PurchaseItemModel extends PurchaseItem {
     required super.id,
     required super.uuid,
     required super.amount,
-    required super.item,
-    required super.teacher,
+    required super.itemId,
+    required super.itemType,
   });
   factory PurchaseItemModel.fromJson(Map json) {
     return PurchaseItemModel(
       id: json["id"],
       uuid: json["uuid"],
       amount: json["amount"],
-      item: json["item"],
-      teacher: json["teacher"],
+      itemId: json["item_id"],
+      itemType: json["item_type"],
     );
   }
   factory PurchaseItemModel.fromClass(PurchaseItem item) {
@@ -22,16 +22,16 @@ class PurchaseItemModel extends PurchaseItem {
       id: item.id,
       uuid: item.uuid,
       amount: item.amount,
-      item: item.item,
-      teacher: item.teacher,
+      itemId: item.itemId,
+      itemType: item.itemType,
     );
   }
   toJson() {
     return {
       "uuid": uuid,
       "amount": amount,
-      "item": item,
-      "teacher": teacher,
+      "item_id": itemId,
+      "item_type": itemType,
       "day_month": "${DateTime.now().month}/${DateTime.now().day}",
     };
   }

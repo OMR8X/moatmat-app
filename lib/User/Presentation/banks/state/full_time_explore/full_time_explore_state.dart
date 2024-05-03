@@ -13,7 +13,7 @@ final class FullTimeExploreLoading extends FullTimeExploreState {}
 
 final class FullTimeExploreQuestion extends FullTimeExploreState {
   //
-  final (BankQuestion, int?) question;
+  final (Question, int?) question;
   //
   final Duration time;
   //
@@ -31,7 +31,7 @@ final class FullTimeExploreQuestion extends FullTimeExploreState {
 }
 
 final class FullTimeExploreResult extends FullTimeExploreState {
-  final List<(BankQuestion, int)> correct, wrong;
+  final List<(Question, int)> correct, wrong;
   final String result;
 
   const FullTimeExploreResult({

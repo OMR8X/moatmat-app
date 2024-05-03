@@ -14,6 +14,7 @@ import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/get_test_c/get_test_cubit.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/test_searching_v.dart';
+import 'package:moatmat_app/User/Presentation/tests/widgets/test_tile_w.dart';
 
 class PickTestView extends StatefulWidget {
   const PickTestView({
@@ -120,84 +121,12 @@ class _PickTestViewState extends State<PickTestView> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                      width: SpacingResources.mainHalfWidth(context),
-                      height: SpacingResources.mainHalfWidth(context),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: SizesResources.s3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: ColorsResources.onPrimary,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: ShadowsResources.mainBoxShadow,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            widget.tests[index].$1.title,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: ColorsResources.blackText2,
-                            ),
-                          ),
-                          getSubTitle(index),
-                          Text(
-                            "${widget.tests[index].$1.questions.length.toString()} سؤال",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: ColorsResources.blackText2,
-                            ),
-                          ),
-                          FilledButton(
-                            onPressed: () {
-                              var test = widget.tests[index].$1;
-                              if (test.isPurchased()) {
-                                //
-                                if (test.password != null &&
-                                    test.password!.isNotEmpty) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        EnterTestPasswordWidget(
-                                      password: test.password!,
-                                      onOpen: () {
-                                        widget.onPick(widget.tests[index]);
-                                      },
-                                    ),
-                                  );
-                                } else {
-                                  widget.onPick(widget.tests[index]);
-                                }
-                                //
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => BuyTestsWidget(
-                                    tests: [test],
-                                  ),
-                                );
-                              }
-                            },
-                            child: widget.tests[index].$1.isPurchased()
-                                ? const Text(
-                                    "فتح",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: ColorsResources.whiteText1),
-                                  )
-                                : Text(
-                                    "${widget.tests[index].$1.cost} نقطة",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: ColorsResources.whiteText1),
-                                  ),
-                          ),
-                        ],
-                      )),
+                  TestTileWidget(
+                    test: widget.tests[index].$1,
+                    onPick: () {
+                      widget.onPick(widget.tests[index]);
+                    },
+                  ),
                 ],
               );
             }),
@@ -207,7 +136,8 @@ class _PickTestViewState extends State<PickTestView> {
 
   Widget getSubTitle(int index) {
     var test = widget.tests[index].$1;
-    if (test.password != null && test.password!.isNotEmpty) {
+    if (test.information.password != null &&
+        test.information.password!.isNotEmpty) {
       return const Text(
         "كلمة السر مطلوبة",
         style: TextStyle(
@@ -392,7 +322,7 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
   String getItems() {
     String items = "";
     for (var b in widget.tests) {
-      items += " ${b.title}";
+      items += " ${b.information.title}";
     }
     return items;
   }
@@ -400,7 +330,7 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
   String getPrice() {
     int price = 0;
     for (var b in widget.tests) {
-      price += b.cost ?? 0;
+      price += b.information.price ?? 0;
     }
     return "$price نقطة";
   }

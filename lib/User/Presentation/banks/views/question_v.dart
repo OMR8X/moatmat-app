@@ -18,6 +18,7 @@ import 'package:moatmat_app/User/Presentation/banks/widgets/bank_q_box.dart';
 import 'package:moatmat_app/User/Presentation/banks/widgets/explore_question_appbar_w.dart';
 
 import '../../../Core/functions/report.dart';
+import '../../../Features/tests/domain/entities/question.dart';
 
 class BankQuestionView extends StatefulWidget {
   const BankQuestionView({
@@ -38,13 +39,13 @@ class BankQuestionView extends StatefulWidget {
   final Bank bank;
   final String title;
   final Duration? time;
-  final BankQuestion question;
+  final Question question;
   final int? selected;
   final bool? showNext, showPrevious, disableActions;
   final VoidCallback onPop;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
-  final Function(BankQuestion question, int? selected) onAnswer;
+  final Function(Question question, int? selected) onAnswer;
 
   @override
   State<BankQuestionView> createState() => _BankQuestionViewState();
@@ -96,7 +97,7 @@ class BankQuestionBodyElements extends StatelessWidget {
   });
   final Bank bank;
   final int? selected;
-  final BankQuestion question;
+  final Question question;
   final Function(int selected) onAnswer;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
@@ -160,12 +161,12 @@ class BankQuestionBodyElements extends StatelessWidget {
                           context: context,
                           id: bank.id,
                           bQuestion: question,
-                          name: bank.title,
-                          teacher: bank.teacher,
+                          name: bank.information.title,
+                          teacherEmail: bank.teacherEmail,
                         );
                       },
                       onShowAnswer: () {
-                        showExplain(question.explain!, context);
+                        showExplain(question, context);
                       },
                       didAnswer: selected != null,
                     ),

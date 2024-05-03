@@ -1,59 +1,53 @@
-import 'package:moatmat_app/User/Core/injection/app_inj.dart';
-import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
-import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
+import '../../../../Core/injection/app_inj.dart';
+import '../../../purchase/domain/entites/purchase_item.dart';
+import '../../../tests/domain/entities/question.dart';
+import 'bank_information.dart';
 
 class Bank {
-  //
   final int id;
-  final int cost;
-  //
-  final String clas;
-  final String title;
-  final String material;
-  final String teacher;
-  //
-  final List<BankQuestion> questions;
-  //
+  final String teacherEmail;
+  final BankInformation information;
+  final List<Question> questions;
   Bank({
     required this.id,
-    required this.cost,
-    required this.title,
-    required this.clas,
-    required this.material,
-    required this.teacher,
+    required this.teacherEmail,
+    required this.information,
     required this.questions,
   });
-  //
+
   Bank copyWith({
     int? id,
-    int? cost,
-    String? clas,
-    String? title,
-    String? material,
-    String? teacher,
-    List<BankQuestion>? questions,
+    String? teacherEmail,
+    BankInformation? information,
+    List<Question>? questions,
   }) {
     return Bank(
       id: id ?? this.id,
-      cost: cost ?? this.cost,
-      title: title ?? this.title,
-      clas: clas ?? this.clas,
-      material: material ?? this.material,
-      teacher: teacher ?? this.teacher,
+      teacherEmail: teacherEmail ?? this.teacherEmail,
+      information: information ?? this.information,
       questions: questions ?? this.questions,
     );
   }
 
   PurchaseItem toPurchaseItem() {
     return PurchaseItem(
-      amount: cost,
-      item: "$id , $title",
-      teacher: teacher,
+      amount: information.price,
+      itemId: "$id",
+      itemType: "bank",
     );
   }
 
   bool isPurchased() {
-    var items = locator<List<PurchaseItem>>().map((e) => e.item).toList();
-    return items.contains("$id , $title");
+    bool purchased = false;
+    //
+    var items = locator<List<PurchaseItem>>();
+    //
+    for (var i in items) {
+      if (i.itemId == "$id" && i.itemType == "bank") {
+        purchased = true;
+      }
+    }
+    //
+    return purchased;
   }
 }

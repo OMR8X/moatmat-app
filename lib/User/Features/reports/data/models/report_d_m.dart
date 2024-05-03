@@ -4,6 +4,7 @@ class ReportDataModel extends ReportData {
   ReportDataModel({
     required super.id,
     required super.message,
+    required super.userName,
     required super.questionID,
     required super.testId,
     required super.bankId,
@@ -14,6 +15,7 @@ class ReportDataModel extends ReportData {
     return ReportDataModel(
       id: json["id"],
       message: json["message"],
+      userName: json["user_name"],
       questionID: json["question_id"],
       testId: json["test_id"],
       bankId: json["bank_id"],
@@ -25,6 +27,7 @@ class ReportDataModel extends ReportData {
     return ReportDataModel(
       id: report.id,
       message: report.message,
+      userName: report.userName,
       questionID: report.questionID,
       testId: report.testId,
       bankId: report.bankId,
@@ -35,6 +38,7 @@ class ReportDataModel extends ReportData {
   toJson() {
     return {
       "message": message,
+      "user_name": userName,
       "question_id": questionID,
       "test_id": testId,
       "bank_id": bankId,

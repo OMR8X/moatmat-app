@@ -35,13 +35,13 @@ class TestQuestionView extends StatefulWidget {
   final Test test;
   final String title;
   final Duration? time;
-  final TestQuestion question;
+  final Question question;
   final int? selected;
   final bool? showNext, showPrevious, disableActions;
   final VoidCallback onPop;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
-  final Function(TestQuestion question, int? selected) onAnswer;
+  final Function(Question question, int? selected) onAnswer;
 
   @override
   State<TestQuestionView> createState() => _TestQuestionViewState();
@@ -95,7 +95,7 @@ class TestQuestionBodyElements extends StatelessWidget {
   });
   final Test test;
   final int? selected;
-  final TestQuestion question;
+  final Question question;
   final Function(int selected) onAnswer;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
@@ -161,17 +161,17 @@ class TestQuestionBodyElements extends StatelessWidget {
                           context: context,
                           id: test.id,
                           tQuestion: question,
-                          teacher: test.teacher,
-                          name: test.title,
+                          teacherEmail: test.teacherEmail,
+                          name: test.information.title,
                         );
                       },
                       onShowAnswer: () {
-                        showExplain(question.explain!, context);
+                        showExplain(question, context);
                       },
                       didAnswer: selected != null,
                     ),
                     TestQuestionAnswerWidget(
-                      canChange: question.editable,
+                      canChange: question.editable ?? false,
                       answer: question.answers[index],
                       onAnswer: () {
                         onAnswer(index);
@@ -185,7 +185,7 @@ class TestQuestionBodyElements extends StatelessWidget {
                   return Column(
                     children: [
                       TestQuestionAnswerWidget(
-                        canChange: question.editable,
+                        canChange: question.editable ?? false,
                         answer: question.answers[index],
                         onAnswer: () {
                           onAnswer(index);
@@ -197,7 +197,7 @@ class TestQuestionBodyElements extends StatelessWidget {
                   );
                 } else {
                   return TestQuestionAnswerWidget(
-                    canChange: question.editable,
+                    canChange: question.editable ?? false,
                     answer: question.answers[index],
                     onAnswer: () {
                       onAnswer(index);

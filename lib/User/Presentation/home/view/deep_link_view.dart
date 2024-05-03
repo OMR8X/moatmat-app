@@ -43,7 +43,7 @@ class _DeepLinkViewState extends State<DeepLinkView> {
         disableActions: true,
         onNext: () {},
         onPrevious: () {},
-        title: "بنك الاستاذ ${widget.bank!.teacher}",
+        title: "بنك الاستاذ ${widget.bank!.information.teacher}",
       );
     } else if (widget.test != null) {
       return TestQuestionView(
@@ -61,7 +61,7 @@ class _DeepLinkViewState extends State<DeepLinkView> {
         },
         onNext: () {},
         onPrevious: () {},
-        title: "بنك الاستاذ ${widget.test!.teacher}",
+        title: "بنك الاستاذ ${widget.test!.information.teacher}",
       );
     }
     return const Scaffold();

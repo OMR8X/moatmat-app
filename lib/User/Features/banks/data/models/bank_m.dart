@@ -1,55 +1,43 @@
-import 'package:moatmat_app/User/Features/banks/data/models/bank_q_m.dart';
-import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
+import '../../../tests/data/models/question_m.dart';
+import '../../domain/entites/bank.dart';
+import 'information_m.dart';
 
 class BankModel extends Bank {
   BankModel({
     required super.id,
-    required super.cost,
-    required super.title,
-    required super.clas,
-    required super.material,
-    required super.teacher,
+    required super.teacherEmail,
+    required super.information,
     required super.questions,
   });
+
   factory BankModel.fromJson(Map json) {
     return BankModel(
-      id: json["id"],
-      cost: json["cost"],
-      title: json["title"],
-      clas: json["class"],
-      material: json["material"],
-      teacher: json["teacher"],
-      questions: List.generate((json["questions"] as List).length, (i) {
-        var map = (json["questions"][i] as Map);
-        map["id"] = i;
-        return BankQuestionModel.fomJson(map);
-      }),
+      id: json['id'],
+      teacherEmail: json['teacher_email'],
+      information: BankInformationModel.fromJson(json['information']),
+      questions: List.generate(
+        (json['questions'] as List).length,
+        (i) => QuestionModel.fromJson(json['questions'][i]),
+      ),
     );
   }
+
   factory BankModel.fromClass(Bank bank) {
     return BankModel(
       id: bank.id,
-      cost: bank.cost,
-      title: bank.title,
-      clas: bank.clas,
-      material: bank.material,
-      teacher: bank.teacher,
+      teacherEmail: bank.teacherEmail,
+      information: bank.information,
       questions: bank.questions,
     );
   }
   toJson() {
     return {
-      "id": id,
-      "cost": cost,
-      "title": title,
-      "clas": clas,
-      "material": material,
-      "teacher": teacher,
-      "questions": questions
-          .map<Map>(
-            (e) => BankQuestionModel.fromClass(e).toJson(),
-          )
-          .toList(),
+      "teacher_email": teacherEmail,
+      "information": BankInformationModel.fromClass(information).toJson(),
+      "questions": List.generate(
+        questions.length,
+        (i) => QuestionModel.fromClass(questions[i]).toJson(),
+      ),
     };
   }
 }

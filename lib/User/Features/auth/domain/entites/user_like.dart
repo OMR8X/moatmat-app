@@ -1,14 +1,11 @@
-import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
-import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
-import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 
 class UserLike {
   final int id;
   final int? bankId;
   final int? testId;
-  final BankQuestion? bQuestion;
-  final TestQuestion? tQuestion;
+  final Question? bQuestion;
+  final Question? tQuestion;
 
   UserLike({
     required this.id,

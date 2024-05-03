@@ -11,7 +11,7 @@ final class PerQuestionExploreLoading extends PerQuestionExploreState {}
 
 final class PerQuestionExploreQuestion extends PerQuestionExploreState {
   //
-  final (TestQuestion, int?) question;
+  final (Question, int?) question;
   //
   final Duration time;
   //
@@ -29,7 +29,7 @@ final class PerQuestionExploreQuestion extends PerQuestionExploreState {
 }
 
 final class PerQuestionExploreResult extends PerQuestionExploreState {
-  final List<(TestQuestion, int)> correct, wrong;
+  final List<(Question, int)> correct, wrong;
   final String result;
 
   const PerQuestionExploreResult({

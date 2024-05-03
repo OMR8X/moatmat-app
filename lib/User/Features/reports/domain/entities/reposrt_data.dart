@@ -1,6 +1,7 @@
 class ReportData {
   final int id;
   final String name;
+  final String userName;
   final String teacher;
   final int questionID;
   final String? message;
@@ -10,6 +11,7 @@ class ReportData {
   ReportData({
     required this.id,
     required this.message,
+    required this.userName,
     required this.questionID,
     required this.testId,
     required this.bankId,
@@ -19,6 +21,7 @@ class ReportData {
   ReportData copyWith({
     int? id,
     String? message,
+    String? userName,
     String? name,
     String? teacher,
     int? questionID,
@@ -27,6 +30,7 @@ class ReportData {
   }) {
     return ReportData(
       id: id ?? this.id,
+      userName: userName ?? this.userName,
       message: message ?? this.message,
       teacher: teacher ?? this.teacher,
       name: name ?? this.name,

@@ -34,12 +34,12 @@ class BanksDataSourceImpl implements BanksDataSource {
     //
     List<String> classes = [];
     //
-    var res = await client.from("banks").select("class").eq(
-          "material",
+    var res = await client.from("banks").select("information->>classs").eq(
+          "information->>material",
           material,
         );
     //
-    classes = res.map<String>((e) => e["class"]).toList();
+    classes = res.map<String>((e) => e["classs"]).toList();
     //
     classes.removeWhere((e) => e.isEmpty);
 
@@ -57,9 +57,9 @@ class BanksDataSourceImpl implements BanksDataSource {
 
     var res = await client
         .from("banks")
-        .select("teacher")
-        .eq("material", material)
-        .eq("class", clas);
+        .select("information->>teacher")
+        .eq("information->>material", material)
+        .eq("information->>classs", clas);
     //
     teachers = res.map<String>((e) => e["teacher"]).toList();
     //
@@ -79,9 +79,9 @@ class BanksDataSourceImpl implements BanksDataSource {
     var res = await client
         .from("banks")
         .select()
-        .eq("teacher", teacher)
-        .eq("material", material)
-        .eq("class", clas);
+        .eq("information->>teacher", teacher)
+        .eq("information->>material", material)
+        .eq("information->>classs", clas);
     //
     banks = res.map<Bank>((e) => BankModel.fromJson(e)).toList();
     return banksToBanksWithCount(banks);

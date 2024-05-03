@@ -96,7 +96,7 @@ class _PickBankViewState extends State<PickBankView> {
                     ),
                     child: ListTile(
                       title: Text(
-                        widget.banks[index].$1.title,
+                        widget.banks[index].$1.information.title,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -132,7 +132,7 @@ class _PickBankViewState extends State<PickBankView> {
                                     color: ColorsResources.whiteText1),
                               )
                             : Text(
-                                "${widget.banks[index].$1.cost} نقطة",
+                                "${widget.banks[index].$1.information.price} نقطة",
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: ColorsResources.whiteText1),
@@ -249,7 +249,7 @@ class _BuyBanksWidgetState extends State<BuyBanksWidget> {
   String getItems() {
     String items = "";
     for (var b in widget.banks) {
-      items += " ${b.title}";
+      items += " ${b.information.title}";
     }
     return items;
   }
@@ -257,7 +257,7 @@ class _BuyBanksWidgetState extends State<BuyBanksWidget> {
   String getPrice() {
     int price = 0;
     for (var b in widget.banks) {
-      price += b.cost;
+      price += b.information.price;
     }
     return "$price نقطة";
   }

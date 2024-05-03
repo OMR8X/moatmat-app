@@ -5,8 +5,8 @@ class PurchaseItem {
   //
   final int amount;
   //
-  final String item;
-  final String teacher;
+  final String itemType;
+  final String itemId;
   //
   late String dayAndMoth;
 
@@ -14,22 +14,22 @@ class PurchaseItem {
     this.id = 0,
     this.uuid = "",
     required this.amount,
-    required this.item,
-    required this.teacher,
+    required this.itemType,
+    required this.itemId,
   });
   PurchaseItem copyWith({
     int? id,
     String? uuid,
     int? amount,
-    String? item,
-    String? teacher,
+    String? itemId,
+    String? itemType,
   }) {
     return PurchaseItem(
       id: id ?? this.id,
       uuid: uuid ?? this.uuid,
       amount: amount ?? this.amount,
-      item: item ?? this.item,
-      teacher: teacher ?? this.teacher,
+      itemType: itemType ?? this.itemType,
+      itemId: itemId ?? this.itemId,
     );
   }
 }

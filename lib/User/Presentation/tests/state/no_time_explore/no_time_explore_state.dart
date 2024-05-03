@@ -11,7 +11,7 @@ final class NoTimeExploreLoading extends NoTimeExploreState {}
 
 final class NoTimeExploreQuestion extends NoTimeExploreState {
   //
-  final (TestQuestion, int?) question;
+  final (Question, int?) question;
   //
   final int currentQ, length;
 
@@ -25,7 +25,7 @@ final class NoTimeExploreQuestion extends NoTimeExploreState {
 }
 
 final class NoTimeExploreResult extends NoTimeExploreState {
-  final List<(TestQuestion, int)> correct, wrong;
+  final List<(Question, int)> correct, wrong;
   final String result;
 
   const NoTimeExploreResult({

@@ -1,8 +1,6 @@
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
 import 'package:moatmat_app/User/Features/tests/data/models/question_m.dart';
 
-import '../../../banks/data/models/bank_q_m.dart';
-
 class UserLikeModel extends UserLike {
   UserLikeModel({
     required super.id,
@@ -16,8 +14,12 @@ class UserLikeModel extends UserLike {
       id: json["id"],
       bankId: json["bank_id"],
       testId: json["test_id"],
-      bQuestion:json["bank_question"]!=null? BankQuestionModel.fomJson(json["bank_question"]):null,
-      tQuestion:json["test_question"]!=null? TestQuestionModel.fromJson(json["test_question"]):null,
+      bQuestion: json["bank_question"] != null
+          ? QuestionModel.fromJson(json["bank_question"])
+          : null,
+      tQuestion: json["test_question"] != null
+          ? QuestionModel.fromJson(json["test_question"])
+          : null,
     );
   }
   factory UserLikeModel.fromClass(UserLike like) {
@@ -36,10 +38,10 @@ class UserLikeModel extends UserLike {
       "test_id": testId,
     };
     if (bQuestion != null) {
-      data["bank_question"] = BankQuestionModel.fromClass(bQuestion!).toJson();
+      data["bank_question"] = QuestionModel.fromClass(bQuestion!).toJson();
     }
     if (tQuestion != null) {
-      data["test_question"] = TestQuestionModel.fromClass(tQuestion!).toJson();
+      data["test_question"] = QuestionModel.fromClass(tQuestion!).toJson();
     }
     return data;
   }

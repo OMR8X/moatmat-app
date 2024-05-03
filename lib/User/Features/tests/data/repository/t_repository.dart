@@ -15,7 +15,8 @@ class TestsRepositoryImpl implements TestsRepository {
     try {
       var res = await dataSource.getMaterialTestClasses(material: material);
       return right(res);
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       return left(const AnonFailure());
     }
   }

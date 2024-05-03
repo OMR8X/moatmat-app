@@ -25,9 +25,11 @@ class PurchasesReporisotyrImpl implements PurchasesRepository {
     try {
       var res = await dataSource.purchaseItem(item: item);
       return right(res);
-    } on NotEnoughtBalaneException {
+    } on NotEnoughBalanceException catch (e) {
+      print(e);
       return left(const NotEnoughtBalaneFailure());
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       return left(const AnonFailure());
     }
   }
@@ -39,7 +41,7 @@ class PurchasesReporisotyrImpl implements PurchasesRepository {
     try {
       var res = await dataSource.purchaseListOfItem(items: items);
       return right(res);
-    } on NotEnoughtBalaneException {
+    } on NotEnoughBalanceException {
       return left(const NotEnoughtBalaneFailure());
     } on Exception {
       return left(const AnonFailure());

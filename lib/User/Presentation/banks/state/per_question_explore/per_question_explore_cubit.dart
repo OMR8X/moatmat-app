@@ -9,14 +9,15 @@ import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 
 import '../../../../Core/resources/audios_r.dart';
+import '../../../../Features/tests/domain/entities/question.dart';
 
 part 'per_question_explore_state.dart';
 
 class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   PerQuestionExploreCubit() : super(PerQuestionExploreLoading());
   late Bank bank;
-  late List<(BankQuestion, int?)> questions;
-  late List<(BankQuestion, int?)> didNotAnswer;
+  late List<(Question, int?)> questions;
+  late List<(Question, int?)> didNotAnswer;
   late int currentQuestion;
   late int seconds;
   Timer? _timer;
@@ -56,11 +57,11 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   }
   //
 
-  void answerQuestion(int index, (BankQuestion, int?) question) {
-    BankQuestion currentQuestion = questions[index].$1;
+  void answerQuestion(int index, (Question, int?) question) {
+    Question currentQuestion = questions[index].$1;
     List<int> trueIndexes = [];
     for (int i = 0; i < currentQuestion.answers.length; i++) {
-      if (currentQuestion.answers[i].isCorrect) {
+      if (currentQuestion.answers[i].trueAnswer ?? false) {
         trueIndexes.add(i);
       }
     }
@@ -139,7 +140,7 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     //
     int trueIndex = 0;
     for (int i = 0; i < ques.$1.answers.length; i++) {
-      if (ques.$1.answers[i].isCorrect) {
+      if (ques.$1.answers[i].trueAnswer ?? false) {
         trueIndex = i;
       }
     }
@@ -158,13 +159,13 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
 
   void finish() {
     cancelTimer();
-    List<(BankQuestion, int)> correct = [];
-    List<(BankQuestion, int)> wrong = [];
+    List<(Question, int)> correct = [];
+    List<(Question, int)> wrong = [];
     for (var q in questions) {
       if (q.$2 != null) {
         List<int> correctIndex = [];
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex.add(i) : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
         }
         (correctIndex.contains(q.$2))
             ? correct.add((q.$1, q.$2!))
@@ -177,11 +178,11 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     for (var d in didNotAnswer) {
       String value = "";
       value += d.$1.image ?? "";
-      value += d.$1.answers.first.answer ?? d.$1.answers.first.equation!;
+      value += d.$1.answers.first.text ?? "";
       correct.removeWhere((e) {
         String value2 = "";
         value2 += e.$1.image ?? "";
-        value2 += d.$1.answers.first.answer ?? d.$1.answers.first.equation!;
+        value2 += d.$1.answers.first.text ?? "";
         return value == value2;
       });
     }

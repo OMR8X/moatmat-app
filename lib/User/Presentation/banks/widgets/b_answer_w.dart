@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/b_question_answer.dart';
+import 'package:moatmat_app/User/Features/tests/domain/entities/answer.dart';
+import 'package:moatmat_app/User/Presentation/tests/widgets/answer_body_w.dart';
 
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/shadows_r.dart';
@@ -17,7 +19,7 @@ class BankQuestionAnswerWidget extends StatefulWidget {
     this.selected,
   });
   final bool? selected;
-  final BankAnswer answer;
+  final Answer answer;
   final VoidCallback onAnswer;
 
   @override
@@ -72,35 +74,24 @@ class _BankQuestionAnswerWidgetState extends State<BankQuestionAnswerWidget> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: SizesResources.s3,
-                  horizontal: SizesResources.s4,
+                  horizontal: SpacingResources.sidePadding / 2,
                 ),
                 child: Row(
                   children: [
-                    const Expanded(
-                      flex: 1,
-                      child: Opacity(
-                        opacity: 0,
-                        child: CircleAvatar(
-                          radius: 14,
-                          child: Icon(
-                            Icons.check,
-                            size: 14,
-                          ),
-                        ),
-                      ),
+                    const SizedBox(
+                      width: 35,
                     ),
                     Expanded(
                       flex: 5,
-                      child: getContentWidget(),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Opacity(
-                        opacity: 1,
-                        child: widget.answer.isCorrect
-                            ? getCorrectWidget()
-                            : getWrongWidget(),
+                      child: AnswerBodyWidget(
+                        answer: widget.answer,
                       ),
+                    ),
+                    SizedBox(
+                      width: 35,
+                      child: (widget.answer.trueAnswer ?? false)
+                          ? getCorrectWidget()
+                          : getWrongWidget(),
                     ),
                   ],
                 ),
@@ -112,78 +103,24 @@ class _BankQuestionAnswerWidgetState extends State<BankQuestionAnswerWidget> {
     );
   }
 
-  Widget getContentWidget() {
-    List<Widget> widgets = [];
-    if (widget.answer.answer != null) {
-      widgets.add(
-        Text(
-          widget.answer.answer!,
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
-    if (widget.answer.equation != null) {
-      widgets.add(
-        Center(
-          child: SizedBox(
-            width: SpacingResources.mainWidth(context) - (SizesResources.s8),
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.black,
-                  fontFamily: "Almarai",
-                  height: 2,
-                ),
-                children: List.generate(
-                  fixTheError(widget.answer.equation!).length,
-                  (index) {
-                    if (!containsArabic(
-                        fixTheError(widget.answer.equation!)[index])) {
-                      return WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: SizedBox(
-                          child: Math.tex(
-                            fixTheError(widget.answer.equation!)[index],
-                            textStyle: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      );
-                    } else {
-                      return TextSpan(
-                        text:
-                            " ${fixTheError(widget.answer.equation!)[index]}  ",
-                        style: const TextStyle(fontSize: 14),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-    return Column(
-      children: widgets,
-    );
-  }
-
   Widget getCorrectWidget() {
     if (widget.selected == null) {
       return const SizedBox();
     }
-    if (widget.selected == false && widget.answer.isCorrect == false) {
+    if (widget.selected == false && widget.answer.trueAnswer == false) {
       return const SizedBox();
     }
 
-    return const CircleAvatar(
-      radius: 14,
-      backgroundColor: ColorsResources.green,
-      child: Icon(
-        Icons.check,
-        size: 14,
-        color: ColorsResources.onPrimary,
+    return const SizedBox(
+      width: 35,
+      child: CircleAvatar(
+        radius: 10,
+        backgroundColor: ColorsResources.green,
+        child: Icon(
+          Icons.check,
+          size: 10,
+          color: ColorsResources.onPrimary,
+        ),
       ),
     );
   }
@@ -192,16 +129,19 @@ class _BankQuestionAnswerWidgetState extends State<BankQuestionAnswerWidget> {
     if (widget.selected == null) {
       return const SizedBox();
     }
-    if (widget.selected == false && widget.answer.isCorrect == false) {
+    if (widget.selected == false && widget.answer.trueAnswer == false) {
       return const SizedBox();
     }
-    return const CircleAvatar(
-      radius: 14,
-      backgroundColor: Colors.red,
-      child: Icon(
-        Icons.close,
-        size: 14,
-        color: ColorsResources.onPrimary,
+    return const SizedBox(
+      width: 35,
+      child: CircleAvatar(
+        radius: 10,
+        backgroundColor: Colors.red,
+        child: Icon(
+          Icons.close,
+          size: 10,
+          color: ColorsResources.onPrimary,
+        ),
       ),
     );
   }

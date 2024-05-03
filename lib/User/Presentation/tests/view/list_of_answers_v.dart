@@ -11,7 +11,7 @@ class ListOfTestAnswersView extends StatefulWidget {
   const ListOfTestAnswersView(
       {super.key, required this.answers, required this.test});
   final Test test;
-  final List<(TestQuestion, int)> answers;
+  final List<(Question, int)> answers;
   @override
   State<ListOfTestAnswersView> createState() => _ListOfTestAnswersViewState();
 }

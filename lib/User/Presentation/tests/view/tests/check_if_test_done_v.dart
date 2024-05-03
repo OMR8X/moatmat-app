@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/video_player_v.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../exploring/explore_no_time_v.dart';
@@ -36,7 +37,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   }
 
   Future checking() async {
-    if (widget.test.returnable) {
+    if (widget.test.properties.repeatable ?? false) {
       onOpen();
       return;
     }
@@ -61,7 +62,24 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   }
 
   onOpen() {
-    if (widget.test.seconds == null || widget.test.seconds == 0) {
+    if (widget.test.information.video != null) {
+      Navigator.of(context)
+          .push(
+            MaterialPageRoute(
+              builder: (context) => VideoPlayerView(
+                link: widget.test.information.video!,
+              ),
+            ),
+          )
+          .then((value) => openTest());
+    } else {
+      openTest();
+    }
+  }
+
+  openTest() {
+    if (widget.test.information.period == 0 ||
+        widget.test.information.period == null) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => TestExploreNoTimeView(
@@ -70,11 +88,11 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
         ),
       );
     } else {
-      if (widget.test.timePerQuestion) {
+      if (widget.test.properties.timePerQuestion ?? false) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => TestPerQuestionExploreView(
-              minutes: widget.test.seconds!,
+              minutes: widget.test.information.period!,
               test: widget.test,
             ),
           ),
@@ -83,7 +101,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => TestFullTimeExploreView(
-              minutes: widget.test.seconds!,
+              minutes: widget.test.information.period!,
               test: widget.test,
             ),
           ),

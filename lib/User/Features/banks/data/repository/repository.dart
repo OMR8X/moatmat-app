@@ -14,7 +14,8 @@ class BanksRepositoryImpl implements BanksRepository {
     try {
       var res = await dataSource.getMaterialBankClasses(material: material);
       return right(res);
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       return left(const AnonFailure());
     }
   }
@@ -28,7 +29,8 @@ class BanksRepositoryImpl implements BanksRepository {
         material: material,
       );
       return right(res);
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       return left(const AnonFailure());
     }
   }
@@ -45,7 +47,8 @@ class BanksRepositoryImpl implements BanksRepository {
         material: material,
       );
       return right(res);
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       return left(const AnonFailure());
     }
   }

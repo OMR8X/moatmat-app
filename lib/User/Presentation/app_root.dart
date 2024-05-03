@@ -28,13 +28,14 @@ class _AppRootState extends State<AppRoot> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: ColorsResources.primary),
         useMaterial3: true,
-        fontFamily: "Almarai",
+        fontFamily: "Tajawal",
         //
         appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
-              fontSize: 19,
-              color: ColorsResources.blackText1,
-              fontFamily: "Almarai"),
+            fontSize: 19,
+            color: ColorsResources.blackText1,
+            fontFamily: "Tajawal",
+          ),
         ),
         inputDecorationTheme: const InputDecorationTheme(
           border: OutlineInputBorder(
@@ -79,4 +80,3 @@ class _AppRootState extends State<AppRoot> {
     );
   }
 }
-

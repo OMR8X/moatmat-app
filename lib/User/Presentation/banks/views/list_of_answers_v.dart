@@ -4,13 +4,14 @@ import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/texts_resources.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
+import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
 
 class ListOfBankAnswersView extends StatefulWidget {
   const ListOfBankAnswersView(
       {super.key, required this.answers, required this.bank});
   final Bank bank;
-  final List<(BankQuestion, int)> answers;
+  final List<(Question, int)> answers;
   @override
   State<ListOfBankAnswersView> createState() => _ListOfBankAnswersViewState();
 }

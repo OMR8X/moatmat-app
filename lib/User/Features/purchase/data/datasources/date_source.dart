@@ -46,7 +46,7 @@ class PurchasedItemsDataSourceImpl implements PurchasedItemsDataSource {
     Map json = PurchaseItemModel.fromClass(item).toJson();
     //
     if (userData.balance < item.amount) {
-      throw NotEnoughtBalaneException();
+      throw NotEnoughBalanceException();
     }
     //
     //  update user data
@@ -70,7 +70,7 @@ class PurchasedItemsDataSourceImpl implements PurchasedItemsDataSource {
       price += i.amount;
     }
     if (userData.balance < price) {
-      throw NotEnoughtBalaneException();
+      throw NotEnoughBalanceException();
     } else {
       for (var i in items) {
         await purchaseItem(item: i);

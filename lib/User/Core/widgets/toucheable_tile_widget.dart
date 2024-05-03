@@ -60,6 +60,7 @@ class TouchableTileWidget extends StatelessWidget {
                             textAlign: TextAlign.start,
                             style: FontsResources.lightStyle().copyWith(
                               color: ColorsResources.blackText1,
+                              fontWeight: FontWeight.w300,
                               fontSize: 10,
                             ),
                           ),

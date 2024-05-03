@@ -5,13 +5,16 @@ import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
+import 'package:moatmat_app/User/Presentation/tests/widgets/question_body_w.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/shadows_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
+import '../../../Core/widgets/math/question_body_w.dart';
 import '../../../Features/banks/domain/entites/bank_q.dart';
+import '../../../Features/tests/domain/entities/question.dart';
 import '../../tests/widgets/answer_w.dart';
 
 class BankQuestionBox extends StatefulWidget {
@@ -27,7 +30,7 @@ class BankQuestionBox extends StatefulWidget {
     required this.onUnLike,
   });
   final int bankID;
-  final BankQuestion question;
+  final Question question;
   final bool didAnswer;
   final VoidCallback onShare;
   final Function(int id) onReport;
@@ -97,7 +100,7 @@ class _BankQuestionBoxState extends State<BankQuestionBox> {
           ),
           padding: const EdgeInsets.symmetric(
             vertical: SizesResources.s2,
-            horizontal: SizesResources.s2,
+            horizontal: SpacingResources.sidePadding / 2,
           ),
           width: SpacingResources.mainWidth(context),
           decoration: BoxDecoration(
@@ -125,11 +128,13 @@ class _BankQuestionBoxState extends State<BankQuestionBox> {
                   });
                 },
               ),
-              BankQuestionBodyWidget(question: widget.question),
+              QuestionBodyWidget(question: widget.question),
               const SizedBox(height: SizesResources.s2),
               if (didAnswer &&
-                  widget.question.explain != null &&
-                  widget.question.explain!.isNotEmpty)
+                      (widget.question.explain != null &&
+                          widget.question.explain!.isNotEmpty) ||
+                  (widget.question.video != null &&
+                      widget.question.video != ""))
                 IconButton(
                   onPressed: widget.onShowAnswer,
                   icon: const Icon(
@@ -147,142 +152,142 @@ class _BankQuestionBoxState extends State<BankQuestionBox> {
   }
 }
 
-class BankQuestionBodyWidget extends StatelessWidget {
-  const BankQuestionBodyWidget({
-    super.key,
-    required this.question,
-    this.disableOpenImage = false,
-  });
-  final BankQuestion question;
-  final bool disableOpenImage;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (question.image != null && question.image!.isNotEmpty)
-          Column(
-            children: [
-              const SizedBox(height: SizesResources.s2),
-              GestureDetector(
-                onTap: () {
-                  if (disableOpenImage) return;
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ExploreImage(image: question.image!),
-                    ),
-                  );
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    question.image!,
-                    width: SpacingResources.mainWidth(context) - 50,
-                    fit: BoxFit.fitWidth,
-                    frameBuilder:
-                        (context, child, frame, wasSynchronouslyLoaded) {
-                      if (frame == null) {
-                        return SizedBox(
-                          width: SpacingResources.mainWidth(context) - 50,
-                          height: 200,
-                          child: Shimmer.fromColors(
-                              baseColor: Colors.grey[400]!,
-                              highlightColor: Colors.grey[300]!,
-                              child: Container(
-                                width: 200,
-                                height: 100,
-                                color: ColorsResources.background,
-                              )),
-                        );
-                      } else {
-                        return SizedBox(
-                          child: child,
-                        );
-                      }
-                    },
-                    loadingBuilder: (context, child, p) {
-                      if (p == null) {
-                        return child;
-                      } else {
-                        return SizedBox(
-                          width: SpacingResources.mainWidth(context) - 50,
-                          height: 200,
-                          child: Shimmer.fromColors(
-                              baseColor: Colors.grey[400]!,
-                              highlightColor: Colors.grey[300]!,
-                              child: Container(
-                                width: 200,
-                                height: 100,
-                                color: ColorsResources.background,
-                              )),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: SizesResources.s3),
-            ],
-          ),
-        if (question.question != null)
-          SizedBox(
-            child: Text(
-              question.question!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                letterSpacing: 0.2,
-                height: 1.6,
-                color: ColorsResources.blackText1,
-              ),
-            ),
-          ),
-        if (question.equation != null) ...[
-          SizedBox(
-            width: SpacingResources.mainWidth(context),
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.black,
-                  fontFamily: "Almarai",
-                  height: 2,
-                ),
-                children: List.generate(
-                  fixTheError(question.equation!).length,
-                  (index) {
-                    if (!containsArabic(
-                        fixTheError(question.equation!)[index])) {
-                      return WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2.5,
-                            vertical: 2,
-                          ),
-                          child: SizedBox(
-                            child: Math.tex(
-                              fixTheError(question.equation!)[index],
-                              textStyle: const TextStyle(fontSize: 14),
-                            ),
-                          ),
-                        ),
-                      );
-                    } else {
-                      return TextSpan(
-                        text: " ${fixTheError(question.equation!)[index]}  ",
-                        style: const TextStyle(fontSize: 14),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
-        ]
-      ],
-    );
-  }
-}
+// class BankQuestionBodyWidget extends StatelessWidget {
+//   const BankQuestionBodyWidget({
+//     super.key,
+//     required this.question,
+//     this.disableOpenImage = false,
+//   });
+//   final Question question;
+//   final bool disableOpenImage;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         if (question.image != null && question.image!.isNotEmpty)
+//           Column(
+//             children: [
+//               const SizedBox(height: SizesResources.s2),
+//               GestureDetector(
+//                 onTap: () {
+//                   if (disableOpenImage) return;
+//                   Navigator.of(context).push(
+//                     MaterialPageRoute(
+//                       builder: (context) =>
+//                           ExploreImage(image: question.image!),
+//                     ),
+//                   );
+//                 },
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(12),
+//                   child: Image.network(
+//                     question.image!,
+//                     width: SpacingResources.mainWidth(context) - 50,
+//                     fit: BoxFit.fitWidth,
+//                     frameBuilder:
+//                         (context, child, frame, wasSynchronouslyLoaded) {
+//                       if (frame == null) {
+//                         return SizedBox(
+//                           width: SpacingResources.mainWidth(context) - 50,
+//                           height: 200,
+//                           child: Shimmer.fromColors(
+//                               baseColor: Colors.grey[400]!,
+//                               highlightColor: Colors.grey[300]!,
+//                               child: Container(
+//                                 width: 200,
+//                                 height: 100,
+//                                 color: ColorsResources.background,
+//                               )),
+//                         );
+//                       } else {
+//                         return SizedBox(
+//                           child: child,
+//                         );
+//                       }
+//                     },
+//                     loadingBuilder: (context, child, p) {
+//                       if (p == null) {
+//                         return child;
+//                       } else {
+//                         return SizedBox(
+//                           width: SpacingResources.mainWidth(context) - 50,
+//                           height: 200,
+//                           child: Shimmer.fromColors(
+//                               baseColor: Colors.grey[400]!,
+//                               highlightColor: Colors.grey[300]!,
+//                               child: Container(
+//                                 width: 200,
+//                                 height: 100,
+//                                 color: ColorsResources.background,
+//                               )),
+//                         );
+//                       }
+//                     },
+//                   ),
+//                 ),
+//               ),
+//               const SizedBox(height: SizesResources.s3),
+//             ],
+//           ),
+//         if (question.question != null)
+//           SizedBox(
+//             child: Text(
+//               question.question!,
+//               textAlign: TextAlign.center,
+//               style: const TextStyle(
+//                 letterSpacing: 0.2,
+//                 height: 1.6,
+//                 color: ColorsResources.blackText1,
+//               ),
+//             ),
+//           ),
+//         if (question.equation != null) ...[
+//           SizedBox(
+//             width: SpacingResources.mainWidth(context),
+//             child: RichText(
+//               text: TextSpan(
+//                 style: const TextStyle(
+//                   fontSize: 14.0,
+//                   color: Colors.black,
+//                   fontFamily: "Tajawal",
+//                   height: 2,
+//                 ),
+//                 children: List.generate(
+//                   fixTheError(question.equation!).length,
+//                   (index) {
+//                     if (!containsArabic(
+//                         fixTheError(question.equation!)[index])) {
+//                       return WidgetSpan(
+//                         alignment: PlaceholderAlignment.middle,
+//                         child: Padding(
+//                           padding: const EdgeInsets.symmetric(
+//                             horizontal: 2.5,
+//                             vertical: 2,
+//                           ),
+//                           child: SizedBox(
+//                             child: Math.tex(
+//                               fixTheError(question.equation!)[index],
+//                               textStyle: const TextStyle(fontSize: 14),
+//                             ),
+//                           ),
+//                         ),
+//                       );
+//                     } else {
+//                       return TextSpan(
+//                         text: " ${fixTheError(question.equation!)[index]}  ",
+//                         style: const TextStyle(fontSize: 14),
+//                       );
+//                     }
+//                   },
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ]
+//       ],
+//     );
+//   }
+// }
 
 class TopItems extends StatelessWidget {
   const TopItems({

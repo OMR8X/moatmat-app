@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
-import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
-import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
 
 import '../../../../Core/resources/colors_r.dart';
 import '../../../../Core/resources/fonts_r.dart';
 import '../../../../Core/resources/shadows_r.dart';
 import '../../../../Core/resources/sizes_resources.dart';
 import '../../../../Core/resources/spacing_resources.dart';
-import '../../../home/view/deep_link_view.dart';
+import '../../../../Features/tests/domain/entities/question.dart';
 
 class BankQuestionSearchView extends StatefulWidget {
   const BankQuestionSearchView({
@@ -16,15 +13,15 @@ class BankQuestionSearchView extends StatefulWidget {
     required this.questions,
     required this.onPick,
   });
-  final List<BankQuestion> questions;
-  final Function(BankQuestion question) onPick;
+  final List<Question> questions;
+  final Function(Question question) onPick;
   @override
   State<BankQuestionSearchView> createState() => _BankQuestionSearchViewState();
 }
 
 class _BankQuestionSearchViewState extends State<BankQuestionSearchView> {
   final TextEditingController _controller = TextEditingController();
-  List<BankQuestion> result = [];
+  List<Question> result = [];
   String searchedText = "";
   @override
   void initState() {
@@ -32,9 +29,15 @@ class _BankQuestionSearchViewState extends State<BankQuestionSearchView> {
     _controller.addListener(() {
       setState(() {
         searchedText = _controller.value.text;
-        result = widget.questions
-            .where((e) => (e.question?.contains(searchedText) ?? false))
-            .toList();
+        result = widget.questions.where((e) {
+          if (e.upperImageText?.contains(searchedText) ?? false) {
+            return true;
+          }
+          if (e.lowerImageText?.contains(searchedText) ?? false) {
+            return true;
+          }
+          return false;
+        }).toList();
       });
     });
     super.initState();
@@ -104,7 +107,7 @@ class _BankQuestionSearchViewState extends State<BankQuestionSearchView> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        result[index].question ?? "",
+                                        result[index].upperImageText ?? "",
                                         style: FontsResources.lightStyle()
                                             .copyWith(
                                           color: ColorsResources.blackText1,

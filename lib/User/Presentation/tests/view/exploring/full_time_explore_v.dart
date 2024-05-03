@@ -79,8 +79,8 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView>
             } else if (state is FullTimeExploreResult) {
               submit = false;
               return TestResultView(
-                canReTest: widget.test.returnable,
-                explorable: widget.test.explorable,
+                 explorable: widget.test.properties.exploreAnswers ?? false,
+                canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(

@@ -1,57 +1,79 @@
 import 'package:moatmat_app/User/Features/tests/data/models/answer_m.dart';
+import 'package:moatmat_app/User/Features/tests/data/models/question_w_color_m.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
 
-class TestQuestionModel extends TestQuestion {
-  TestQuestionModel({
+class QuestionModel extends Question {
+  QuestionModel({
     required super.id,
-    required super.question,
+    required super.upperImageText,
+    required super.lowerImageText,
     required super.explain,
-    required super.equation,
+    required super.equations,
     required super.image,
-    required super.time,
+    required super.period,
     required super.editable,
     required super.answers,
+    required super.video,
+    required super.colors,
   });
-  factory TestQuestionModel.fromJson(Map json) {
-    return TestQuestionModel(
+  factory QuestionModel.fromJson(Map json) {
+    return QuestionModel(
       id: json["id"],
-      question: json["question"],
+      upperImageText: json["upper_image_text"],
+      lowerImageText: json["lower_image_text"],
       explain: json["explain"],
-      equation: json["equation"],
+      equations: List.generate(
+        (json["equations"] as List?)?.length ?? 0,
+        (i) => json["equations"][i],
+      ),
       image: json["image"],
-      time: json["time"],
-      editable: json["editable"]??false,
+      period: json["period"],
+      editable: json["editable"],
       answers: List.generate(
         (json["answers"] as List).length,
-        (index) {
-          return TestAnswerModel.fromJson(json["answers"][index]);
-        },
+        (i) => AnswerModel.fromJson(json["answers"][i]),
+      ),
+      video: json["video"],
+      colors: List.generate(
+        (json["colors"] as List?)?.length ?? 0,
+        (i) => QuestionWordColorModel.fromJson(json["colors"][i]),
       ),
     );
   }
-  factory TestQuestionModel.fromClass(TestQuestion question) {
-    return TestQuestionModel(
+  factory QuestionModel.fromClass(Question question) {
+    return QuestionModel(
       id: question.id,
-      question: question.question,
+      upperImageText: question.upperImageText,
+      lowerImageText: question.lowerImageText,
       explain: question.explain,
-      equation: question.equation,
+      equations: question.equations,
       image: question.image,
-      time: question.time,
+      period: question.period,
       editable: question.editable,
       answers: question.answers,
+      video: question.video,
+      colors: question.colors,
     );
   }
   toJson() {
     return {
-      "id":id,
-      "question": question,
+      "id": id,
+      "upper_image_text": upperImageText,
+      "lower_image_text": lowerImageText,
       "explain": explain,
-      "equation": equation,
-      "time": time,
+      "equations": equations,
+      "image": image,
+      "period": period,
       "editable": editable,
-      "answers": answers.map((e) {
-        return TestAnswerModel.fromClass(e).toJson();
-      }).toList(),
+      "video": video,
+      "colors": List.generate(
+        colors.length,
+        (i) => QuestionWordColorModel.fromClass(colors[i]).toJson(),
+      ),
+      "answers": List.generate(
+        answers.length,
+        (i) => AnswerModel.fromClass(answers[i]).toJson(),
+      ),
     };
   }
 }

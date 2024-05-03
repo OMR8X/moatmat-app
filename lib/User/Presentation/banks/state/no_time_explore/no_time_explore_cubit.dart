@@ -5,13 +5,14 @@ import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 
 import '../../../../Core/resources/audios_r.dart';
+import '../../../../Features/tests/domain/entities/question.dart';
 
 part 'no_time_explore_state.dart';
 
 class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   NoTimeExploreCubit() : super(NoTimeExploreLoading());
   late Bank bank;
-  late List<(BankQuestion, int?)> questions;
+  late List<(Question, int?)> questions;
   late int currentQuestion;
   void init(Bank bank) {
     variables(bank);
@@ -37,11 +38,11 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     }
   }
 
-  void answerQuestion(int index, (BankQuestion, int?) question) {
-    BankQuestion currentQuestion = questions[index].$1;
+  void answerQuestion(int index, (Question, int?) question) {
+    Question currentQuestion = questions[index].$1;
     List<int> trueIndexes = [];
     for (int i = 0; i < currentQuestion.answers.length; i++) {
-      if (currentQuestion.answers[i].isCorrect) {
+      if (currentQuestion.answers[i].trueAnswer ?? false) {
         trueIndexes.add(i);
       }
     }
@@ -69,13 +70,13 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   }
 
   void finish() {
-    List<(BankQuestion, int)> correct = [];
-    List<(BankQuestion, int)> wrong = [];
+    List<(Question, int)> correct = [];
+    List<(Question, int)> wrong = [];
     for (var q in questions) {
       if (q.$2 != null) {
         List<int> correctIndex = [];
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex.add(i) : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
         }
         (correctIndex.contains(q.$2))
             ? correct.add((q.$1, q.$2!))
@@ -83,7 +84,7 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
       } else {
         int correctIndex = 0;
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex = i : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex = i : null;
         }
         wrong.add((q.$1, correctIndex));
       }

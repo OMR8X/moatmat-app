@@ -15,7 +15,9 @@ import 'package:moatmat_app/User/Presentation/banks/views/banks/do_bank_question
 import 'package:moatmat_app/User/Presentation/banks/views/exploring/full_time_explore_v.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/exploring/per_question_explore_v.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/video_player_v.dart';
 
+import '../../../videos/view/video_player_w.dart';
 import '../exploring/explore_no_time_v.dart';
 
 class SettingUpBankView extends StatefulWidget {
@@ -55,6 +57,12 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
         child: Center(
           child: Column(
             children: [
+              if (widget.bank.information.video != null) ...[
+                const SizedBox(height: SizesResources.s4),
+                VideoPlayerWidget(
+                  link: widget.bank.information.video!,
+                ),
+              ],
               const SizedBox(height: SizesResources.s4),
               Container(
                 decoration: BoxDecoration(

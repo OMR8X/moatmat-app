@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/reports/data/models/report_d_m.dart';
 import 'package:moatmat_app/User/Features/reports/domain/entities/reposrt_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -40,6 +42,7 @@ class ReportsDataSourceImple implements ReportsDataSource {
     ReportData report = ReportData(
       id: 0,
       message: message,
+      userName: locator<UserData>().name,
       questionID: questionID,
       testId: null,
       bankId: bankID,
@@ -62,6 +65,7 @@ class ReportsDataSourceImple implements ReportsDataSource {
     ReportData report = ReportData(
       id: 0,
       message: message,
+      userName: locator<UserData>().name,
       questionID: questionID,
       testId: testID,
       bankId: null,

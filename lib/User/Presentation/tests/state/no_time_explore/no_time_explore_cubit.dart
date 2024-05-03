@@ -16,7 +16,7 @@ part 'no_time_explore_state.dart';
 class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   TestNoTimeExploreCubit() : super(NoTimeExploreLoading());
   late Test test;
-  late List<(TestQuestion, int?)> questions;
+  late List<(Question, int?)> questions;
   late int currentQuestion;
   late Duration period;
   Timer? _timer;
@@ -45,7 +45,7 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     }
   }
 
-  void answerQuestion(int index, (TestQuestion, int?) question) {
+  void answerQuestion(int index, (Question, int?) question) {
     questions[index] = (question.$1, question.$2);
     emitState();
   }
@@ -76,13 +76,13 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   }
 
   void finish() async {
-    List<(TestQuestion, int)> correct = [];
-    List<(TestQuestion, int)> wrong = [];
+    List<(Question, int)> correct = [];
+    List<(Question, int)> wrong = [];
     for (var q in questions) {
       if (q.$2 != null) {
         List<int> correctIndex = [];
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex.add(i) : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
         }
         (correctIndex.contains(q.$2))
             ? correct.add((q.$1, q.$2!))
@@ -90,7 +90,7 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
       } else {
         int correctIndex = 0;
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex = i : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex = i : null;
         }
         wrong.add((q.$1, correctIndex));
       }
@@ -108,8 +108,8 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     }
   }
 
-  submitResult(List<(TestQuestion, int)> wrongAnswers, String result) async {
-        debugPrint("submitting");
+  submitResult(List<(Question, int)> wrongAnswers, String result) async {
+    debugPrint("submitting");
     String wrongAnswersStr = "";
     for (var a in wrongAnswers) {
       wrongAnswersStr += (a.$1.id + 1).toString();
@@ -124,7 +124,7 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
         period: period.inSeconds,
         date: DateTime.now(),
         name: userInfo.name,
-        testName: test.title,
+        testName: test.information.title,
         userId: userInfo.uuid,
         testId: test.id.toString(),
       ),

@@ -16,8 +16,8 @@ part 'per_question_explore_state.dart';
 class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   TestPerQuestionExploreCubit() : super(PerQuestionExploreLoading());
   late Test test;
-  late List<(TestQuestion, int?)> questions = [];
-  late List<(TestQuestion, int?)> didNotAnswer;
+  late List<(Question, int?)> questions = [];
+  late List<(Question, int?)> didNotAnswer;
   late int currentQuestion;
   late int seconds;
   Timer? _timer;
@@ -55,13 +55,13 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
 
   initTIme() {
     time = Duration(seconds: seconds, milliseconds: 900);
-    if (questions.isNotEmpty && questions[currentQuestion].$1.time != null) {
-      time = Duration(seconds: questions[currentQuestion].$1.time!);
+    if (questions.isNotEmpty && questions[currentQuestion].$1.period != null) {
+      time = Duration(seconds: questions[currentQuestion].$1.period!);
     }
   }
   //
 
-  void answerQuestion(int index, (TestQuestion, int?) question) {
+  void answerQuestion(int index, (Question, int?) question) {
     questions[index] = (question.$1, question.$2);
     emitState();
     stopTimer = true;
@@ -133,7 +133,7 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     //
     int trueIndex = 0;
     for (int i = 0; i < ques.$1.answers.length; i++) {
-      if (ques.$1.answers[i].isCorrect) {
+      if (ques.$1.answers[i].trueAnswer ?? false) {
         trueIndex = i;
       }
     }
@@ -151,13 +151,13 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
 
   void finish() {
     cancelTimer();
-    List<(TestQuestion, int)> correct = [];
-    List<(TestQuestion, int)> wrong = [];
+    List<(Question, int)> correct = [];
+    List<(Question, int)> wrong = [];
     for (var q in questions) {
       if (q.$2 != null) {
         List<int> correctIndex = [];
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex.add(i) : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
         }
         (correctIndex.contains(q.$2))
             ? correct.add((q.$1, q.$2!))
@@ -165,20 +165,21 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
       } else {
         int correctIndex = 0;
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex = i : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex = i : null;
         }
         wrong.add((q.$1, correctIndex));
       }
     }
     //
+    // TODO : check this out
     for (var d in didNotAnswer) {
       String value = "";
       value += d.$1.image ?? "";
-      value += d.$1.answers.first.answer ?? d.$1.answers.first.equation!;
+      value += d.$1.answers.first.text ?? "";
       correct.removeWhere((e) {
         String value2 = "";
         value2 += e.$1.image ?? "";
-        value2 += d.$1.answers.first.answer ?? d.$1.answers.first.equation!;
+        value2 += d.$1.answers.first.text ?? "";
         return value == value2;
       });
     }
@@ -192,7 +193,7 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     submitResult(wrong, result);
   }
 
-  submitResult(List<(TestQuestion, int)> wrongAnswers, String result) async {
+  submitResult(List<(Question, int)> wrongAnswers, String result) async {
     debugPrint("submitting");
     String wrongAnswersStr = "";
     for (var a in wrongAnswers) {
@@ -208,7 +209,7 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
         period: counter.inSeconds,
         date: DateTime.now(),
         name: userInfo.name,
-        testName: test.title,
+        testName: test.information.title,
         userId: userInfo.uuid,
         testId: test.id.toString(),
       ),

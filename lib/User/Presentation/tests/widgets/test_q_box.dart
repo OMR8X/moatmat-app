@@ -3,6 +3,7 @@ import 'package:flutter_math_fork/ast.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/tests/widgets/answer_w.dart';
+import 'package:moatmat_app/User/Presentation/tests/widgets/question_body_w.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../Core/injection/app_inj.dart';
@@ -10,6 +11,7 @@ import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/shadows_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
+import '../../../Core/widgets/math/question_body_w.dart';
 import '../../../Features/auth/domain/entites/user_data.dart';
 import '../../../Features/tests/domain/entities/question.dart';
 
@@ -27,7 +29,7 @@ class TestQuestionBox extends StatefulWidget {
     this.disableExplain = false,
   });
   final int testID;
-  final TestQuestion question;
+  final Question question;
   final bool didAnswer, disableExplain;
   final VoidCallback onShare;
   final VoidCallback onReport;
@@ -96,7 +98,7 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
           ),
           padding: const EdgeInsets.symmetric(
             vertical: SizesResources.s2,
-            horizontal: SizesResources.s2,
+            horizontal: SpacingResources.sidePadding / 2,
           ),
           width: SpacingResources.mainWidth(context),
           decoration: BoxDecoration(
@@ -122,7 +124,7 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
                   });
                 },
               ),
-              TestQuestionBodyWidget(question: widget.question),
+              QuestionBodyWidget(question: widget.question),
               const SizedBox(height: SizesResources.s2),
               if (didAnswer &&
                   (widget.question.explain != null) &&
@@ -145,150 +147,150 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
   }
 }
 
-class TestQuestionBodyWidget extends StatelessWidget {
-  const TestQuestionBodyWidget({
-    super.key,
-    required this.question,
-    this.disableOpenImage = false,
-  });
-  final TestQuestion question;
-  final bool disableOpenImage;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (question.image != null && question.image!.isNotEmpty)
-          Column(
-            children: [
-              const SizedBox(height: SizesResources.s2),
-              GestureDetector(
-                onTap: () {
-                  if (disableOpenImage) return;
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ExploreImage(image: question.image!),
-                    ),
-                  );
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    question.image!,
-                    width: SpacingResources.mainWidth(context) - 50,
-                    fit: BoxFit.fitWidth,
-                    frameBuilder:
-                        (context, child, frame, wasSynchronouslyLoaded) {
-                      if (frame == null) {
-                        return SizedBox(
-                          width: SpacingResources.mainWidth(context) - 50,
-                          height: 200,
-                          child: Shimmer.fromColors(
-                              baseColor: Colors.grey[400]!,
-                              highlightColor: Colors.grey[300]!,
-                              child: const SizedBox(
-                                width: 200,
-                                height: 100,
-                                // color: ColorsResources.background,
-                              )),
-                        );
-                      } else {
-                        return SizedBox(
-                          child: child,
-                        );
-                      }
-                    },
-                    loadingBuilder: (context, child, p) {
-                      if (p == null) {
-                        return child;
-                      } else {
-                        return SizedBox(
-                          width: SpacingResources.mainWidth(context) - 50,
-                          height: 200,
-                          child: Shimmer.fromColors(
-                              baseColor: Colors.grey[400]!,
-                              highlightColor: Colors.grey[300]!,
-                              child: Container(
-                                width: 200,
-                                height: 100,
-                                color: ColorsResources.background,
-                              )),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: SizesResources.s3),
-            ],
-          ),
-        if (question.question != null)
-          SizedBox(
-            child: Text(
-              question.question!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                letterSpacing: 0.2,
-                height: 1.6,
-                color: ColorsResources.blackText1,
-              ),
-            ),
-          ),
-        if (question.equation != null &&
-            question.equation != "" &&
-            question.question != null &&
-            question.question != "")
-          const SizedBox(height: SizesResources.s3),
-        if (question.equation != null) ...[
-          SizedBox(
-            width: SpacingResources.mainWidth(context),
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.black,
-                  fontFamily: "Almarai",
-                  height: 2,
-                ),
-                children: List.generate(
-                  fixTheError(question.equation!).length,
-                  (index) {
-                    if (!containsArabic(
-                        fixTheError(question.equation!)[index])) {
-                      return WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2.5,
-                            vertical: 2,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 5),
-                            child: SizedBox(
-                              child: Math.tex(
-                                fixTheError(question.equation!)[index],
-                                textStyle: const TextStyle(fontSize: 17),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    } else {
-                      return TextSpan(
-                        text: " ${fixTheError(question.equation!)[index]}  ",
-                        style: const TextStyle(fontSize: 14),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
-        ]
-      ],
-    );
-  }
-}
+// class TestQuestionBodyWidget extends StatelessWidget {
+//   const TestQuestionBodyWidget({
+//     super.key,
+//     required this.question,
+//     this.disableOpenImage = false,
+//   });
+//   final Question question;
+//   final bool disableOpenImage;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         if (question.image != null && question.image!.isNotEmpty)
+//           Column(
+//             children: [
+//               const SizedBox(height: SizesResources.s2),
+//               GestureDetector(
+//                 onTap: () {
+//                   if (disableOpenImage) return;
+//                   Navigator.of(context).push(
+//                     MaterialPageRoute(
+//                       builder: (context) =>
+//                           ExploreImage(image: question.image!),
+//                     ),
+//                   );
+//                 },
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(12),
+//                   child: Image.network(
+//                     question.image!,
+//                     width: SpacingResources.mainWidth(context) - 50,
+//                     fit: BoxFit.fitWidth,
+//                     frameBuilder:
+//                         (context, child, frame, wasSynchronouslyLoaded) {
+//                       if (frame == null) {
+//                         return SizedBox(
+//                           width: SpacingResources.mainWidth(context) - 50,
+//                           height: 200,
+//                           child: Shimmer.fromColors(
+//                               baseColor: Colors.grey[400]!,
+//                               highlightColor: Colors.grey[300]!,
+//                               child: const SizedBox(
+//                                 width: 200,
+//                                 height: 100,
+//                                 // color: ColorsResources.background,
+//                               )),
+//                         );
+//                       } else {
+//                         return SizedBox(
+//                           child: child,
+//                         );
+//                       }
+//                     },
+//                     loadingBuilder: (context, child, p) {
+//                       if (p == null) {
+//                         return child;
+//                       } else {
+//                         return SizedBox(
+//                           width: SpacingResources.mainWidth(context) - 50,
+//                           height: 200,
+//                           child: Shimmer.fromColors(
+//                               baseColor: Colors.grey[400]!,
+//                               highlightColor: Colors.grey[300]!,
+//                               child: Container(
+//                                 width: 200,
+//                                 height: 100,
+//                                 color: ColorsResources.background,
+//                               )),
+//                         );
+//                       }
+//                     },
+//                   ),
+//                 ),
+//               ),
+//               const SizedBox(height: SizesResources.s3),
+//             ],
+//           ),
+//         if (question.question != null)
+//           SizedBox(
+//             child: Text(
+//               question.question!,
+//               textAlign: TextAlign.center,
+//               style: const TextStyle(
+//                 letterSpacing: 0.2,
+//                 height: 1.6,
+//                 color: ColorsResources.blackText1,
+//               ),
+//             ),
+//           ),
+//         if (question.equation != null &&
+//             question.equation != "" &&
+//             question.question != null &&
+//             question.question != "")
+//           const SizedBox(height: SizesResources.s3),
+//         if (question.equation != null) ...[
+//           SizedBox(
+//             width: SpacingResources.mainWidth(context),
+//             child: RichText(
+//               text: TextSpan(
+//                 style: const TextStyle(
+//                   fontSize: 14.0,
+//                   color: Colors.black,
+//                   fontFamily: "Almarai",
+//                   height: 2,
+//                 ),
+//                 children: List.generate(
+//                   fixTheError(question.equation!).length,
+//                   (index) {
+//                     if (!containsArabic(
+//                         fixTheError(question.equation!)[index])) {
+//                       return WidgetSpan(
+//                         alignment: PlaceholderAlignment.middle,
+//                         child: Padding(
+//                           padding: const EdgeInsets.symmetric(
+//                             horizontal: 2.5,
+//                             vertical: 2,
+//                           ),
+//                           child: Padding(
+//                             padding: const EdgeInsets.only(top: 5),
+//                             child: SizedBox(
+//                               child: Math.tex(
+//                                 fixTheError(question.equation!)[index],
+//                                 textStyle: const TextStyle(fontSize: 17),
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//                       );
+//                     } else {
+//                       return TextSpan(
+//                         text: " ${fixTheError(question.equation!)[index]}  ",
+//                         style: const TextStyle(fontSize: 14),
+//                       );
+//                     }
+//                   },
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ]
+//       ],
+//     );
+//   }
+// }
 
 class TopItems extends StatelessWidget {
   const TopItems({

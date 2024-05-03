@@ -14,10 +14,10 @@ import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
 reportOnQuestion({
   required BuildContext context,
   required int id,
-  required String teacher,
+  required String teacherEmail,
   required String name,
-  BankQuestion? bQuestion,
-  TestQuestion? tQuestion,
+  Question? bQuestion,
+  Question? tQuestion,
 }) {
   showDialog(
     context: context,
@@ -25,7 +25,7 @@ reportOnQuestion({
       id: id,
       bQuestion: bQuestion,
       tQuestion: tQuestion,
-      teacher: teacher,
+      teacher: teacherEmail,
       name: name,
     ),
   );
@@ -41,8 +41,8 @@ class ReportDialog extends StatefulWidget {
     required this.name,
   });
   final int id;
-  final BankQuestion? bQuestion;
-  final TestQuestion? tQuestion;
+  final Question? bQuestion;
+  final Question? tQuestion;
   final String teacher;
   final String name;
   @override

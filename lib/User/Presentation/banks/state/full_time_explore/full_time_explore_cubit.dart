@@ -5,13 +5,15 @@ import 'package:equatable/equatable.dart';
 import 'package:moatmat_app/User/Core/resources/audios_r.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
+
+import '../../../../Features/tests/domain/entities/question.dart';
 part 'full_time_explore_state.dart';
 
 class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   FullTimeExploreCubit() : super(FullTimeExploreInitial());
   late Bank bank;
-  late List<(BankQuestion, int?)> questions;
-  late List<(BankQuestion, int?)> didNotAnswer;
+  late List<(Question, int?)> questions;
+  late List<(Question, int?)> didNotAnswer;
   late int currentQuestion;
   late int minutes;
   Timer? _timer;
@@ -45,11 +47,11 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   }
   //
 
-  void answerQuestion(int index, (BankQuestion, int?) question) async {
-    BankQuestion currentQuestion = questions[index].$1;
+  void answerQuestion(int index, (Question, int?) question) async {
+    Question currentQuestion = questions[index].$1;
     List<int> trueIndexes = [];
     for (int i = 0; i < currentQuestion.answers.length; i++) {
-      if (currentQuestion.answers[i].isCorrect) {
+      if (currentQuestion.answers[i].trueAnswer ?? false) {
         trueIndexes.add(i);
       }
     }
@@ -115,7 +117,7 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
       var ques = questions[currentQuestion];
       int trueIndex = 0;
       for (int i = 0; i < ques.$1.answers.length; i++) {
-        if (ques.$1.answers[i].isCorrect) {
+        if (ques.$1.answers[i].trueAnswer ?? false) {
           trueIndex = i;
         }
       }
@@ -134,13 +136,13 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   void finish() {
     cancelTimer();
     // collectRestQuestions();
-    List<(BankQuestion, int)> correct = [];
-    List<(BankQuestion, int)> wrong = [];
+    List<(Question, int)> correct = [];
+    List<(Question, int)> wrong = [];
     for (var q in questions) {
       if (q.$2 != null) {
         List<int> correctIndex = [];
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex.add(i) : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
         }
         (correctIndex.contains(q.$2))
             ? correct.add((q.$1, q.$2!))
@@ -148,7 +150,7 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
       } else {
         int correctIndex = 0;
         for (int i = 0; i < q.$1.answers.length; i++) {
-          q.$1.answers[i].isCorrect ? correctIndex = i : null;
+          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex = i : null;
         }
         wrong.add((q.$1, correctIndex));
       }
@@ -157,11 +159,11 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
     for (var d in didNotAnswer) {
       String value = "";
       value += d.$1.image ?? "";
-      value += d.$1.answers.first.answer ?? d.$1.answers.first.equation!;
+      value += d.$1.answers.first.text ?? "";
       correct.removeWhere((e) {
         String value2 = "";
         value2 += e.$1.image ?? "";
-        value2 += d.$1.answers.first.answer ?? d.$1.answers.first.equation!;
+        value2 += d.$1.answers.first.text ?? "";
         return value == value2;
       });
     }

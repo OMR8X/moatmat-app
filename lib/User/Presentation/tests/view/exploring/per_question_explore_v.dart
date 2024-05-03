@@ -83,8 +83,8 @@ class _TestPerQuestionExploreViewState extends State<TestPerQuestionExploreView>
             } else if (state is PerQuestionExploreResult) {
               submit = false;
               return TestResultView(
-                explorable: widget.test.explorable,
-                canReTest: widget.test.returnable,
+                      explorable: widget.test.properties.exploreAnswers ?? false,
+                canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(

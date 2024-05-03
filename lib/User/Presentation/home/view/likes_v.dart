@@ -8,13 +8,18 @@ import 'package:moatmat_app/User/Core/resources/texts_resources.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
+import 'package:moatmat_app/User/Features/banks/domain/entites/bank_information.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
+import 'package:moatmat_app/User/Features/tests/domain/entities/test_information.dart';
+import 'package:moatmat_app/User/Features/tests/domain/entities/test_properties.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/question_v.dart';
+import 'package:moatmat_app/User/Presentation/tests/widgets/question_body_w.dart';
 import 'package:moatmat_app/User/Presentation/tests/widgets/test_q_box.dart';
 
+import '../../../Core/widgets/math/question_body_w.dart';
 import '../../auth/state/auth_c/auth_cubit_cubit.dart';
 import '../../banks/widgets/bank_q_box.dart';
 
@@ -26,8 +31,8 @@ class LikesView extends StatefulWidget {
 }
 
 class _LikesViewState extends State<LikesView> {
-  List<(BankQuestion, int)> bQuestions = [];
-  List<(TestQuestion, int)> tQuestions = [];
+  List<(Question, int)> bQuestions = [];
+  List<(Question, int)> tQuestions = [];
   @override
   void initState() {
     initData();
@@ -47,7 +52,7 @@ class _LikesViewState extends State<LikesView> {
     }
   }
 
-  removeBankQ((BankQuestion, int) bQuestion) async {
+  removeBankQ((Question, int) bQuestion) async {
     var like = UserLike(
       id: 0,
       bankId: bQuestion.$2,
@@ -60,7 +65,7 @@ class _LikesViewState extends State<LikesView> {
     setState(() {});
   }
 
-  removeTestQ((TestQuestion, int) tQuestions) async {
+  removeTestQ((Question, int) tQuestions) async {
     var like = UserLike(
       id: 0,
       bankId: null,
@@ -95,7 +100,6 @@ class _LikesViewState extends State<LikesView> {
           ),
         ),
         body: TabBarView(
-          // https://moatmat.page.link/eNh4
           children: [
             ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: SizesResources.s2),
@@ -105,7 +109,7 @@ class _LikesViewState extends State<LikesView> {
                 var question = tQuestions[index].$1;
                 int? selected;
                 for (int i = 0; i < question.answers.length; i++) {
-                  if (question.answers[i].isCorrect) {
+                  if (question.answers[i].trueAnswer ?? false) {
                     selected = i;
                   }
                 }
@@ -144,17 +148,25 @@ class _LikesViewState extends State<LikesView> {
                               disableActions: true,
                               test: Test(
                                 id: tQuestions[index].$2,
-                                seconds: 0,
-                                password: "",
-                                timePerQuestion: false,
-                                explorable: false,
-                                returnable: false,
-                                cost: 0,
-                                title: "0",
-                                clas: "",
-                                material: "",
-                                teacher: "",
+                                teacherEmail: "",
                                 questions: [],
+                                information: TestInformation(
+                                  title: "",
+                                  classs: "",
+                                  material: "",
+                                  teacher: "",
+                                  price: null,
+                                  password: null,
+                                  period: 0,
+                                  video: null,
+                                ),
+                                properties: TestProperties(
+                                  exploreAnswers: null,
+                                  showAnswers: null,
+                                  timePerQuestion: null,
+                                  repeatable: null,
+                                  visible: null,
+                                ),
                               ),
                             ),
                           ),
@@ -164,7 +176,7 @@ class _LikesViewState extends State<LikesView> {
                         padding: const EdgeInsets.all(SizesResources.s4),
                         child: Row(
                           children: [
-                            TestQuestionBodyWidget(
+                            QuestionBodyWidget(
                               question: tQuestions[index].$1,
                               disableOpenImage: true,
                             ),
@@ -194,7 +206,7 @@ class _LikesViewState extends State<LikesView> {
                 var question = bQuestions[index].$1;
                 int? selected;
                 for (int i = 0; i < question.answers.length; i++) {
-                  if (question.answers[i].isCorrect) {
+                  if (question.answers[i].trueAnswer ?? false) {
                     selected = i;
                   }
                 }
@@ -220,11 +232,15 @@ class _LikesViewState extends State<LikesView> {
                             builder: (context) => BankQuestionView(
                               bank: Bank(
                                 id: bQuestions[index].$2,
-                                cost: 0,
-                                title: "0",
-                                clas: "",
-                                material: "",
-                                teacher: "",
+                                teacherEmail: "",
+                                information: BankInformation(
+                                  title: "",
+                                  classs: "",
+                                  material: "",
+                                  teacher: "",
+                                  price: 0,
+                                  video: "",
+                                ),
                                 questions: [],
                               ),
                               question: question,
@@ -247,7 +263,7 @@ class _LikesViewState extends State<LikesView> {
                         padding: const EdgeInsets.all(SizesResources.s4),
                         child: Row(
                           children: [
-                            BankQuestionBodyWidget(
+                            QuestionBodyWidget(
                               question: bQuestions[index].$1,
                               disableOpenImage: true,
                             ),

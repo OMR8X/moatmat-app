@@ -3,6 +3,8 @@ import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
 
+import '../../../../Features/tests/domain/entities/question.dart';
+
 class DoBankQuestionView extends StatefulWidget {
   const DoBankQuestionView({
     super.key,
@@ -10,7 +12,7 @@ class DoBankQuestionView extends StatefulWidget {
     required this.question,
   });
   final Bank bank;
-  final BankQuestion question;
+  final Question question;
   @override
   State<DoBankQuestionView> createState() => _DoBankQuestionViewState();
 }
@@ -34,7 +36,7 @@ class _DoBankQuestionViewState extends State<DoBankQuestionView> {
       disableActions: true,
       onNext: () {},
       onPrevious: () {},
-      title: "بنك الاستاذ ${widget.bank.teacher}",
+      title: "بنك الاستاذ ${widget.bank.information.teacher}",
     );
   }
 }

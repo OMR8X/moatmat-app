@@ -3,6 +3,7 @@ import 'package:moatmat_app/User/Features/banks/domain/entites/b_question_answer
 class BankQuestion {
   final int id;
   final String? question;
+
   final String? explain;
   final String? equation;
   final String? image;

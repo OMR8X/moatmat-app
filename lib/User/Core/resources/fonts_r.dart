@@ -6,7 +6,7 @@ class FontsResources {
   // extra bold
   static TextStyle extraBoldStyle() {
     return const TextStyle(
-      fontFamily: "Almarai",
+      fontFamily: "Tajawal",
       fontWeight: FontWeight.w400,
       color: ColorsResources.blackText1,
     );
@@ -15,7 +15,7 @@ class FontsResources {
   // bold
   static TextStyle boldStyle() {
     return const TextStyle(
-      fontFamily: "Almarai",
+      fontFamily: "Tajawal",
       fontWeight: FontWeight.w300,
       color: ColorsResources.blackText1,
     );
@@ -24,7 +24,7 @@ class FontsResources {
   // reqular
   static TextStyle reqularStyle() {
     return const TextStyle(
-      fontFamily: "Almarai",
+      fontFamily: "Tajawal",
       fontWeight: FontWeight.w200,
       color: ColorsResources.blackText1,
     );
@@ -33,7 +33,7 @@ class FontsResources {
   // light
   static TextStyle lightStyle() {
     return const TextStyle(
-      fontFamily: "Almarai",
+      fontFamily: "Tajawal",
       fontWeight: FontWeight.w100,
       color: ColorsResources.blackText1,
     );

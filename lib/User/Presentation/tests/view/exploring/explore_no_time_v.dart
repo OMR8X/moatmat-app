@@ -29,7 +29,7 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.inactive) {
-       context.read<TestNoTimeExploreCubit>().finish();
+      context.read<TestNoTimeExploreCubit>().finish();
     }
   }
 
@@ -74,8 +74,8 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView>
             if (state is NoTimeExploreResult) {
               submit = false;
               return TestResultView(
-                explorable: widget.test.explorable,
-                canReTest: widget.test.returnable,
+                explorable: widget.test.properties.exploreAnswers ?? false,
+                canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(

@@ -1,44 +1,79 @@
-import 'package:moatmat_app/User/Features/tests/domain/entities/answer.dart';
+import 'package:equatable/equatable.dart';
 
-class TestQuestion {
+import 'answer.dart';
+import 'question_word_color.dart';
+
+class Question {
+  //
   final int id;
-  final String? question;
-    final String? explain;
-    final String? equation;
+  //
+  final String? upperImageText;
+  //
+  final String? lowerImageText;
+  //
   final String? image;
-  final int? time;
-  final bool editable;
-  final List<TestAnswer> answers;
+  //
+  final String? video;
+  //
+  final String? explain;
+  //
+  final int? period;
+  //
+  final bool? editable;
+  //
+  final List<Answer> answers;
+  //
+  final List<String> equations;
+  //
+  final List<QuestionWordColor> colors;
 
-  TestQuestion({
-    required this.id,
-    required this.question,
-    required this.explain,
-    required this.equation,
-    required this.image,
-    required this.time,
-    required this.editable,
-    required this.answers,
-  });
-  TestQuestion copyWith({
-    int? id,
-    String? question,
-    String? explain,
-    String? equation,
+  Question copyWith({
+    String? lowerImageText,
+    String? upperImageText,
     String? image,
-    int? time,
+    String? video,
+    String? explain,
+    int? period,
     bool? editable,
-    List<TestAnswer>? answers,
+    List<Answer>? answers,
+    List<String>? equations,
+    List<QuestionWordColor>? colors,
   }) {
-    return TestQuestion(
-      id: id ?? this.id,
-      explain: explain ?? this.explain,
-      equation: equation ?? this.equation,
-      question: question ?? this.question,
+    return Question(
+      id: id,
+      lowerImageText: lowerImageText ?? this.lowerImageText,
+      upperImageText: upperImageText ?? this.upperImageText,
       image: image ?? this.image,
-      time: time ?? this.time,
+      video: video ?? this.video,
+      explain: explain ?? this.explain,
+      period: period ?? this.period,
       editable: editable ?? this.editable,
       answers: answers ?? this.answers,
+      equations: equations ?? this.equations,
+      colors: colors ?? this.colors,
     );
   }
+
+  bool isNotEmpty() {
+    bool con1 = upperImageText != null && upperImageText != "";
+    bool con2 = lowerImageText != null && lowerImageText != "";
+    bool con3 = image != null && image != "";
+    bool con4 = video != null && video != "";
+
+    return con1 || con2 || con3 || con4;
+  }
+
+  const Question({
+    required this.id,
+    required this.lowerImageText,
+    required this.upperImageText,
+    required this.image,
+    required this.video,
+    required this.explain,
+    required this.period,
+    required this.editable,
+    required this.answers,
+    required this.equations,
+    required this.colors,
+  });
 }

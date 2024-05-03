@@ -25,7 +25,7 @@ class _TestSearchingViewState extends State<TestSearchingView> {
       setState(() {
         searchedText = _controller.value.text;
         result = widget.tests
-            .where((e) => e.$1.title.contains(searchedText))
+            .where((e) => e.$1.information.title.contains(searchedText))
             .toList();
       });
     });
@@ -64,7 +64,7 @@ class _TestSearchingViewState extends State<TestSearchingView> {
             child: ListView.builder(
               itemCount: result.length,
               itemBuilder: (context, index) => TouchableTileWidget(
-                title: result[index].$1.title,
+                title: result[index].$1.information.title,
                 iconData: Icons.arrow_forward_ios,
                 onTap: () {
                   widget.onSelect(result[index]);

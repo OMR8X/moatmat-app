@@ -32,12 +32,19 @@ class TestsDataSourceImpl implements TestsDataSource {
     //
     List<String> classes = [];
     //
-    var res = await client.from("tests").select("class").eq(
-          "material",
-          material,
-        );
+    var query = client
+        //
+        .from("tests")
+        //
+        .select("information->>classs")
+        //
+        .eq("information->>material", material)
+        //
+        .eq("properties->>visible", true);
     //
-    classes = res.map<String>((e) => e["class"]).toList();
+    var res = await query;
+    //
+    classes = res.map<String>((e) => e["classs"]).toList();
     //
     classes.removeWhere((e) => e.isEmpty);
 
@@ -52,12 +59,17 @@ class TestsDataSourceImpl implements TestsDataSource {
     //
     List<String> teachers = [];
     //
-
-    var res = await client
+    var query = client
         .from("tests")
-        .select("teacher")
-        .eq("material", material)
-        .eq("class", clas);
+        .select("information->>teacher")
+        //
+        .eq("information->>material", material)
+        //
+        .eq("information->>classs", clas)
+        //
+        .eq("properties->>visible", true);
+    //
+    var res = await query;
     //
     teachers = res.map<String>((e) => e["teacher"]).toList();
     //
@@ -74,12 +86,19 @@ class TestsDataSourceImpl implements TestsDataSource {
   }) async {
     List<Test> tests = [];
     //
-    var res = await client
+    var query = client
         .from("tests")
         .select()
-        .eq("teacher", teacher)
-        .eq("material", material)
-        .eq("class", clas);
+        //
+        .eq("information->>teacher", teacher)
+        //
+        .eq("information->>material", material)
+        //
+        .eq("information->>classs", clas)
+        //
+        .eq("properties->>visible", true);
+    //
+    var res = await query;
     //
     tests = res.map<Test>((e) => TestModel.fromJson(e)).toList();
     return testsToBanksWithCount(tests);
