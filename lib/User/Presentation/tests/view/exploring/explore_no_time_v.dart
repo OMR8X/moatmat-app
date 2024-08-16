@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moatmat_app/User/Core/functions/show_alert.dart';
+import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
+import 'package:moatmat_app/User/Presentation/auth/view/auth_views_manager.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/no_time_explore/no_time_explore_cubit.dart';
 
 import '../../../../Features/tests/domain/entities/test.dart';
@@ -15,38 +18,24 @@ class TestExploreNoTimeView extends StatefulWidget {
   State<TestExploreNoTimeView> createState() => _TestExploreNoTimeViewState();
 }
 
-class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView>
-    with WidgetsBindingObserver {
-  bool submit = true;
-
+class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView> {
   @override
-  void initState() {
+  void initState() {context.read<AuthCubit>().onCheck();
     super.initState();
     context.read<TestNoTimeExploreCubit>().init(widget.test);
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive) {
-      context.read<TestNoTimeExploreCubit>().finish();
-    }
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var cubit = context.read<TestNoTimeExploreCubit>();
-    return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        if (submit) {
-          context.read<TestNoTimeExploreCubit>().finish();
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSignedOut) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const AuthViewsManager(),
+            ),
+          );
         }
       },
       child: Scaffold(
@@ -54,6 +43,9 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView>
           builder: (context, state) {
             if (state is NoTimeExploreQuestion) {
               return TestQuestionView(
+                onExit: () {
+                  context.read<TestNoTimeExploreCubit>().finish();
+                },
                 test: widget.test,
                 title: "${state.currentQ + 1} / ${state.length}",
                 question: state.question.$1,
@@ -72,7 +64,6 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView>
               );
             }
             if (state is NoTimeExploreResult) {
-              submit = false;
               return TestResultView(
                 explorable: widget.test.properties.exploreAnswers ?? false,
                 canReTest: widget.test.properties.repeatable ?? false,
@@ -100,7 +91,6 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView>
                   context.read<TestNoTimeExploreCubit>().init(widget.test);
                 },
                 backToHome: () {
-                  submit = false;
                   Navigator.of(context).pop();
                 },
                 correctAnswers: "${state.correct.length}",

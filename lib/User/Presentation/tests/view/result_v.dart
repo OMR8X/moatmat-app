@@ -51,7 +51,7 @@ class TestResultView extends StatelessWidget {
                     width: SpacingResources.mainHalfWidth(context),
                     height: SpacingResources.mainHalfWidth(context),
                     decoration: BoxDecoration(
-                      color: ColorsResources.onPrimary,
+                      color: ColorsResources.green,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: ShadowsResources.mainBoxShadow,
                     ),
@@ -64,7 +64,7 @@ class TestResultView extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
-                            color: ColorsResources.green,
+                            color: ColorsResources.onPrimary,
                           ),
                         ),
                         const SizedBox(height: SizesResources.s1),
@@ -73,7 +73,7 @@ class TestResultView extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: ColorsResources.blackText2,
+                            color: ColorsResources.blackText1,
                           ),
                         ),
                         if (correctAnswers != '0' && explorable == true)
@@ -85,11 +85,15 @@ class TestResultView extends StatelessWidget {
                                 onPressed: showCorrectAnswers,
                                 icon: const Text(
                                   TextsResources.show,
-                                  style: TextStyle(fontSize: 10),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: ColorsResources.whiteText1,
+                                  ),
                                 ),
                                 label: const Icon(
                                   Icons.arrow_forward_ios,
                                   size: 10,
+                                  color: ColorsResources.whiteText1,
                                 ),
                               )
                             ],
@@ -102,9 +106,9 @@ class TestResultView extends StatelessWidget {
                     width: SpacingResources.mainHalfWidth(context),
                     height: SpacingResources.mainHalfWidth(context),
                     decoration: BoxDecoration(
-                      color: ColorsResources.onPrimary,
+                      color: ColorsResources.red,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: ShadowsResources.mainBoxShadow,
+                      // boxShadow: ShadowsResources.mainBoxShadow,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -115,7 +119,7 @@ class TestResultView extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
-                            color: ColorsResources.red,
+                            color: ColorsResources.onPrimary,
                           ),
                         ),
                         const SizedBox(height: SizesResources.s1),
@@ -124,7 +128,7 @@ class TestResultView extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: ColorsResources.blackText2,
+                            color: ColorsResources.blackText1,
                           ),
                         ),
                         if (wrongAnswers != '0' && explorable == true)
@@ -136,11 +140,15 @@ class TestResultView extends StatelessWidget {
                                 onPressed: showWrongAnswers,
                                 icon: const Text(
                                   TextsResources.show,
-                                  style: TextStyle(fontSize: 10),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: ColorsResources.whiteText1,
+                                  ),
                                 ),
                                 label: const Icon(
                                   Icons.arrow_forward_ios,
                                   size: 10,
+                                  color: ColorsResources.whiteText1,
                                 ),
                               )
                             ],

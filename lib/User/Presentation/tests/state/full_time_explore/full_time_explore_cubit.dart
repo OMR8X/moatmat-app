@@ -16,12 +16,15 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   TestFullTimeExploreCubit() : super(FullTimeExploreInitial());
   late Test test;
   late List<(Question, int?)> questions;
+  late List<int?> userAnswers;
   late List<(Question, int?)> didNotAnswer;
   late int currentQuestion;
   late int seconds;
   late Duration counter;
   Timer? _timer;
   late Duration time;
+  bool didSubmit = false;
+  List<int?> wrongAnswers = [];
   void init(Test test, int seconds) {
     variables(test, seconds);
   }
@@ -35,12 +38,17 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
     initTime();
     didNotAnswer = [];
     questions = [];
+    userAnswers = [];
+    didSubmit = false;
     for (var q in test.questions) {
       var answers = q.answers;
       answers.shuffle();
       q = q.copyWith(answers: answers);
       questions.add((q, null));
+      userAnswers.add(null);
     }
+    //
+    wrongAnswers = List.filled(questions.length, -1);
     //
     emitState();
     cancelTimer();
@@ -53,6 +61,10 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   //
 
   void answerQuestion(int index, (Question, int?) question) {
+    //
+    if (question.$2 != null) {
+      userAnswers[index] = question.$1.answers[question.$2!].id;
+    }
     questions[index] = (question.$1, question.$2);
     emitState();
   }
@@ -64,6 +76,21 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
     } else {
       cancelTimer();
       finish();
+    }
+  }
+
+  void previousQuestion({int? index}) {
+    //
+    if (index == null) {
+      emitState();
+      return;
+    }
+    //
+    if (index > questions.length - 1) {
+    } else {
+      //
+      currentQuestion = index;
+      emitState();
     }
   }
 
@@ -128,29 +155,36 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   }
 
   void finish() {
+    //
     cancelTimer();
-    // collectRestQuestions();
+    //
     List<(Question, int)> correct = [];
     List<(Question, int)> wrong = [];
+    //
     for (var q in questions) {
       if (q.$2 != null) {
         List<int> correctIndex = [];
         for (int i = 0; i < q.$1.answers.length; i++) {
           (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
         }
-        (correctIndex.contains(q.$2))
-            ? correct.add((q.$1, q.$2!))
-            : wrong.add((q.$1, q.$2!));
+        if (correctIndex.contains(q.$2)) {
+          correct.add((q.$1, q.$2!));
+        } else {
+          wrongAnswers[q.$1.id - 1] = userAnswers[q.$1.id - 1];
+          wrong.add((q.$1, q.$2!));
+        }
       } else {
         int correctIndex = 0;
         for (int i = 0; i < q.$1.answers.length; i++) {
           (q.$1.answers[i].trueAnswer ?? false) ? correctIndex = i : null;
         }
+        wrongAnswers[q.$1.id - 1] = null;
         wrong.add((q.$1, correctIndex));
       }
     }
-
+    //
     for (var d in didNotAnswer) {
+      wrongAnswers[d.$1.id - 1] = null;
       String value = "";
       value += d.$1.image ?? "";
       value += d.$1.answers.first.text ?? "";
@@ -161,6 +195,7 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
         return value == value2;
       });
     }
+    //
     wrong.addAll(didNotAnswer.map((e) => (e.$1, e.$2!)).toList());
     var result = ((correct.length / questions.length) * 100).toStringAsFixed(2);
     emit(FullTimeExploreResult(
@@ -168,34 +203,42 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
       wrong: wrong,
       result: result,
     ));
-    submitResult(wrong, result);
+    submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
   }
 
-  submitResult(List<(Question, int)> wrongAnswers, String result) async {
-    debugPrint("submitting");
-    String wrongAnswersStr = "";
-    for (var a in wrongAnswers) {
-      wrongAnswersStr += (a.$1.id + 1).toString();
-      wrongAnswersStr += ' , ';
+  submitResult(List<int?> wrongAnswers, double result) async {
+    if (didSubmit) {
+      debugPrint("did submit , skip submitting");
+      return;
     }
+    //
+    didSubmit = true;
+    //
+    debugPrint("submitting");
+    //
     var userData = locator<UserData>();
+    //
     await locator<AddResultUC>().call(
       result: Result(
         id: 0,
-        marks: result,
-        wrongAnswers: wrongAnswersStr,
+        userNumber: userData.id.toString(),
+        answers: userAnswers,
+        wrongAnswers: wrongAnswers,
+        mark: result,
         period: counter.inSeconds,
         date: DateTime.now(),
-        name: userData.name,
         testName: test.information.title,
         userId: userData.uuid,
-        testId: test.id.toString(),
+        testId: test.id,
+        bankId: null,
+        userName: userData.name,
       ),
-      test: test,
     );
+    //
     userData = userData.copyWith(
       tests: userData.tests + [(test.id, test.information.title)],
     );
+    //
     await locator<UpdateUserDataUC>().call(userData: userData);
   }
 }

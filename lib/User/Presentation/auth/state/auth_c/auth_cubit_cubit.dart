@@ -1,10 +1,16 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:moatmat_app/User/Core/services/device_s.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
 import 'package:moatmat_app/User/Features/auth/domain/use_cases/update_user_data_uc.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/get_user_purchased_uc.dart';
+import 'package:moatmat_app/User/Features/update/domain/entites/update_info.dart';
+import 'package:moatmat_app/User/Features/update/domain/usecases/check_update_state_uc.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,60 +22,123 @@ part 'auth_cubit_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthLoading());
+  //
+  bool didCheckUpdate = false;
+  Timer? timer;
+  //
   init() async {
+    //
+    if (timer != null && (timer?.isActive ?? false)) {
+      timer?.cancel();
+    }
+    timer = Timer.periodic(
+      const Duration(minutes: 5),
+      (t) {
+        onCheck();
+      },
+    );
+    //
+    emit(AuthLoading());
+    //
     var user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      emit(AuthOnBoarding());
-    } else {
-      emit(AuthLoading());
-      locator<GetUserDataUC>().call(uuid: user.id).then((value) {
-        value.fold(
-          (l) {
-            emit(AuthError());
-          },
-          (r) async {
-            injectUserData(r);
+    //
+    if (didCheckUpdate) {
+      if (user == null) {
+        emit(AuthOnBoarding());
+      } else {
+        //
+        refresh();
+        //
+      }
+      return;
+    }
+    //
+    final res = await locator<CheckUpdateStateUC>().call();
+    //
+    res.fold(
+      (l) {
+        emit(const AuthError());
+      },
+      (r) {
+        injectUpdateInfo(r);
+        if (r.appVersion < r.currentVersion ||
+            r.appVersion < r.minimumVersion) {
+          emit(AuthUpdate(updateInfo: r));
+        } else {
+          didCheckUpdate = true;
+          if (user == null) {
+            emit(AuthOnBoarding());
+          } else {
+            //
+            refresh();
+            //
+          }
+        }
+      },
+    );
+    //
+  }
+
+  onCheck({VoidCallback? onSignedOut}) {
+    //
+    var user = Supabase.instance.client.auth.currentUser;
+    //
+    if (user == null) return;
+    //
+    locator<GetUserDataUC>().call(uuid: user.id).then((value) {
+      value.fold(
+        (l) {},
+        (userData) async {
+          if (userData.deviceId == DeviceService().deviceId) {
+            injectUserData(userData);
+          } else {
+            if (timer != null && (timer?.isActive ?? false)) {
+              timer?.cancel();
+            }
+            startSignOut(forced: true);
+            if (onSignedOut != null) {
+              onSignedOut();
+            }
+          }
+        },
+      );
+    });
+  }
+
+  void skipUpdate() {
+    refresh();
+  }
+
+  Future refresh() async {
+    //
+    emit(AuthLoading());
+    //
+    var user = Supabase.instance.client.auth.currentUser;
+    //
+    //
+    await locator<GetUserDataUC>().call(uuid: user!.id).then((value) {
+      value.fold(
+        (l) {
+          emit(const AuthError());
+        },
+        (userData) async {
+          if (userData.deviceId == DeviceService().deviceId) {
+            injectUserData(userData);
             var res = await locator<GetUserPurchasedItemsUC>().call();
             res.fold(
               (l) {
-                emit(AuthError());
+                emit(const AuthError());
               },
-              (r) {
+              (r) async {
+                //
                 injectPurchasedItems(r);
+                //
                 emit(AuthDone());
               },
             );
-          },
-        );
-      });
-    }
-  }
-
-  refresh() async {
-    emit(AuthLoading());
-    var user = Supabase.instance.client.auth.currentUser;
-    locator<GetUserDataUC>().call(uuid: user!.id).then((value) {
-      value.fold(
-        (l) {
-          emit(AuthError());
-        },
-        (r) async {
-          injectUserData(r);
-          var res = await locator<GetUserPurchasedItemsUC>().call();
-          res.fold(
-            (l) {
-              emit(AuthError());
-            },
-            (r) {
-              if (!GetIt.instance.isRegistered<List<PurchaseItem>>()) {
-                locator.registerFactory<List<PurchaseItem>>(() => r);
-              } else {
-                GetIt.instance.unregister<List<PurchaseItem>>();
-                locator.registerFactory<List<PurchaseItem>>(() => r);
-              }
-              emit(AuthDone());
-            },
-          );
+          } else {
+            startSignOut(forced: true);
+          }
         },
       );
     });
@@ -132,6 +201,15 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  injectUpdateInfo(UpdateInfo info) {
+    if (!GetIt.instance.isRegistered<UpdateInfo>()) {
+      locator.registerFactory<UpdateInfo>(() => info);
+    } else {
+      GetIt.instance.unregister<UpdateInfo>();
+      locator.registerFactory<UpdateInfo>(() => info);
+    }
+  }
+
   injectPurchasedItems(List<PurchaseItem> items) {
     if (!GetIt.instance.isRegistered<List<PurchaseItem>>()) {
       locator.registerFactory<List<PurchaseItem>>(() => items);
@@ -162,10 +240,13 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   //
-  startSignOut() async {
+  startSignOut({bool forced = false}) async {
+    //
+    timer?.cancel();
+    //
     emit(AuthLoading());
     await locator<SupabaseClient>().auth.signOut();
-    startAuth();
+    emit(AuthSignedOut(forced: forced));
   }
 
   //

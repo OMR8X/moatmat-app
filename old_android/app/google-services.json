@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "814213526279",
+    "project_id": "notifications-46c03",
+    "storage_bucket": "notifications-46c03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814213526279:android:ec44360ac7f52a51350ba2",
+        "android_client_info": {
+          "package_name": "com.moatmat.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH93fI_O-7tD7dziTUpaKbXCYVlQAKVR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

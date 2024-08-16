@@ -10,7 +10,7 @@ class AddResultUC {
 
   AddResultUC({required this.repository});
 
-  Future<Either<Failure, Unit>> call({required Result result,required Test test}) async {
-    return await repository.addResult(result: result,test: test);
+  Future<Either<Failure, Unit>> call({required Result result}) async {
+    return await repository.addResult(result: result);
   }
 }

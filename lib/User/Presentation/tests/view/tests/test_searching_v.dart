@@ -5,6 +5,10 @@ import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/banks/state/get_bank_c/get_bank_cubit.dart';
 
+import '../../../../Core/resources/sizes_resources.dart';
+import '../../widgets/test_tile_w.dart';
+import 'check_if_test_done_v.dart';
+
 class TestSearchingView extends StatefulWidget {
   const TestSearchingView(
       {super.key, required this.tests, required this.onSelect});
@@ -61,16 +65,48 @@ class _TestSearchingViewState extends State<TestSearchingView> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: result.length,
-              itemBuilder: (context, index) => TouchableTileWidget(
-                title: result[index].$1.information.title,
-                iconData: Icons.arrow_forward_ios,
-                onTap: () {
-                  widget.onSelect(result[index]);
-                },
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1,
               ),
+              padding: const EdgeInsets.symmetric(
+                vertical: SizesResources.s2,
+              ),
+              itemCount: result.length,
+              itemBuilder: (context, index) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TestTileWidget(
+                      test: result[index].$1,
+                      onBuy: () {
+                        setState(() {});
+                      },
+                      onPick: () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CheckIfTestDone(
+                              test: result[index].$1,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
+            // child: ListView.builder(
+            //   itemCount: result.length,
+            //   itemBuilder: (context, index) => TouchableTileWidget(
+            //     title: result[index].$1.information.title,
+            //     iconData: Icons.arrow_forward_ios,
+            //     onTap: () {
+            //       widget.onSelect(result[index]);
+            //     },
+            //   ),
+            // ),
           ),
         ],
       )),

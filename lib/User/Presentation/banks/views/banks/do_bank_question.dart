@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
+import 'package:moatmat_app/User/Presentation/auth/view/auth_views_manager.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
 
 import '../../../../Features/tests/domain/entities/question.dart';
@@ -37,6 +38,7 @@ class _DoBankQuestionViewState extends State<DoBankQuestionView> {
       onNext: () {},
       onPrevious: () {},
       title: "بنك الاستاذ ${widget.bank.information.teacher}",
+      onExit: () {},
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Core/functions/coders/decode.dart';
 
 import '../resources/colors_r.dart';
 import '../resources/fonts_r.dart';
@@ -13,10 +14,14 @@ class TouchableTileWidget extends StatelessWidget {
     this.iconData,
     this.onTap,
     this.subTitle,
+    this.subTitle2,
+    this.icon,
   });
   final String title;
   final String? subTitle;
+  final String? subTitle2;
   final IconData? iconData;
+  final Widget? icon;
   final void Function()? onTap;
   @override
   Widget build(BuildContext context) {
@@ -46,8 +51,9 @@ class TouchableTileWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          title,
-                          style: FontsResources.lightStyle().copyWith(
+                          (title),
+                          textAlign: TextAlign.start,
+                          style: FontsResources.styleLight().copyWith(
                             color: ColorsResources.blackText1,
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
@@ -58,10 +64,20 @@ class TouchableTileWidget extends StatelessWidget {
                           Text(
                             subTitle!,
                             textAlign: TextAlign.start,
-                            style: FontsResources.lightStyle().copyWith(
-                              color: ColorsResources.blackText1,
-                              fontWeight: FontWeight.w300,
-                              fontSize: 10,
+                            style: FontsResources.styleRegular().copyWith(
+                              color: ColorsResources.blackText2,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                        if (subTitle2 != null) ...[
+                          const SizedBox(height: SizesResources.s2),
+                          Text(
+                            subTitle2!,
+                            textAlign: TextAlign.start,
+                            style: FontsResources.styleRegular().copyWith(
+                              color: ColorsResources.blackText2,
+                              fontSize: 12,
                             ),
                           ),
                         ]
@@ -72,6 +88,7 @@ class TouchableTileWidget extends StatelessWidget {
                       color: ColorsResources.blackText2,
                       size: 12,
                     ),
+                    if (icon != null) icon!,
                   ],
                 ),
               ),

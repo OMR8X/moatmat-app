@@ -43,20 +43,22 @@ class _UpdateUserDataViewState extends State<UpdateUserDataView> {
       loading = true;
     });
     var userData = UserData(
-      uuid: widget.userData.uuid,
-      balance: widget.userData.balance,
-      name: name,
-      email: widget.userData.email,
-      motherName: motherName,
-      age: age,
-      classroom: classroom,
-      schoolName: schoolName,
-      governorate: governorate,
-      phoneNumber: phoneNumber,
-      whatsappNumber: whatsappNumber,
-      likes: [],
-      tests: [],
-    );
+        id: widget.userData.id,
+        uuid: widget.userData.uuid,
+        deviceId: widget.userData.deviceId,
+        balance: widget.userData.balance,
+        name: name,
+        email: widget.userData.email,
+        motherName: motherName,
+        age: age,
+        classroom: classroom,
+        schoolName: schoolName,
+        governorate: governorate,
+        phoneNumber: phoneNumber,
+        whatsappNumber: whatsappNumber,
+        likes: [],
+        tests: [],
+        notifications: []);
     var query = locator<UpdateUserDataUC>().call(
       userData: userData,
     );

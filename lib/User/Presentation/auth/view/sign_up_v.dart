@@ -47,20 +47,22 @@ class _SignUpViewState extends State<SignUpView> {
       loading = true;
     });
     UserData userData = UserData(
-      uuid: "",
-      balance: 0,
-      name: name,
-      email: email,
-      motherName: motherName,
-      age: age,
-      classroom: classroom,
-      schoolName: schoolName,
-      governorate: governorate,
-      phoneNumber: phoneNumber,
-      whatsappNumber: whatsappNumber,
-      likes: [],
-      tests: [],
-    );
+        id: 0,
+        uuid: "",
+        deviceId: "",
+        balance: 0,
+        name: name,
+        email: email,
+        motherName: motherName,
+        age: age,
+        classroom: classroom,
+        schoolName: schoolName,
+        governorate: governorate,
+        phoneNumber: phoneNumber,
+        whatsappNumber: whatsappNumber,
+        likes: [],
+        tests: [],
+        notifications: []);
     var query = locator<SignUpUC>().call(
       userData: userData,
       password: password,
@@ -185,7 +187,7 @@ class _SignUpViewState extends State<SignUpView> {
                   validator: (p0) {
                     return emailValidator(text: p0);
                   },
-                  hintText: "البريد الالكترني",
+                  hintText: "البريد الالكتروني",
                   textInputAction: TextInputAction.next,
                   maxLength: 45,
                   inputFormatters: [
@@ -205,11 +207,7 @@ class _SignUpViewState extends State<SignUpView> {
                   hintText: "الرمز السري",
                   textInputAction: TextInputAction.next,
                   obscureText: true,
-                  maxLength: 30,
                   keyboardType: TextInputType.emailAddress,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(30),
-                  ],
                   onSaved: (p0) {
                     password = p0!;
                   },

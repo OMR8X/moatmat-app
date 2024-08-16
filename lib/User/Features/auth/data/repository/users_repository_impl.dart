@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../Core/errors/exceptions.dart';
@@ -39,7 +40,6 @@ class UserRepositoryImpl implements UserRepository {
       }
       return left(const AnonFailure());
     } on Exception {
-      // خطا بالانترنت
       return left(const AnonFailure());
     }
     //
@@ -59,13 +59,15 @@ class UserRepositoryImpl implements UserRepository {
       //
       return right(res);
     } on AuthException catch (e) {
+      print(e);
       if (e.message.contains("User already registered")) {
         return left(const UserAlreadyExcitedFailure());
       } else if (e.message.contains("invalid format")) {
         return left(const InvalidDataFailure());
       }
       return left(const AnonFailure());
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       return left(const AnonFailure());
     }
   }
@@ -94,6 +96,16 @@ class UserRepositoryImpl implements UserRepository {
         password: password,
         token: token,
       );
+      return right(res);
+    } on Exception {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, TeacherData>> getTeacherData() async {
+    try {
+      var res = await dataSource.getTeacherData();
       return right(res);
     } on Exception {
       return left(const AnonFailure());

@@ -1,10 +1,15 @@
 import 'dart:math';
 
 import 'package:dartz/dartz.dart';
+import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Core/services/device_s.dart';
+import 'package:moatmat_app/User/Features/update/domain/entites/update_info.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../Core/errors/exceptions.dart';
+import '../../domain/entites/teacher_data.dart';
 import '../../domain/entites/user_data.dart';
+import '../models/teacher_data_m.dart';
 import '../models/user_data_m.dart';
 
 abstract class UsersDataSource {
@@ -27,6 +32,9 @@ abstract class UsersDataSource {
   // get User Data
   Future<UserData> getUserData({required String uuid});
   //
+  // get teacher Data
+  Future<TeacherData> getTeacherData();
+  //
   Future<Unit> resetPassword({
     required String email,
     required String password,
@@ -40,15 +48,58 @@ class UsersDataSourceImpl implements UsersDataSource {
   UsersDataSourceImpl({required this.client});
   @override
   Future<UserData> getUserData({required String uuid}) async {
-    var query = client.from("users_data").select();
-    query.eq("uuid", uuid);
+    //
+    await addUpdateData();
+    //
+    client.from("users_data").select().eq("uuid", uuid);
+    //
+    var query = client.from("users_data").select().eq("uuid", uuid);
+    //
     List res = await query;
+    //
     if (res.isNotEmpty) {
+      //
       final userData = UserDataModel.fromJson(res.first);
+      //
+      await removeUpdateData();
+      //
       return userData;
     } else {
+      //
+      await removeUpdateData();
+      //
       throw Exception();
     }
+  }
+
+  addUpdateData() async {
+    //
+    Map data = client.auth.currentUser?.userMetadata ?? {};
+    //
+    data["version"] = locator<UpdateInfo>().appVersion;
+    //
+    await client.auth.updateUser(
+      UserAttributes(
+        data: data,
+      ),
+    );
+    //
+    await client.auth.refreshSession();
+    //
+    return;
+  }
+
+  removeUpdateData() async {
+    //
+    await client.auth.updateUser(
+      UserAttributes(
+        data: {"version": 0},
+      ),
+    );
+    //
+    await client.auth.refreshSession();
+    //
+    return;
   }
 
   @override
@@ -63,10 +114,16 @@ class UsersDataSourceImpl implements UsersDataSource {
     );
     String? uuid = client.auth.currentUser?.id;
     if (uuid != null) {
-      return await getUserData(uuid: uuid);
+      final userData = await getUserData(uuid: uuid);
+      await updateUserData(
+        userData: userData.copyWith(deviceId: DeviceService().deviceId),
+      );
+      return userData;
     } else {
       throw AnonException();
     }
+    //
+    //
   }
 
   @override
@@ -83,9 +140,17 @@ class UsersDataSourceImpl implements UsersDataSource {
     );
     //
     String? uuid = client.auth.currentUser?.id;
+    //
     if (uuid != null) {
+      //
       userData = userData.copyWith(uuid: uuid);
+      //
       await updateUserData(userData: userData);
+      //
+      await updateUserData(
+        userData: userData.copyWith(deviceId: DeviceService().deviceId),
+      );
+      //
       return userData;
     } else {
       throw AnonException();
@@ -93,15 +158,40 @@ class UsersDataSourceImpl implements UsersDataSource {
   }
 
   @override
-  Future<Unit> updateUserData(
-      {required UserData userData, bool removeBalande = false}) async {
+  Future<Unit> updateUserData({
+    required UserData userData,
+    bool removeBalance = false,
+  }) async {
+    //
+    await addUpdateData();
+    //
     Map json = UserDataModel.fromClass(userData).toJson();
-    if (removeBalande) {
+    //
+    if (removeBalance) {
       json.remove("balance");
     }
-    var query = client.from("users_data").upsert(json);
-    query.eq("uuid", userData.uuid);
-    await query;
+    //
+    //
+    var emails = await client.from("users_data").select().eq(
+          "uuid",
+          userData.uuid,
+        );
+
+    //
+    if (emails.isEmpty) {
+      await client.from("users_data").insert(json).eq(
+            "uuid",
+            userData.uuid,
+          );
+    } else {
+      await client.from("users_data").update(json).eq(
+            "uuid",
+            userData.uuid,
+          );
+    }
+    //
+    await removeUpdateData();
+    //
     return unit;
   }
 
@@ -121,5 +211,22 @@ class UsersDataSourceImpl implements UsersDataSource {
       UserAttributes(password: password),
     );
     return unit;
+  }
+
+  @override
+  Future<TeacherData> getTeacherData() async {
+    //
+    var query = client
+        .from("teachers_data")
+        .select()
+        .eq("email", client.auth.currentUser!.email!);
+    //
+    List res = await query;
+    if (res.isNotEmpty) {
+      final teacherData = TeacherDataModel.fromJson(res.first);
+      return teacherData;
+    } else {
+      throw Exception();
+    }
   }
 }

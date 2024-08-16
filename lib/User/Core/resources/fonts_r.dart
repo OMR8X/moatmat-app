@@ -22,7 +22,7 @@ class FontsResources {
   }
 
   // reqular
-  static TextStyle reqularStyle() {
+  static TextStyle regularStyle() {
     return const TextStyle(
       fontFamily: "Tajawal",
       fontWeight: FontWeight.w200,
@@ -36,6 +36,75 @@ class FontsResources {
       fontFamily: "Tajawal",
       fontWeight: FontWeight.w100,
       color: ColorsResources.blackText1,
+    );
+  }
+
+  static TextStyle styleExtraLight({Color? color, double? size}) {
+    return TextStyle(
+      fontFamily: "Tajawal",
+      fontSize: size,
+      fontWeight: FontWeight.w100,
+      color: color ?? ColorsResources.blackText1,
+    );
+  }
+
+  // extra bold
+  static TextStyle styleLight({Color? color, double? size}) {
+    return TextStyle(
+      fontFamily: "Tajawal",
+      fontSize: size,
+      fontWeight: FontWeight.w200,
+      color: color ?? ColorsResources.blackText1,
+    );
+  }
+
+  // extra bold
+  static TextStyle styleRegular({Color? color, double? size}) {
+    return TextStyle(
+      fontFamily: "Tajawal",
+      fontSize: size,
+      fontWeight: FontWeight.w300,
+      color: color ?? ColorsResources.blackText1,
+    );
+  }
+
+  // extra bold
+  static TextStyle styleMedium({Color? color, double? size}) {
+    return TextStyle(
+      fontFamily: "Tajawal",
+      fontSize: size,
+      fontWeight: FontWeight.w400,
+      color: color ?? ColorsResources.blackText1,
+    );
+  }
+
+  // extra bold
+  static TextStyle styleBold({Color? color, double? size}) {
+    return TextStyle(
+      fontFamily: "Tajawal",
+      fontSize: size,
+      fontWeight: FontWeight.w500,
+      color: color ?? ColorsResources.blackText1,
+    );
+  }
+
+  // extra bold
+  static TextStyle styleExtraBold({Color? color, double? size}) {
+    return TextStyle(
+      fontFamily: "Tajawal",
+      fontSize: size,
+      fontWeight: FontWeight.w600,
+      color: color ?? ColorsResources.blackText1,
+    );
+  }
+
+  // extra bold
+  static TextStyle styleBlack({Color? color, double? size}) {
+    return TextStyle(
+      fontFamily: "Tajawal",
+      fontSize: size,
+      fontWeight: FontWeight.w700,
+      color: color ?? ColorsResources.blackText1,
     );
   }
 }

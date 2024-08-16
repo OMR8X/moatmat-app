@@ -1,9 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
-import '../../../Core/resources/colors_r.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../Core/resources/spacing_resources.dart';
 import '../../../Features/tests/domain/entities/question.dart';
 import '../../../Features/tests/domain/entities/question_word_color.dart';
+import '../../../Presentation/tests/widgets/test_q_box.dart';
 import '../../resources/sizes_resources.dart';
 import 'equation_text_builder_w.dart';
 import 'math_tex_w.dart';
@@ -30,6 +31,7 @@ class _QuestionBodyWidgetState extends State<QuestionBodyWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.question.image);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -80,11 +82,30 @@ class QuestionImageBuilderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (image.contains("supabase")) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.network(
-          image,
-          width: SpacingResources.mainWidth(context) - 50,
+      return InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ExploreImage(image: image),
+            ),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: CachedNetworkImage(
+            width: SpacingResources.mainWidth(context) - 50,
+            imageUrl: image,
+            placeholder: (context, url) => Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                width: SpacingResources.mainWidth(context) - 50,
+                height: 150,
+                color: Colors.grey[300],
+              ),
+            ),
+            errorWidget: (context, url, error) => Image.network(image),
+          ),
         ),
       );
     } else {
@@ -161,7 +182,9 @@ class _QuestionTextBuilderWidgetState extends State<QuestionTextBuilderWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: SpacingResources.mainWidth(context) - SpacingResources.sidePadding,
+      width: SpacingResources.mainWidth(context) -
+          SpacingResources.sidePadding -
+          70,
       child: Wrap(
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
@@ -171,7 +194,22 @@ class _QuestionTextBuilderWidgetState extends State<QuestionTextBuilderWidget> {
             //
             String equation = getEquationByFromText(words[index]);
             //
-            return MathTexWidget(equation: equation, color: colors[index]);
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: constraints
+                        .maxWidth, // Ensure the widget does not exceed the parent width
+                  ),
+                  child: FittedBox(
+                    child: MathTexWidget(
+                      equation: equation,
+                      color: colors[index],
+                    ),
+                  ),
+                );
+              },
+            );
             //
           } else {
             //

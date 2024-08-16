@@ -34,7 +34,7 @@ class ExploreQuestionAppBarWidget extends StatelessWidget {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: ColorsResources.darkPrimary,
+                      color: ColorsResources.background,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Material(
@@ -43,11 +43,16 @@ class ExploreQuestionAppBarWidget extends StatelessWidget {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(12),
                         onTap: onPop,
-                        child: const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Icon(
-                            Icons.close,
-                            color: ColorsResources.whiteText1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: InkWell(
+                            onTap: () {
+                              onPop();
+                            },
+                            child: const Icon(
+                              Icons.close,
+                              color: ColorsResources.primary,
+                            ),
                           ),
                         ),
                       ),
@@ -65,7 +70,7 @@ class ExploreQuestionAppBarWidget extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           vertical: 14, horizontal: 16),
                       decoration: BoxDecoration(
-                        color: ColorsResources.darkPrimary,
+                        color: ColorsResources.background,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Material(
@@ -77,7 +82,7 @@ class ExploreQuestionAppBarWidget extends StatelessWidget {
                           child: Text(
                             getTime(),
                             style: FontsResources.extraBoldStyle().copyWith(
-                              color: ColorsResources.whiteText1,
+                              color: ColorsResources.primary,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -96,13 +101,13 @@ class ExploreQuestionAppBarWidget extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         vertical: 14, horizontal: 16),
                     decoration: BoxDecoration(
-                      color: ColorsResources.darkPrimary,
+                      color: ColorsResources.background,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       title,
                       style: FontsResources.extraBoldStyle().copyWith(
-                        color: ColorsResources.whiteText1,
+                        color: ColorsResources.primary,
                         fontSize: 11,
                       ),
                     ),

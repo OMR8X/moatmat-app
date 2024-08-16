@@ -9,12 +9,12 @@ class GetTeacherBanksUC {
 
   GetTeacherBanksUC({required this.repository});
   Future<Either<Failure, List<(Bank, int)>>> call({
-    required String teacher,
+    required String teacherEmail,
     required String clas,
     required String material,
   }) async {
     return await repository.getTeacherBanks(
-      teacher: teacher,
+      teacherEmail: teacherEmail,
       clas: clas,
       material: material,
     );

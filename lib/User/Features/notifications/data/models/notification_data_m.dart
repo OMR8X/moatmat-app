@@ -9,10 +9,18 @@ class NotificationDataModel extends NotificationData {
   });
   factory NotificationDataModel.fromJson(Map json) {
     return NotificationDataModel(
-      id: json["id"],
-      title: json["title"],
-      content: json["content"],
+      id: json["id"] ?? 0,
+      title: json["title"] ?? "",
+      content: json["content"] ?? "",
       date: DateTime.parse(json["date"]),
+    );
+  }
+  factory NotificationDataModel.fromClass(NotificationData notificationData) {
+    return NotificationDataModel(
+      id: notificationData.id,
+      title: notificationData.title,
+      content: notificationData.content,
+      date: notificationData.date,
     );
   }
   toJson() {

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
-import 'package:moatmat_app/User/Presentation/videos/view/video_player_v.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/can_do_test_uc.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/test_video_v.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../Core/functions/show_alert.dart';
 import '../exploring/explore_no_time_v.dart';
 import '../exploring/full_time_explore_v.dart';
 import '../exploring/per_question_explore_v.dart';
@@ -21,7 +23,34 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      checking();
+      if (widget.test.information.previous != null) {
+        locator<CanDoTestUC>()
+            .call(test: widget.test.information.previous!)
+            .then((v) {
+          v.fold(
+            (l) {
+              exitWithMsg("حصل خطآ اثناء الاتصال بالخادم");
+            },
+            (r) {
+              if (r) {
+                checking();
+              } else {
+                String title = widget.test.information.previous!.title;
+                Navigator.of(context).pop();
+                showAlert(
+                  context: context,
+                  title: "تنبيه",
+                  body:
+                      "يجب عليك حل الاختبار : \"$title\" \n لكي تتمكن من فتح الاختبار",
+                  onAgree: () {},
+                );
+              }
+            },
+          );
+        });
+      } else {
+        checking();
+      }
     });
     super.initState();
   }
@@ -37,6 +66,9 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   }
 
   Future checking() async {
+    //
+
+    //
     if (widget.test.properties.repeatable ?? false) {
       onOpen();
       return;
@@ -50,37 +82,41 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
       onOpen();
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("لا يمكنك اعادة الاختبار"),
-          ),
-        );
+        exitWithMsg("لا يمكنك اعادة الاختبار");
       }
     }
   }
 
+  exitWithMsg(String msg) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+      ),
+    );
+  }
+
   onOpen() {
-    if (widget.test.information.video != null) {
-      Navigator.of(context)
-          .push(
-            MaterialPageRoute(
-              builder: (context) => VideoPlayerView(
-                link: widget.test.information.video!,
-              ),
-            ),
-          )
-          .then((value) => openTest());
+    bool con1 = widget.test.information.video != null;
+    bool con2 = widget.test.information.files?.isNotEmpty ?? false;
+    if (con1 || con2) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => TestVideoView(
+            test: widget.test,
+          ),
+        ),
+      );
     } else {
       openTest();
     }
   }
 
-  openTest() {
+  openTest() async {
     if (widget.test.information.period == 0 ||
         widget.test.information.period == null) {
-      Navigator.of(context).pushReplacement(
+      await Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => TestExploreNoTimeView(
             test: widget.test,
@@ -89,7 +125,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
       );
     } else {
       if (widget.test.properties.timePerQuestion ?? false) {
-        Navigator.of(context).pushReplacement(
+        await Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => TestPerQuestionExploreView(
               minutes: widget.test.information.period!,
@@ -98,7 +134,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
           ),
         );
       } else {
-        Navigator.of(context).pushReplacement(
+        await Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => TestFullTimeExploreView(
               minutes: widget.test.information.period!,
@@ -107,6 +143,9 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
           ),
         );
       }
+    }
+    if (mounted) {
+      Navigator.of(context).pop();
     }
   }
 }

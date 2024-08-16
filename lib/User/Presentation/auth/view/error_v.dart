@@ -28,13 +28,13 @@ class _ErrorViewState extends State<ErrorView> {
             const SizedBox(
               height: SizesResources.s5,
             ),
-            const Text("حصل خطا ما اثناء محاولة الاتصال بالخدام"),
+            const Text("حصل خطا ما اثناء محاولة الاتصال الخادم"),
             const SizedBox(
               height: SizesResources.s2,
             ),
             TextButton(
               onPressed: () {
-                context.read<AuthCubit>().init();
+                context.read<AuthCubit>().startAuth();
               },
               child: const Text("اعادة التحميل"),
             ),

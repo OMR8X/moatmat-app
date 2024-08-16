@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../Core/errors/exceptions.dart';
+import '../../domain/entites/code_center.dart';
 import '../../domain/entites/code_data.dart';
 import '../../domain/repository/codes_repository.dart';
 import '../data_sources/codes_ds.dart';
@@ -18,12 +19,14 @@ class CodesRepositoryImpl implements CodesRepository {
     } on CodesUsedException {
       return left(const CodesUsedFailure());
     } on PostgrestException catch (e) {
+      print("failure  is $e");
       if (e.code == "22P02") {
         return left(const InvalidDataFailure());
       } else {
         return left(const AnonFailure());
       }
     } on Exception catch (e) {
+      print("filaure  is $e");
       return left(const AnonFailure());
     }
   }
@@ -33,8 +36,19 @@ class CodesRepositoryImpl implements CodesRepository {
     try {
       var res = await dataSource.generateCode(amount: amount);
       return right(res);
-    } on Exception catch (e) {
+    } on Exception {
       return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Exception, List<CodeCenter>>> getCodesCenters(
+      {required String governorate}) async {
+    try {
+      var res = await dataSource.getCodesCenters(governorate: governorate);
+      return right(res);
+    } on Exception catch (e) {
+      return left(e);
     }
   }
 }

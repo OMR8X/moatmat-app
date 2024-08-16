@@ -3,19 +3,22 @@ import 'package:moatmat_app/User/Features/banks/data/models/bank_m.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../auth/data/models/teacher_data_m.dart';
+import '../../../auth/domain/entites/teacher_data.dart';
+
 abstract class BanksDataSource {
   // material teachers
   Future<List<(String, int)>> getMaterialBankClasses({
     required String material,
   });
   // material teachers
-  Future<List<(String, int)>> getMaterialBanksTeachers({
+  Future<List<(TeacherData, int)>> getMaterialBanksTeachers({
     required String clas,
     required String material,
   });
   // teacher banks
   Future<List<(Bank, int)>> getTeacherBanks({
-    required String teacher,
+    required String teacherEmail,
     required String clas,
     required String material,
   });
@@ -34,43 +37,59 @@ class BanksDataSourceImpl implements BanksDataSource {
     //
     List<String> classes = [];
     //
-    var res = await client.from("banks").select("information->>classs").eq(
-          "information->>material",
-          material,
-        );
+    var res = await client
+        .from("banks")
+        .select("information->>classs")
+        .eq("information->>material", material)
+        .or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
     //
     classes = res.map<String>((e) => e["classs"]).toList();
     //
     classes.removeWhere((e) => e.isEmpty);
 
-    return listToListWithCount(classes);
+    return listStrToListWithCount(classes);
   }
 
   @override
-  Future<List<(String, int)>> getMaterialBanksTeachers({
+  Future<List<(TeacherData, int)>> getMaterialBanksTeachers({
     required String clas,
     required String material,
   }) async {
     //
-    List<String> teachers = [];
+    List<String> teachersEmails = [];
     //
+    List<TeacherData> teachers = [];
 
-    var res = await client
+    var query1 = await client
         .from("banks")
-        .select("information->>teacher")
+        .select("teacher_email")
         .eq("information->>material", material)
-        .eq("information->>classs", clas);
+        .eq("information->>classs", clas)
+        .or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
     //
-    teachers = res.map<String>((e) => e["teacher"]).toList();
+    var res = query1;
     //
-    teachers.removeWhere((e) => e.isEmpty);
+    teachersEmails = res.map<String>((e) => e["teacher_email"]).toList();
     //
-    return listToListWithCount(teachers);
+    teachersEmails.removeWhere((e) => e.isEmpty);
+    //
+    //
+    var query2 = client
+        .from("teachers_data")
+        .select("")
+        //
+        .inFilter("email", teachersEmails);
+    //
+    var res2 = await query2;
+    //
+    teachers = res2.map((e) => TeacherDataModel.fromJson(e)).toList();
+    //
+    return listTeacherToListWithCount(teachers,teachersEmails);
   }
 
   @override
   Future<List<(Bank, int)>> getTeacherBanks({
-    required String teacher,
+    required String teacherEmail,
     required String clas,
     required String material,
   }) async {
@@ -79,9 +98,10 @@ class BanksDataSourceImpl implements BanksDataSource {
     var res = await client
         .from("banks")
         .select()
-        .eq("information->>teacher", teacher)
+        .eq("teacher_email", teacherEmail)
         .eq("information->>material", material)
-        .eq("information->>classs", clas);
+        .eq("information->>classs", clas)
+        .or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
     //
     banks = res.map<Bank>((e) => BankModel.fromJson(e)).toList();
     return banksToBanksWithCount(banks);
@@ -114,7 +134,26 @@ List<(Bank, int)> banksToBanksWithCount(List<Bank> list) {
   return res;
 }
 
-List<(String, int)> listToListWithCount(List<String> list) {
+List<(TeacherData, int)> listTeacherToListWithCount(
+    List<TeacherData> list, List<String> teacherStr) {
+  Map<String, int> value = {};
+  for (var l in teacherStr) {
+    if (value[l] != null) {
+      value[l] = value[l]! + 1;
+    } else {
+      value[l] = 1;
+    }
+  }
+  //
+  List<(TeacherData, int)> res = [];
+  value.forEach((key, value) {
+    var t = list.where((e) => e.email == key).first;
+    res.add((t, value));
+  });
+  return res;
+}
+
+List<(String, int)> listStrToListWithCount(List<String> list) {
   Map<String, int> value = {};
   for (var l in list) {
     if (value[l] != null) {

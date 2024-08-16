@@ -12,13 +12,14 @@ class TextsResources {
   static const show = "عرض";
   static const reOpen = "اعادة الفتح";
   static const backToHome = "العودة للصفحة الرئيسية";
-  static const result = "نتيجك";
+  static const result = "نتيجتك";
   static const p = "";
   //
   static const startUsingApp = "البدء باستخدام التطبيق";
 }
 
 class AppBarTitles {
+  static const letUsStart = "هيا بنا نبدأ!";
   static const startAuth = "البدء باستخدام التطبيق";
   static const signIn = "تسجيل الدخول";
   static const signUp = "انشاء حساب";
@@ -41,6 +42,7 @@ class AppBarTitles {
   static const likes = "الاسئلة المفضلة";
   static const aboutUs = "حول التطبيق";
   static const communicateWithUs = "تواصل معنا";
-  static const howToUseApp = "كيفية استخدام التطبيق";
+  static const commonQuestions = "الاسئلة الشائعة";
+  static const myResult = "نتائجي";
   static const n = "";
 }

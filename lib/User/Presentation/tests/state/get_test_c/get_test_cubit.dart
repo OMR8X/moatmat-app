@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:moatmat_app/User/Core/constant/materials.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_teacher_tests_uc.dart';
 import '../../../../Features/tests/domain/usecases/get_material_test_classes_uc.dart';
@@ -14,12 +15,12 @@ class GetTestCubit extends Cubit<GetTestState> {
   //
   List<String> materials = [];
   List<(String, int)> classes = [];
-  List<(String, int)> teachers = [];
+  List<(TeacherData, int)> teachers = [];
   List<(Test, int)> tests = [];
   //
   String? material;
   String? clas;
-  String? teacher;
+  TeacherData? teacherData;
   Test? test;
   init() async {
     emit(const GetTestLoading());
@@ -70,13 +71,13 @@ class GetTestCubit extends Cubit<GetTestState> {
   }
 
   //
-  selectTeacher(String teacher, {bool disableLoading = false}) async {
+  selectTeacher(TeacherData teacherData, {bool disableLoading = false}) async {
     if (!disableLoading) {
       emit(const GetTestLoading());
     }
-    this.teacher = teacher;
+    this.teacherData = teacherData;
     var res = locator<GetTeacherTestsUC>().call(
-      teacher: teacher,
+      teacherEmail: teacherData.email,
       clas: clas!,
       material: material!,
     );
@@ -87,18 +88,22 @@ class GetTestCubit extends Cubit<GetTestState> {
         },
         (r) {
           tests = r;
-          emit(GetTestSelectTest(tests: tests, teacher: teacher));
+          List<String> folders = r.map((e) => e.$1.information.folder).toList();
+          emit(GetTestSelectFolder(folders: folders, teacherData: teacherData));
         },
       );
     });
   }
 
-  //
+  selectFolder(String folder) {
+    emit(GetTestSelectTest(
+      tests: tests.where((e) => e.$1.information.folder == folder).toList(),
+      title: folder,
+    ));
+  }
 
   //
-  refreshTests() async {
-    selectTeacher(teacher!);
-  }
+
 
   //
   backToMaterials() {
@@ -111,5 +116,10 @@ class GetTestCubit extends Cubit<GetTestState> {
 
   backToTeachers() {
     emit(GetTestSelectTeacher(teachers: teachers));
+  }
+
+  backToFolders() {
+    List<String> folders = tests.map((e) => e.$1.information.folder).toList();
+    emit(GetTestSelectFolder(folders: folders, teacherData: teacherData!));
   }
 }

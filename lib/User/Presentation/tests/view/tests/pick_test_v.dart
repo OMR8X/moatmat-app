@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
@@ -8,10 +10,13 @@ import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Core/resources/texts_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/fields/text_input_field.dart';
+import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/pucrhase_list_of_item.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
+import 'package:moatmat_app/User/Presentation/teachers/view/teacher_profile_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/get_test_c/get_test_cubit.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/test_searching_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/widgets/test_tile_w.dart';
@@ -21,11 +26,11 @@ class PickTestView extends StatefulWidget {
     super.key,
     required this.tests,
     required this.onPick,
-    required this.teacher,
     required this.onPop,
+    required this.title,
   });
   final List<(Test, int)> tests;
-  final String teacher;
+  final String title;
   final Function((Test, int)) onPick;
   final VoidCallback onPop;
 
@@ -53,83 +58,112 @@ class _PickTestViewState extends State<PickTestView> {
       onPopInvoked: (didPop) {
         widget.onPop();
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "${AppBarTitles.pickTest} ${widget.teacher}",
-          ),
-          centerTitle: false,
-          leading: IconButton(
-            onPressed: widget.onPop,
-            icon: const Icon(Icons.arrow_back_ios),
-          ),
-          actions: showPurchaseAll()
-              ? [
-                  TextButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => BuyTestsWidget(
-                          tests: widget.tests
-                              .map((e) => e.$1)
-                              .where((e) => !e.isPurchased())
-                              .toList(),
-                        ),
-                      );
-                    },
-                    child: const Text("شراء الكل"),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => TestSearchingView(
-                                tests: widget.tests,
-                                onSelect: (t) {
-                                  Navigator.of(context).pop();
-                                  widget.onPick(t);
-                                },
-                              )));
-                    },
-                    icon: const Icon(Icons.search),
-                  ),
-                ]
-              : [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => TestSearchingView(
-                                tests: widget.tests,
-                                onSelect: (t) {
-                                  Navigator.of(context).pop();
-                                  widget.onPick(t);
-                                },
-                              )));
-                    },
-                    icon: const Icon(Icons.search),
-                  ),
-                ],
-        ),
-        body: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 1,
+      child: BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthDone) {
+            setState(() {});
+          }
+        },
+        child: Scaffold(
+          backgroundColor: ColorsResources.primary,
+          appBar: AppBar(
+            backgroundColor: ColorsResources.primary,
+            foregroundColor: ColorsResources.whiteText1,
+            title: Text(
+              widget.title,
+              style: const TextStyle(
+                fontSize: 14,
+                color: ColorsResources.whiteText1,
+              ),
             ),
-            padding: const EdgeInsets.symmetric(vertical: SizesResources.s2),
-            itemCount: widget.tests.length,
-            itemBuilder: (context, index) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TestTileWidget(
-                    test: widget.tests[index].$1,
-                    onPick: () {
-                      widget.onPick(widget.tests[index]);
-                    },
+            centerTitle: false,
+            leading: IconButton(
+              onPressed: widget.onPop,
+              icon: const Icon(Icons.arrow_back_ios),
+            ),
+            actions: showPurchaseAll()
+                ? [
+                    TextButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => BuyTestsWidget(
+                            tests: widget.tests
+                                .map((e) => e.$1)
+                                .where((e) => !e.isPurchased())
+                                .toList(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "شراء الكل",
+                        style: TextStyle(
+                          color: ColorsResources.whiteText2,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => TestSearchingView(
+                                  tests: widget.tests,
+                                  onSelect: (t) {
+                                    Navigator.of(context).pop();
+                                    widget.onPick(t);
+                                  },
+                                )));
+                      },
+                      icon: const Icon(Icons.search),
+                    ),
+                  ]
+                : [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => TestSearchingView(
+                                  tests: widget.tests,
+                                  onSelect: (t) {
+                                    Navigator.of(context).pop();
+                                    widget.onPick(t);
+                                  },
+                                )));
+                      },
+                      icon: const Icon(Icons.search),
+                    ),
+                  ],
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1,
                   ),
-                ],
-              );
-            }),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: SizesResources.s2,
+                  ),
+                  itemCount: widget.tests.length,
+                  itemBuilder: (context, index) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TestTileWidget(
+                          test: widget.tests[index].$1,
+                          onPick: () {
+                            widget.onPick(widget.tests[index]);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -236,7 +270,13 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("عملية شراء"),
+      title: const Text(
+        "عملية شراء",
+        style: TextStyle(
+          color: ColorsResources.primary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -295,10 +335,12 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
                         );
                         Navigator.of(context).pop();
                       },
-                      (r) {
+                      (r) async {
+                        //
+                        await context.read<AuthCubit>().refresh();
+                        //
                         Navigator.of(context).pop();
-                        context.read<AuthCubit>().refresh();
-                        context.read<GetTestCubit>().refreshTests();
+                        //
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text("تمت عملية الشراء بنجاح"),
@@ -306,9 +348,6 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
                         );
                       },
                     );
-                  });
-                  setState(() {
-                    loading = false;
                   });
                 },
                 child: const Text(

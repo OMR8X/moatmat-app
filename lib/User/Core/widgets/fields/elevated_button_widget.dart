@@ -10,7 +10,8 @@ class ElevatedButtonWidget extends StatelessWidget {
     this.onPressed,
     required this.text,
     this.isWhite = false,
-    this.loading = false, this.width,
+    this.loading = false,
+    this.width,
   });
   final String text;
   final bool isWhite, loading;
@@ -19,7 +20,7 @@ class ElevatedButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:width?? SpacingResources.mainWidth(context),
+      width: width ?? SpacingResources.mainWidth(context),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           shadowColor: Colors.transparent,
@@ -30,12 +31,15 @@ class ElevatedButtonWidget extends StatelessWidget {
             ? const Center(
                 child: CupertinoActivityIndicator(),
               )
-            : Text(
-                text,
-                style: TextStyle(
-                  color: isWhite
-                      ? ColorsResources.darkPrimary
-                      : ColorsResources.whiteText1,
+            : Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: isWhite
+                        ? ColorsResources.darkPrimary
+                        : ColorsResources.whiteText1,
+                  ),
                 ),
               ),
       ),

@@ -1,4 +1,6 @@
 
+import 'package:moatmat_app/User/Features/code/domain/use_cases/get_codes_centers_uc.dart';
+
 import '../../Features/code/data/data_sources/codes_ds.dart';
 import '../../Features/code/data/repository/codes_repository_impl.dart';
 import '../../Features/code/domain/repository/codes_repository.dart';
@@ -20,6 +22,11 @@ void injectUC() {
   );
   locator.registerFactory<GenerateCodeUC>(
     () => GenerateCodeUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetCodesCentersUC>(
+    () => GetCodesCentersUC(
       repository: locator(),
     ),
   );

@@ -2,14 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moatmat_app/User/Core/functions/show_alert.dart';
 import 'package:moatmat_app/User/Features/banks/domain/use_cases/get_bank_by_id.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
+import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
+import 'package:moatmat_app/User/Presentation/auth/view/auth_views_manager.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/banks/banks_view_manager.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
 import 'package:moatmat_app/User/Presentation/code/views/add_code_v.dart';
 import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cubit.dart';
 import 'package:moatmat_app/User/Presentation/home/view/deep_link_view.dart';
 import 'package:moatmat_app/User/Presentation/home/view/likes_v.dart';
+import 'package:moatmat_app/User/Presentation/results/view/my_results_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/question_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/tests_view_manager.dart';
 import 'package:shimmer/shimmer.dart';
@@ -109,6 +113,13 @@ class _HomeViewState extends State<HomeView> {
                 ),
               );
             },
+            onOpenResults: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const MyResultsView(),
+                ),
+              );
+            },
           ),
           const HomeBodyWidget(),
         ],
@@ -129,10 +140,11 @@ class HomeBodyWidget extends StatefulWidget {
 class _HomeBodyWidgetState extends State<HomeBodyWidget> {
   int _currentPage = 0;
   Timer? _timer;
-  final PageController _pageController =
-      PageController(initialPage: 0, viewportFraction: 0.9);
+  final PageController _pageController = PageController(
+    initialPage: 0,
+  );
   Future<List<String>> getAds() async {
-    var res = await Supabase.instance.client.from("ads").select();
+    var res = await Supabase.instance.client.from("ads").select().order("id");
     List<String> ads = res.map((e) => e["image"] as String).toList();
     return ads;
   }
@@ -140,8 +152,14 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
   @override
   void initState() {
     super.initState();
+  }
+
+  startTimer(int length) {
+    if (_timer?.isActive ?? false) {
+      return;
+    }
     _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-      if (_currentPage < 2) {
+      if (_currentPage < length) {
         _currentPage++;
       } else {
         _currentPage = 0;
@@ -157,12 +175,13 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
 
   @override
   void dispose() {
-    super.dispose();
     _timer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print(Supabase.instance.client.auth.currentUser?.userMetadata);
     return Expanded(
       flex: 5,
       child: Container(
@@ -183,6 +202,9 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                   future: getAds(),
                   builder: (context, future) {
                     if (future.hasData && future.data!.isNotEmpty) {
+                      //
+                      startTimer(future.data!.length);
+                      //
                       return SizedBox(
                         height: 200,
                         width: double.infinity,
@@ -205,6 +227,14 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                               child: Image.network(
                                 future.data![index],
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const SizedBox(
+                                    child: Center(
+                                      child:
+                                          Text("حدث خطا ما اثناء تحميل الصورة"),
+                                    ),
+                                  );
+                                },
                                 loadingBuilder: (context, child, p) {
                                   if (p == null) {
                                     return child;
@@ -242,9 +272,19 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                   children: [
                     HomeViewItemWidget(
                       color: ColorsResources.homeBanks,
+                      tColor: ColorsResources.blueText,
                       image: "assets/images/home/banks.png",
                       title: "بنوك الاسئلة",
                       onTap: () {
+                        context.read<AuthCubit>().onCheck(
+                          onSignedOut: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const AuthViewsManager(),
+                              ),
+                            );
+                          },
+                        );
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => const BanksViewManager(),
@@ -255,9 +295,19 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                     const Spacer(),
                     HomeViewItemWidget(
                       color: ColorsResources.homeTests,
+                      tColor: ColorsResources.orangeText,
                       image: "assets/images/home/tests.gif",
                       title: "الاختبارات الالكترونية",
                       onTap: () {
+                        context.read<AuthCubit>().onCheck(
+                          onSignedOut: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const AuthViewsManager(),
+                              ),
+                            );
+                          },
+                        );
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => const TestsViewManager(),
@@ -275,6 +325,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                   children: [
                     HomeViewItemWidget(
                       color: ColorsResources.homeCodes,
+                      tColor: ColorsResources.redText,
                       image: "assets/images/home/qr.gif",
                       title: "تعبئة نقاط",
                       onTap: () {
@@ -288,6 +339,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                     const Spacer(),
                     HomeViewItemWidget(
                       color: ColorsResources.homeLocations,
+                      tColor: ColorsResources.greenText,
                       image: "assets/images/home/locations.gif",
                       title: "مراكز البيع",
                       onTap: () {
@@ -317,9 +369,11 @@ class HomeViewItemWidget extends StatelessWidget {
     required this.onTap,
     required this.image,
     required this.color,
+    this.tColor,
   });
   final String title, image;
   final Color color;
+  final Color? tColor;
   final VoidCallback onTap;
 
   @override
@@ -328,7 +382,7 @@ class HomeViewItemWidget extends StatelessWidget {
       width: SpacingResources.mainHalfWidth(context),
       height: SpacingResources.mainHalfWidth(context),
       decoration: BoxDecoration(
-        color: ColorsResources.onPrimary,
+        color: color,
         borderRadius: BorderRadius.circular(12),
         boxShadow: ShadowsResources.mainBoxShadow,
       ),
@@ -343,11 +397,17 @@ class HomeViewItemWidget extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: SpacingResources.mainHalfWidth(context) / 3.5,
-                backgroundColor: color,
+                backgroundColor: Colors.transparent,
                 child: Image.asset(image),
               ),
               const SizedBox(height: SizesResources.s4),
-              Text(title),
+              Text(
+                title,
+                style: const TextStyle(
+                    // color: tColor,
+                    // fontWeight: FontWeight.bold,
+                    ),
+              ),
             ],
           ),
         ),
@@ -362,10 +422,12 @@ class HomeAppBarWidget extends StatelessWidget {
     required this.onOpenSettings,
     required this.onOpenNotifications,
     required this.onOpenLikes,
+    required this.onOpenResults,
   });
   final VoidCallback onOpenSettings;
   final VoidCallback onOpenNotifications;
   final VoidCallback onOpenLikes;
+  final VoidCallback onOpenResults;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -390,11 +452,11 @@ class HomeAppBarWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   onTap: onOpenSettings,
                   child: const Padding(
-                    padding: EdgeInsets.all(15),
+                    padding: EdgeInsets.all(12),
                     child: Icon(
                       Icons.settings,
-                      size: 18,
-                      color: ColorsResources.whiteText1,
+                      size: 22,
+                      color: ColorsResources.blueText,
                     ),
                   ),
                 ),
@@ -413,13 +475,13 @@ class HomeAppBarWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   onTap: onOpenNotifications,
                   child: Padding(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(12),
                     child: Stack(
                       children: [
                         const Icon(
                           Icons.notifications,
-                          size: 18,
-                          color: ColorsResources.whiteText1,
+                          size: 22,
+                          color: ColorsResources.orangeText,
                         ),
                         BlocBuilder<NotificationsCubit, NotificationsState>(
                           builder: (context, state) {
@@ -457,11 +519,34 @@ class HomeAppBarWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   onTap: onOpenLikes,
                   child: const Padding(
-                    padding: EdgeInsets.all(17),
+                    padding: EdgeInsets.all(12),
                     child: Icon(
                       Icons.favorite,
-                      size: 14,
-                      color: ColorsResources.whiteText1,
+                      size: 22,
+                      color: ColorsResources.redText,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: SizesResources.s2),
+            Container(
+              decoration: BoxDecoration(
+                color: ColorsResources.darkPrimary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: onOpenResults,
+                  child: const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Icon(
+                      Icons.assessment,
+                      size: 22,
+                      color: ColorsResources.greenText,
                     ),
                   ),
                 ),
@@ -477,8 +562,10 @@ class HomeAppBarWidget extends StatelessWidget {
                 );
               },
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 13,
+                  horizontal: 12,
+                ),
                 decoration: BoxDecoration(
                   color: ColorsResources.darkPrimary,
                   borderRadius: BorderRadius.circular(12),

@@ -23,8 +23,16 @@ class _MaterialPickerViewState extends State<MaterialPickerView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsResources.primary,
       appBar: AppBar(
-        title: const Text(AppBarTitles.materialPicker),
+        backgroundColor: ColorsResources.primary,
+        foregroundColor: ColorsResources.whiteText1,
+        title: const Text(
+          AppBarTitles.materialPicker,
+          style: TextStyle(
+            color: ColorsResources.whiteText1,
+          ),
+        ),
       ),
       body: GridView.builder(
         padding: const EdgeInsets.only(
@@ -62,13 +70,19 @@ class _MaterialPickerViewState extends State<MaterialPickerView> {
                     CircleAvatar(
                       radius: SpacingResources.mainHalfWidth(context) / 4,
                       backgroundColor: ColorsResources.background,
-                      child: Image.asset(materialsLst[index]["image"]!),
+                      child: Image.asset(
+                        materialsLst[index]["image"]!,
+                        color: ColorsResources.onPrimary,
+                        colorBlendMode: BlendMode.darken,
+                      ),
                     ),
                     const SizedBox(height: SizesResources.s4),
                     Text(
                       materialsLst[index]["name"]!,
                       style: const TextStyle(
-                        fontSize: 10,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: ColorsResources.primary,
                       ),
                     ),
                   ],

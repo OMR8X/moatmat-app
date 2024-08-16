@@ -3,51 +3,68 @@ import 'package:moatmat_app/User/Features/result/domain/entities/result.dart';
 class ResultModel extends Result {
   ResultModel({
     required super.id,
-    required super.marks,
+    required super.answers,
     required super.wrongAnswers,
+    required super.mark,
     required super.period,
     required super.date,
-    required super.name,
-    required super.testName,
     required super.userId,
+    required super.userNumber,
     required super.testId,
+    required super.bankId,
+    required super.testName,
+    required super.userName,
+    super.testAverage,
+    super.teacherEmail,
   });
   factory ResultModel.fromJson(Map json) {
     return ResultModel(
       id: json["id"],
-      marks: json["marks"],
-      wrongAnswers: json["wrong_answers"],
+      mark: json["mark"] + 0.0,
+      answers: json["answers"].cast<int?>(),
+      wrongAnswers: (json["wrong_answers"] ?? []).cast<int?>(),
       period: json["period"],
       date: DateTime.parse(json["date"]),
-      name: json["name"],
       testName: json["test_name"],
       userId: json["user_id"],
-      testId: json["test_id"],
+      userNumber: json["user_number"].toString(),
+      testId: json["test_id"] == null ? null : int.parse(json["test_id"]),
+      bankId: json["bank_id"] == null ? null : int.parse(json["bank_id"]),
+      userName: json["user_name"],
+      teacherEmail: json["teacher_email"],
     );
   }
   factory ResultModel.fromClass(Result result) {
     return ResultModel(
       id: result.id,
-      marks: result.marks,
+      mark: result.mark,
+      answers: result.answers,
       wrongAnswers: result.wrongAnswers,
       period: result.period,
       date: result.date,
-      name: result.name,
       testName: result.testName,
       userId: result.userId,
       testId: result.testId,
+      bankId: result.bankId,
+      userName: result.userName,
+      userNumber: result.userNumber,
+      teacherEmail: result.teacherEmail,
     );
   }
   toJson() {
     return {
-      "marks": marks,
+      "user_id": userId,
+      "user_number": userNumber,
+      "mark": mark,
+      "test_id": testId,
+      "bank_id": bankId,
+      "answers": answers,
       "wrong_answers": wrongAnswers,
       "period": period,
       "date": date.toString(),
-      "name": name,
       "test_name": testName,
-      "user_id": userId,
-      "test_id": testId,
+      "user_name": userName,
+      "teacher_email": teacherEmail,
     };
   }
 }

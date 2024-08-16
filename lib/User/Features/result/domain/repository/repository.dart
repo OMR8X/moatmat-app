@@ -5,7 +5,11 @@ import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 
 abstract class ResultsRepository {
   // add result
-  Future<Either<Failure, Unit>> addResult({required Result result,required Test test});
+  Future<Either<Failure, Unit>> addResult({
+    required Result result,
+  });
   // get latest results
   Future<Either<Failure, List<Result>>> getLatestResults();
+  //
+  Future<Either<Failure, List<Result>>> getMyResults();
 }

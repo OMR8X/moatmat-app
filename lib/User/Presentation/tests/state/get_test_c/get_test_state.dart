@@ -1,7 +1,5 @@
 part of 'get_test_cubit.dart';
 
-
-
 sealed class GetTestState extends Equatable {
   const GetTestState({this.error});
   final String? error;
@@ -36,7 +34,7 @@ final class GetTestSelectClass extends GetTestState {
 }
 
 final class GetTestSelectTeacher extends GetTestState {
-  final List<(String, int)> teachers;
+  final List<(TeacherData, int)> teachers;
 
   const GetTestSelectTeacher({
     required this.teachers,
@@ -46,16 +44,28 @@ final class GetTestSelectTeacher extends GetTestState {
   List<Object> get props => [teachers];
 }
 
+final class GetTestSelectFolder extends GetTestState {
+  final List<String> folders;
+  final TeacherData teacherData;
+
+  const GetTestSelectFolder({
+    required this.teacherData,
+    required this.folders,
+    super.error,
+  });
+  @override
+  List<Object> get props => [folders];
+}
+
 final class GetTestSelectTest extends GetTestState {
+  final String title;
   final List<(Test, int)> tests;
-  final String teacher;
 
   const GetTestSelectTest({
-    required this.teacher,
     required this.tests,
+    required this.title,
     super.error,
   });
   @override
   List<Object> get props => [tests];
 }
-

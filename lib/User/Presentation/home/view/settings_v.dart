@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
+import 'package:moatmat_app/User/Features/update/domain/entites/update_info.dart';
 import 'package:moatmat_app/User/Presentation/home/view/about_us_v.dart';
 import 'package:moatmat_app/User/Presentation/home/view/communicate_with_us_v.dart';
 import 'package:moatmat_app/User/Presentation/home/view/how_to_use_v.dart';
@@ -57,7 +59,7 @@ class _SettingsViewState extends State<SettingsView> {
               },
             ),
             TouchableTileWidget(
-              title: "كيفية استخدام التطبيق",
+              title: AppBarTitles.commonQuestions,
               iconData: Icons.account_tree_rounded,
               onTap: () {
                 Navigator.of(context).push(
@@ -97,6 +99,35 @@ class _SettingsViewState extends State<SettingsView> {
                 Navigator.of(context).pop();
               },
             ),
+            const Spacer(),
+            const SizedBox(height: SizesResources.s2),
+            Text(
+              "ID : ${locator<UserData>().id.toString().padLeft(6, "0")}",
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: SizesResources.s1),
+            Text(
+              "رقم الاصدار : ${locator<UpdateInfo>().getVersionText()}",
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: SizesResources.s1),
+            Text(
+              locator<UserData>().email,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: SizesResources.s10),
           ],
         ),
       ),

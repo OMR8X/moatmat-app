@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDH93fI_O-7tD7dziTUpaKbXCYVlQAKVR0',
-    appId: '1:814213526279:android:ec44360ac7f52a51350ba2',
+    appId: '1:814213526279:android:4f2a6328e019d27e350ba2',
     messagingSenderId: '814213526279',
     projectId: 'notifications-46c03',
     storageBucket: 'notifications-46c03.appspot.com',
@@ -59,10 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDBR5kOLCciFDCYq3alKrZvQfP7VbVcQlE',
-    appId: '1:814213526279:ios:93cc459e7ca15169350ba2',
+    appId: '1:814213526279:ios:1596b31cc2a9baa5350ba2',
     messagingSenderId: '814213526279',
     projectId: 'notifications-46c03',
     storageBucket: 'notifications-46c03.appspot.com',
     iosBundleId: 'com.moatmat.app',
   );
+
 }

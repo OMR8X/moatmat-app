@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:moatmat_app/User/Features/tests/data/datasources/tests_ds.dart';
+import 'package:moatmat_app/User/Features/tests/domain/entities/mini_test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/repository/t_repository.dart';
 
 import '../../../../Core/errors/exceptions.dart';
+import '../../../auth/domain/entites/teacher_data.dart';
 
 class TestsRepositoryImpl implements TestsRepository {
   final TestsDataSource dataSource;
@@ -22,7 +24,7 @@ class TestsRepositoryImpl implements TestsRepository {
   }
 
   @override
-  Future<Either<Failure, List<(String, int)>>> getMaterialTestsTeachers(
+  Future<Either<Failure, List<(TeacherData, int)>>> getMaterialTestsTeachers(
       {required String clas, required String material}) async {
     try {
       var res = await dataSource.getMaterialTestsTeachers(
@@ -37,12 +39,12 @@ class TestsRepositoryImpl implements TestsRepository {
 
   @override
   Future<Either<Failure, List<(Test, int)>>> getTeacherTests(
-      {required String teacher,
+      {required String teacherEmail,
       required String clas,
       required String material}) async {
     try {
       var res = await dataSource.getTeacherTests(
-        teacher: teacher,
+        teacherEmail: teacherEmail,
         clas: clas,
         material: material,
       );
@@ -58,6 +60,16 @@ class TestsRepositoryImpl implements TestsRepository {
       var res = await dataSource.getTestById(id: id);
       return right(res);
     } on Exception catch (e) {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> canDoTest(MiniTest test) async {
+    try {
+      var r = await dataSource.canDoTest(test: test);
+      return right(r);
+    } on Exception {
       return left(const AnonFailure());
     }
   }

@@ -35,7 +35,7 @@ class _CodeScannerViewState extends State<CodeScannerView> {
           _controller!.scannedDataStream.listen((qrCode) {
             context.read<CodesCubit>().init(
                   code: qrCode.code,
-                  msg: "تم مسح الكود",
+                  msg: "تم مسح الكود بنجاح",
                 );
           });
         },

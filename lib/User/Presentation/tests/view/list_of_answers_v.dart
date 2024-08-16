@@ -18,6 +18,7 @@ class ListOfTestAnswersView extends StatefulWidget {
 
 class _ListOfTestAnswersViewState extends State<ListOfTestAnswersView> {
   final PageController _controller = PageController();
+  int currentQuestion = 1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,13 +29,25 @@ class _ListOfTestAnswersViewState extends State<ListOfTestAnswersView> {
       ),
       body: PageView.builder(
           controller: _controller,
+          onPageChanged: (value) {
+            setState(() {
+              currentQuestion = widget.answers[value].$1.id;
+            });
+          },
           itemCount: widget.answers.length,
           itemBuilder: (context, index) => Padding(
                 padding: const EdgeInsets.only(top: SizesResources.s2),
                 child: Column(
                   children: [
+                    Row(
+                      children: [
+                        const SizedBox(width: 20),
+                        Text("رقم السؤال : $currentQuestion"),
+                      ],
+                    ),
                     TestQuestionBodyElements(
                       test: widget.test,
+                      disableExplain: false,
                       question: widget.answers[index].$1,
                       onAnswer: (i) {},
                       onNext: () {
@@ -47,6 +60,7 @@ class _ListOfTestAnswersViewState extends State<ListOfTestAnswersView> {
                       showPrevious: index > 0,
                       disableActions: false,
                       selected: widget.answers[index].$2,
+                      showIsTrue: widget.test.properties.showAnswers ?? false,
                     ),
                   ],
                 ),

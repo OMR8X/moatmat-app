@@ -17,9 +17,13 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   TestNoTimeExploreCubit() : super(NoTimeExploreLoading());
   late Test test;
   late List<(Question, int?)> questions;
+  late List<int?> userAnswers;
+
   late int currentQuestion;
   late Duration period;
+  List<int?> wrongAnswers = [];
   Timer? _timer;
+  bool didSubmit = false;
   void init(Test test) {
     variables(test);
     getQuestion();
@@ -46,6 +50,9 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   }
 
   void answerQuestion(int index, (Question, int?) question) {
+    if (question.$2 != null) {
+      userAnswers[index] = question.$1.answers[question.$2!].id;
+    }
     questions[index] = (question.$1, question.$2);
     emitState();
   }
@@ -54,15 +61,20 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     //
     currentQuestion = 0;
     this.test = test;
-
+    didSubmit = false;
     //
+    userAnswers = [];
     questions = [];
     for (var q in test.questions) {
       var answers = q.answers;
       answers.shuffle();
       q = q.copyWith(answers: answers);
       questions.add((q, null));
+      userAnswers.add(null);
     }
+    //
+    wrongAnswers = List.filled(questions.length, -1);
+    //
   }
 
   startTimeCounter() {
@@ -84,14 +96,18 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
         for (int i = 0; i < q.$1.answers.length; i++) {
           (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
         }
-        (correctIndex.contains(q.$2))
-            ? correct.add((q.$1, q.$2!))
-            : wrong.add((q.$1, q.$2!));
+        if (correctIndex.contains(q.$2)) {
+          correct.add((q.$1, q.$2!));
+        } else {
+          wrongAnswers[q.$1.id - 1] = userAnswers[q.$1.id - 1];
+          wrong.add((q.$1, q.$2!));
+        }
       } else {
         int correctIndex = 0;
         for (int i = 0; i < q.$1.answers.length; i++) {
           (q.$1.answers[i].trueAnswer ?? false) ? correctIndex = i : null;
         }
+        wrongAnswers[q.$1.id - 1] = null;
         wrong.add((q.$1, correctIndex));
       }
     }
@@ -102,37 +118,41 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
       wrong: wrong,
       result: result,
     ));
-    submitResult(wrong, result);
+    submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
     if (_timer?.isActive ?? false) {
       _timer!.cancel();
     }
   }
 
-  submitResult(List<(Question, int)> wrongAnswers, String result) async {
-    debugPrint("submitting");
-    String wrongAnswersStr = "";
-    for (var a in wrongAnswers) {
-      wrongAnswersStr += (a.$1.id + 1).toString();
-      wrongAnswersStr += ' , ';
+  submitResult(List<int?> wrongAnswers, double result) async {
+    if (didSubmit) {
+      debugPrint("did submit , skip submitting");
+      return;
     }
+    //
+    didSubmit = true;
+    //
+    debugPrint("submitting");
+    //
+
     var userInfo = locator<UserData>();
+
     await locator<AddResultUC>().call(
       result: Result(
         id: 0,
-        marks: result,
-        wrongAnswers: wrongAnswersStr,
+        userNumber: userInfo.id.toString(),
+        answers: userAnswers,
+        wrongAnswers: wrongAnswers,
         period: period.inSeconds,
+        mark: result,
         date: DateTime.now(),
-        name: userInfo.name,
         testName: test.information.title,
         userId: userInfo.uuid,
-        testId: test.id.toString(),
+        testId: test.id,
+        bankId: null,
+        userName: userInfo.name,
       ),
-      test: test,
     );
-    if (_timer?.isActive ?? false) {
-      _timer!.cancel();
-    }
   }
 
   emitState() {

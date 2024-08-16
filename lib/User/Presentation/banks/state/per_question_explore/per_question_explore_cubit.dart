@@ -8,7 +8,11 @@ import 'package:equatable/equatable.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 
+import '../../../../Core/injection/app_inj.dart';
 import '../../../../Core/resources/audios_r.dart';
+import '../../../../Features/auth/domain/entites/user_data.dart';
+import '../../../../Features/result/domain/entities/result.dart';
+import '../../../../Features/result/domain/usecases/add_result_uc.dart';
 import '../../../../Features/tests/domain/entities/question.dart';
 
 part 'per_question_explore_state.dart';
@@ -23,6 +27,10 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   Timer? _timer;
   late Duration time;
   late bool stopTimer;
+  bool didSubmit = false;
+  late Duration counter;
+  late List<int?> userAnswers;
+  List<int?> wrongAnswers = [];
   void init(Bank bank, int seconds) {
     variables(bank, seconds);
   }
@@ -37,15 +45,21 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     //
     initTIme();
     //
+    counter = Duration.zero;
     didNotAnswer = [];
     questions = [];
+    userAnswers = [];
+    didSubmit = false;
 
     for (var q in bank.questions) {
       var answers = q.answers;
       answers.shuffle();
       q = q.copyWith(answers: answers);
       questions.add((q, null));
+      userAnswers.add(null);
     }
+    //
+    wrongAnswers = List.filled(questions.length, -1);
     //
     emitState();
     cancelTimer();
@@ -58,6 +72,11 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   //
 
   void answerQuestion(int index, (Question, int?) question) {
+    //
+    if (question.$2 != null) {
+      userAnswers[index] = question.$1.answers[question.$2!].id;
+    }
+    //
     Question currentQuestion = questions[index].$1;
     List<int> trueIndexes = [];
     for (int i = 0; i < currentQuestion.answers.length; i++) {
@@ -86,6 +105,13 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
       cancelTimer();
       finish();
     }
+  }
+
+  void previousQuestion() {
+    currentQuestion--;
+    stopTimer = false;
+    initTIme();
+    emitState();
   }
 
   //
@@ -118,6 +144,8 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
           return;
         }
         time = Duration(milliseconds: time.inMilliseconds - milliseconds);
+        //
+        counter = Duration(milliseconds: counter.inMilliseconds + 500);
         emitState();
         return;
       },
@@ -159,23 +187,46 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
 
   void finish() {
     cancelTimer();
+
     List<(Question, int)> correct = [];
     List<(Question, int)> wrong = [];
+
     for (var q in questions) {
       if (q.$2 != null) {
         List<int> correctIndex = [];
+
         for (int i = 0; i < q.$1.answers.length; i++) {
-          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
+          if (q.$1.answers[i].trueAnswer ?? false) {
+            correctIndex.add(i);
+          }
         }
-        (correctIndex.contains(q.$2))
-            ? correct.add((q.$1, q.$2!))
-            : wrong.add((q.$1, q.$2!));
+
+        if (correctIndex.contains(q.$2)) {
+          correct.add((q.$1, q.$2!));
+        } else {
+          if (q.$1.id - 1 >= 0 && q.$1.id - 1 < wrongAnswers.length) {
+            wrongAnswers[q.$1.id - 1] = userAnswers[q.$1.id - 1];
+          }
+          wrong.add((q.$1, q.$2!));
+        }
       } else {
-        wrong.add((q.$1, q.$2!));
+        int correctIndex = 0;
+        for (int i = 0; i < q.$1.answers.length; i++) {
+          if (q.$1.answers[i].trueAnswer ?? false) {
+            correctIndex = i;
+          }
+        }
+        if (q.$1.id - 1 >= 0 && q.$1.id - 1 < wrongAnswers.length) {
+          wrongAnswers[q.$1.id - 1] = null;
+        }
+        wrong.add((q.$1, correctIndex));
       }
     }
-    //
+
     for (var d in didNotAnswer) {
+      if (d.$1.id - 1 >= 0 && d.$1.id - 1 < wrongAnswers.length) {
+        wrongAnswers[d.$1.id - 1] = null;
+      }
       String value = "";
       value += d.$1.image ?? "";
       value += d.$1.answers.first.text ?? "";
@@ -186,11 +237,50 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
         return value == value2;
       });
     }
+
     wrong.addAll(didNotAnswer.map((e) => (e.$1, e.$2!)).toList());
+
+    var result = ((correct.length / questions.length) * 100).toStringAsFixed(2);
+
     emit(PerQuestionExploreResult(
       correct: correct,
       wrong: wrong,
-      result: ((correct.length / questions.length) * 100).toStringAsFixed(2),
+      result: result,
     ));
+
+    submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
+  }
+
+  submitResult(List<int?> wrongAnswers, double result) async {
+    if (didSubmit) {
+      debugPrint("did submit , skip submitting");
+      return;
+    }
+    //
+    didSubmit = true;
+    //
+    debugPrint("submitting");
+    //
+    var userData = locator<UserData>();
+    //
+    print(counter.inSeconds);
+    //
+
+    await locator<AddResultUC>().call(
+      result: Result(
+        id: 0,
+        userNumber: userData.id.toString(),
+        answers: userAnswers,
+        wrongAnswers: wrongAnswers,
+        mark: result,
+        period: counter.inSeconds,
+        date: DateTime.now(),
+        testName: bank.information.title,
+        userId: userData.uuid,
+        testId: null,
+        bankId: bank.id,
+        userName: userData.name,
+      ),
+    );
   }
 }

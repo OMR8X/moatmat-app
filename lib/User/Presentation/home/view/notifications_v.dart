@@ -75,8 +75,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                             const SizedBox(height: SizesResources.s3),
                             SizedBox(
                               child: Text(
-                                state.notifications[index].content +
-                                    state.notifications[index].content,
+                                state.notifications[index].content,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: ColorsResources.blackText2,

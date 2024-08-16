@@ -13,6 +13,7 @@ import 'package:moatmat_app/User/Presentation/banks/widgets/explore_question_app
 import 'package:moatmat_app/User/Presentation/tests/widgets/answer_w.dart';
 import 'package:moatmat_app/User/Presentation/tests/widgets/test_q_box.dart';
 
+import '../../../Core/functions/show_alert.dart';
 import '../../../Core/services/deep_links_s.dart';
 import '../../auth/state/auth_c/auth_cubit_cubit.dart';
 
@@ -28,52 +29,147 @@ class TestQuestionView extends StatefulWidget {
     this.showNext,
     this.showPrevious,
     this.disableActions,
+    this.enableActions,
     required this.title,
     this.time,
+    this.disableExplain,
     required this.test,
+    required this.onExit,
+    this.canExit = false,
   });
   final Test test;
   final String title;
   final Duration? time;
   final Question question;
   final int? selected;
-  final bool? showNext, showPrevious, disableActions;
+  final bool? showNext,
+      showPrevious,
+      disableActions,
+      enableActions,
+      disableExplain;
   final VoidCallback onPop;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
   final Function(Question question, int? selected) onAnswer;
-
+  final VoidCallback onExit;
+  final bool canExit;
   @override
   State<TestQuestionView> createState() => _TestQuestionViewState();
 }
 
-class _TestQuestionViewState extends State<TestQuestionView> {
+class _TestQuestionViewState extends State<TestQuestionView>
+    with WidgetsBindingObserver {
+  bool submit = true;
+  bool didWarn = false;
+  //
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive && !widget.canExit) {
+      showWarning();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  showWarning() {
+    if (didWarn) {
+      widget.onExit();
+    } else {
+      setState(() {
+        didWarn = true;
+      });
+      showAlert(
+        context: context,
+        title: "تحذير",
+        agreeBtn: "انهاء الاختبار",
+        disagreeBtn: "اكمال الاختبار",
+        body:
+            "تكرار محاولة الغش مرة اخرى سيؤدي الى انهاء الاختبار ، هل انت متأكد من انك تريد انهاء الاختبار؟",
+        onAgree: () {
+          setState(() {
+            submit = false;
+          });
+          widget.onExit();
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorsResources.primary,
-      body: Column(
-        children: [
-          ExploreQuestionAppBarWidget(
-            onPop: widget.onPop,
-            title: widget.title,
-            time: widget.time,
-          ),
-          TestQuestionBodyElements(
-            disableExplain: true,
-            test: widget.test,
-            question: widget.question,
-            selected: widget.selected,
-            onNext: widget.onNext,
-            onPrevious: widget.onPrevious,
-            showNext: widget.showNext,
-            showPrevious: widget.showPrevious,
-            disableActions: widget.disableActions,
-            onAnswer: (selected) {
-              widget.onAnswer(widget.question, selected);
+    return PopScope(
+      canPop: widget.canExit,
+      onPopInvoked: (didPop) {
+        if (submit && !widget.canExit && !didPop) {
+          showAlert(
+            context: context,
+            title: "تحذير",
+            agreeBtn: "انهاء الاختبار",
+            disagreeBtn: "اكمال الاختبار",
+            body: "سيؤدي هذا إلى إنهاء الاختبار هل انت متأكد من ذلك ؟",
+            onAgree: () {
+              widget.onExit();
             },
-          ),
-        ],
+          );
+          return;
+        }
+        if (widget.canExit && !didPop) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: ColorsResources.primary,
+        body: Column(
+          children: [
+            ExploreQuestionAppBarWidget(
+              onPop: () {
+                if (submit && !widget.canExit) {
+                  showAlert(
+                    context: context,
+                    title: "تحذير",
+                    agreeBtn: "انهاء الاختبار",
+                    disagreeBtn: "اكمال الاختبار",
+                    body: "سيؤدي هذا إلى إنهاء الاختبار هل انت متأكد من ذلك ؟",
+                    onAgree: () {
+                      widget.onExit();
+                    },
+                  );
+                  return;
+                }
+                if (widget.canExit) {
+                  widget.onExit();
+                }
+              },
+              title: widget.title,
+              time: widget.time,
+            ),
+            TestQuestionBodyElements(
+              disableExplain: widget.disableExplain ?? true,
+              test: widget.test,
+              enableActions: widget.enableActions,
+              question: widget.question,
+              selected: widget.selected,
+              onNext: widget.onNext,
+              onPrevious: widget.onPrevious,
+              showNext: widget.showNext,
+              showPrevious: widget.showPrevious,
+              disableActions: false,
+              onAnswer: (selected) {
+                widget.onAnswer(widget.question, selected);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -92,6 +188,8 @@ class TestQuestionBodyElements extends StatelessWidget {
     this.disableActions,
     required this.test,
     this.disableExplain = false,
+    this.showIsTrue = false,
+    this.enableActions = true,
   });
   final Test test;
   final int? selected;
@@ -99,8 +197,8 @@ class TestQuestionBodyElements extends StatelessWidget {
   final Function(int selected) onAnswer;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
-  final bool? showNext, showPrevious, disableActions;
-  final bool disableExplain;
+  final bool? showNext, showPrevious, disableActions, enableActions;
+  final bool disableExplain, showIsTrue;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -172,6 +270,7 @@ class TestQuestionBodyElements extends StatelessWidget {
                     ),
                     TestQuestionAnswerWidget(
                       canChange: question.editable ?? false,
+                      showIsTrue: showIsTrue,
                       answer: question.answers[index],
                       onAnswer: () {
                         onAnswer(index);
@@ -185,6 +284,7 @@ class TestQuestionBodyElements extends StatelessWidget {
                   return Column(
                     children: [
                       TestQuestionAnswerWidget(
+                        showIsTrue: showIsTrue,
                         canChange: question.editable ?? false,
                         answer: question.answers[index],
                         onAnswer: () {
@@ -197,6 +297,7 @@ class TestQuestionBodyElements extends StatelessWidget {
                   );
                 } else {
                   return TestQuestionAnswerWidget(
+                    showIsTrue: showIsTrue,
                     canChange: question.editable ?? false,
                     answer: question.answers[index],
                     onAnswer: () {
@@ -215,7 +316,7 @@ class TestQuestionBodyElements extends StatelessWidget {
 
   Widget getActions(bool didAnswer, BuildContext context) {
     if (disableActions == true) return const SizedBox();
-    if (didAnswer) {
+    if (didAnswer || (enableActions ?? false)) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: SizesResources.s4),
         child: SizedBox(

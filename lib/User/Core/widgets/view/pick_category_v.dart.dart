@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 
 import 'package:moatmat_app/User/Core/resources/texts_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
@@ -38,8 +39,16 @@ class _PickCategoryViewState extends State<PickCategoryView> {
         }
       },
       child: Scaffold(
+        backgroundColor: ColorsResources.primary,
         appBar: AppBar(
-          title: Text(widget.title),
+          backgroundColor: ColorsResources.primary,
+          foregroundColor: ColorsResources.whiteText1,
+          title: Text(
+            widget.title,
+            style: const TextStyle(
+              color: ColorsResources.whiteText1,
+            ),
+          ),
           leading: widget.onPop != null
               ? IconButton(
                   onPressed: widget.onPop,

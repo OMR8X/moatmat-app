@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Presentation/questions/widgets/question_item_widget.dart';
 
 import '../../../../Core/resources/colors_r.dart';
 import '../../../../Core/resources/fonts_r.dart';
@@ -78,55 +79,8 @@ class _BankQuestionSearchViewState extends State<BankQuestionSearchView> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: SizesResources.s1),
-                        width: SpacingResources.mainWidth(context),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: ShadowsResources.mainBoxShadow,
-                          color: ColorsResources.onPrimary,
-                        ),
-                        child: Material(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              widget.onPick(result[index]);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(SizesResources.s4),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        result[index].upperImageText ?? "",
-                                        style: FontsResources.lightStyle()
-                                            .copyWith(
-                                          color: ColorsResources.blackText1,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: ColorsResources.blackText2,
-                                    size: 12,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                      QuestionItemWidget(
+                        question: result[index],
                       ),
                     ],
                   );

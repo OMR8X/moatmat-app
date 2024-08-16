@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/ast.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import 'package:moatmat_app/User/Core/widgets/view/question_explain_v.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/tests/widgets/answer_w.dart';
 import 'package:moatmat_app/User/Presentation/tests/widgets/question_body_w.dart';
@@ -20,6 +21,7 @@ class TestQuestionBox extends StatefulWidget {
     super.key,
     required this.question,
     this.didAnswer = false,
+    this.disableActions = false,
     required this.onLike,
     required this.onShare,
     required this.onReport,
@@ -30,7 +32,7 @@ class TestQuestionBox extends StatefulWidget {
   });
   final int testID;
   final Question question;
-  final bool didAnswer, disableExplain;
+  final bool didAnswer, disableExplain, disableActions;
   final VoidCallback onShare;
   final VoidCallback onReport;
   final VoidCallback onShowAnswer;
@@ -89,6 +91,7 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -109,34 +112,46 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TopItems(
-                liked: liked,
-                onShare: widget.onShare,
-                onReport: widget.onReport,
-                onLike: (b) {
-                  if (b) {
-                    widget.onLike(b);
-                  } else {
-                    widget.onUnLike(b);
-                  }
-                  setState(() {
-                    liked = b;
-                  });
-                },
-              ),
+              if (!widget.disableActions)
+                TopItems(
+                  liked: liked,
+                  onShare: widget.onShare,
+                  onReport: widget.onReport,
+                  onLike: (b) {
+                    if (b) {
+                      widget.onLike(b);
+                    } else {
+                      widget.onUnLike(b);
+                    }
+                    setState(() {
+                      liked = b;
+                    });
+                  },
+                ),
+              const SizedBox(height: SizesResources.s2),
               QuestionBodyWidget(question: widget.question),
               const SizedBox(height: SizesResources.s2),
-              if (didAnswer &&
-                  (widget.question.explain != null) &&
-                  (widget.question.explain!.isNotEmpty) &&
-                  (!widget.disableExplain))
-                IconButton(
-                  onPressed: widget.onShowAnswer,
-                  icon: const Icon(
-                    Icons.info_outline,
-                    size: 18,
-                    color: ColorsResources.blackText2,
-                  ),
+              if ((didAnswer &&
+                          (widget.question.explainImage != null &&
+                              widget.question.explainImage!.isNotEmpty) ||
+                      (widget.question.explain != null &&
+                          widget.question.explain!.isNotEmpty) ||
+                      (widget.question.video != null &&
+                          widget.question.video!.isNotEmpty &&
+                          didAnswer)) &&
+                  !widget.disableExplain)
+                Column(
+                  children: [
+                    const SizedBox(height: SizesResources.s2),
+                    const Text(
+                      "شرح الاجابة : ",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: ColorsResources.blackText1,
+                      ),
+                    ),
+                    QuestionExplainMiniView(question: widget.question),
+                  ],
                 ),
               const SizedBox(height: SizesResources.s2),
             ],
@@ -314,7 +329,7 @@ class TopItems extends StatelessWidget {
           icon: const Icon(
             Icons.report_problem_outlined,
             size: 18,
-            color: ColorsResources.blackText2,
+            color: Colors.cyan,
           ),
         ),
         IconButton(
@@ -322,7 +337,7 @@ class TopItems extends StatelessWidget {
           icon: const Icon(
             Icons.share,
             size: 16,
-            color: ColorsResources.blackText2,
+            color: ColorsResources.green,
           ),
         ),
         IconButton(
@@ -332,7 +347,7 @@ class TopItems extends StatelessWidget {
           icon: Icon(
             liked ? Icons.favorite : Icons.favorite_border,
             size: 16,
-            color: liked ? Colors.red : ColorsResources.blackText2,
+            color: Colors.red,
           ),
         ),
       ],

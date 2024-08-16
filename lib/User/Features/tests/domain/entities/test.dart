@@ -43,6 +43,7 @@ class Test {
   }
 
   bool isPurchased() {
+    //
     bool purchased = false;
     //
     var items = locator<List<PurchaseItem>>();
@@ -51,6 +52,10 @@ class Test {
     for (var i in items) {
       if (i.itemId == "$id" && i.itemType == "test") {
         purchased = true;
+      }
+      if (i.itemId == information.teacher && i.itemType == "teacher") {
+        purchased = true;
+        print("yes is puchased");
       }
     }
     //

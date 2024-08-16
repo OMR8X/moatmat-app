@@ -1,10 +1,8 @@
-import 'package:equatable/equatable.dart';
 
 import 'answer.dart';
 import 'question_word_color.dart';
 
 class Question {
-  //
   final int id;
   //
   final String? upperImageText;
@@ -17,6 +15,8 @@ class Question {
   //
   final String? explain;
   //
+  final String? explainImage;
+  //
   final int? period;
   //
   final bool? editable;
@@ -28,9 +28,11 @@ class Question {
   final List<QuestionWordColor> colors;
 
   Question copyWith({
+    int? id,
     String? lowerImageText,
     String? upperImageText,
     String? image,
+    String? explainImage,
     String? video,
     String? explain,
     int? period,
@@ -40,7 +42,7 @@ class Question {
     List<QuestionWordColor>? colors,
   }) {
     return Question(
-      id: id,
+      id: id ?? this.id,
       lowerImageText: lowerImageText ?? this.lowerImageText,
       upperImageText: upperImageText ?? this.upperImageText,
       image: image ?? this.image,
@@ -51,6 +53,7 @@ class Question {
       answers: answers ?? this.answers,
       equations: equations ?? this.equations,
       colors: colors ?? this.colors,
+      explainImage: explainImage ?? this.explainImage,
     );
   }
 
@@ -75,5 +78,6 @@ class Question {
     required this.answers,
     required this.equations,
     required this.colors,
+    required this.explainImage,
   });
 }

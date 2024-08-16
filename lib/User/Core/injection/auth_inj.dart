@@ -1,4 +1,6 @@
 
+import 'package:moatmat_app/User/Features/auth/domain/use_cases/get_teacher_data.dart';
+
 import '../../Features/auth/data/data_source/users_ds.dart';
 import '../../Features/auth/data/repository/users_repository_impl.dart';
 import '../../Features/auth/domain/repository/users_repository.dart';
@@ -38,6 +40,11 @@ void injectUC() {
   );
   locator.registerFactory<ResetPasswordUC>(
     () => ResetPasswordUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetTeacherDataUC>(
+    () => GetTeacherDataUC(
       repository: locator(),
     ),
   );

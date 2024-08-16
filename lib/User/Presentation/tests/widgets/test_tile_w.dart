@@ -11,9 +11,12 @@ import '../../../Features/tests/domain/entities/test.dart';
 import '../view/tests/pick_test_v.dart';
 
 class TestTileWidget extends StatelessWidget {
-  const TestTileWidget({super.key, required this.test, required this.onPick});
+  const TestTileWidget(
+      {super.key, required this.test, required this.onPick, this.onBuy});
   final Test test;
   final VoidCallback onPick;
+  final VoidCallback? onBuy;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,6 +24,7 @@ class TestTileWidget extends StatelessWidget {
         height: SpacingResources.mainHalfWidth(context),
         padding: const EdgeInsets.symmetric(
           vertical: SizesResources.s3,
+          horizontal: SizesResources.s2,
         ),
         decoration: BoxDecoration(
           color: ColorsResources.onPrimary,
@@ -28,18 +32,20 @@ class TestTileWidget extends StatelessWidget {
           boxShadow: ShadowsResources.mainBoxShadow,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            const Spacer(),
             Text(
               test.information.title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: ColorsResources.blackText2,
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: ColorsResources.primary,
               ),
             ),
+            const SizedBox(height: SizesResources.s1),
             getSubTitle(),
+            const SizedBox(height: SizesResources.s1),
             Text(
               "${test.questions.length.toString()} سؤال",
               style: const TextStyle(
@@ -47,6 +53,7 @@ class TestTileWidget extends StatelessWidget {
                 color: ColorsResources.blackText2,
               ),
             ),
+            const Spacer(),
             FilledButton(
               onPressed: () {
                 if (test.isPurchased()) {
@@ -58,11 +65,13 @@ class TestTileWidget extends StatelessWidget {
                       builder: (context) => EnterTestPasswordWidget(
                         password: test.information.password!,
                         onOpen: () {
+                          Navigator.of(context).pop();
                           onPick();
                         },
                       ),
                     );
                   } else {
+                    Navigator.of(context).pop();
                     onPick();
                   }
                   //
@@ -73,7 +82,11 @@ class TestTileWidget extends StatelessWidget {
                     builder: (context) => BuyTestsWidget(
                       tests: [test],
                     ),
-                  );
+                  ).then((f) {
+                    if (onBuy != null) {
+                      onBuy!();
+                    }
+                  });
                 }
               },
               child: test.isPurchased()
@@ -83,11 +96,28 @@ class TestTileWidget extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: ColorsResources.whiteText1),
                     )
-                  : Text(
-                      "${test.information.price} نقطة",
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: ColorsResources.whiteText1),
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (test.information.password != null &&
+                            test.information.password!.isNotEmpty) ...[
+                          const Icon(
+                            Icons.lock,
+                            size: 16,
+                          ),
+                          const SizedBox(width: SizesResources.s2),
+                        ],
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text(
+                            "${test.information.price} نقطة",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: ColorsResources.whiteText1,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
             ),
           ],

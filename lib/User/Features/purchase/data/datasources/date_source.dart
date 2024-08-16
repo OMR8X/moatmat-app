@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moatmat_app/User/Core/errors/exceptions.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
+import 'package:moatmat_app/User/Features/auth/domain/use_cases/update_user_data_uc.dart';
 import 'package:moatmat_app/User/Features/purchase/data/models/purchase_item_m.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -43,6 +44,7 @@ class PurchasedItemsDataSourceImpl implements PurchasedItemsDataSource {
     var userData = locator<UserData>();
     //
     item = item.copyWith(uuid: userData.uuid);
+    //
     Map json = PurchaseItemModel.fromClass(item).toJson();
     //
     if (userData.balance < item.amount) {
@@ -51,8 +53,8 @@ class PurchasedItemsDataSourceImpl implements PurchasedItemsDataSource {
     //
     //  update user data
     userData = userData.copyWith(balance: userData.balance - item.amount);
-    var query = client.from("users_data");
-    await query.update({"balance": userData.balance}).eq("uuid", userData.uuid);
+    //
+    await locator<UpdateUserDataUC>().call(userData: userData);
     // insert purchase
     await client.from("purchases").insert(json);
 
@@ -64,11 +66,15 @@ class PurchasedItemsDataSourceImpl implements PurchasedItemsDataSource {
 
   @override
   Future<Unit> purchaseListOfItem({required List<PurchaseItem> items}) async {
+    //
     var userData = locator<UserData>();
+    //
     int price = 0;
+    //
     for (var i in items) {
       price += i.amount;
     }
+    //
     if (userData.balance < price) {
       throw NotEnoughBalanceException();
     } else {

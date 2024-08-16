@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/error_v.dart';
+import 'package:moatmat_app/User/Presentation/auth/view/signed_out_v.dart';
+import 'package:moatmat_app/User/Presentation/auth/view/update_view.dart';
 
 import '../../home/view/home_v.dart';
 import '../state/auth_c/auth_cubit_cubit.dart';
@@ -28,7 +30,8 @@ class _AuthViewsManagerState extends State<AuthViewsManager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<AuthCubit, AuthState>(
+      body: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {},
         builder: (context, state) {
           if (state is AuthOnBoarding) {
             return const OnBoardingView();
@@ -44,6 +47,11 @@ class _AuthViewsManagerState extends State<AuthViewsManager> {
             return const SendResetCodeView();
           } else if (state is AuthError) {
             return const ErrorView();
+          } else if (state is AuthSignedOut) {
+            return SignedOutView(state: state);
+          } 
+          else if (state is AuthUpdate) {
+            return UpdateView(updateInfo: state.updateInfo);
           } else {
             return const Center(
               child: CupertinoActivityIndicator(),

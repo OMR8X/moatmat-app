@@ -44,9 +44,11 @@ class _DeepLinkViewState extends State<DeepLinkView> {
         onNext: () {},
         onPrevious: () {},
         title: "بنك الاستاذ ${widget.bank!.information.teacher}",
+        onExit: () {},
       );
     } else if (widget.test != null) {
       return TestQuestionView(
+        onExit: () {},
         test: widget.test!,
         selected: selected,
         disableActions: true,

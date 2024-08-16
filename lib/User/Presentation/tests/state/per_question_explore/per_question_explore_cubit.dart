@@ -17,12 +17,15 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   TestPerQuestionExploreCubit() : super(PerQuestionExploreLoading());
   late Test test;
   late List<(Question, int?)> questions = [];
+  late List<int?> userAnswers;
   late List<(Question, int?)> didNotAnswer;
   late int currentQuestion;
   late int seconds;
+  List<int?> wrongAnswers = [];
   Timer? _timer;
   late Duration time, counter;
   late bool stopTimer;
+  bool didSubmit = false;
   void init(Test test, int seconds) {
     variables(test, seconds);
   }
@@ -40,13 +43,19 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     //
     didNotAnswer = [];
     questions = [];
-
+    userAnswers = [];
+    //
+    didSubmit = false;
+    //
     for (var q in test.questions) {
       var answers = q.answers;
       answers.shuffle();
       q = q.copyWith(answers: answers);
       questions.add((q, null));
+      userAnswers.add(null);
     }
+    //
+    wrongAnswers = List.filled(questions.length, -1);
     //
     emitState();
     cancelTimer();
@@ -62,6 +71,9 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   //
 
   void answerQuestion(int index, (Question, int?) question) {
+    if (question.$2 != null) {
+      userAnswers[index] = question.$1.answers[question.$2!].id;
+    }
     questions[index] = (question.$1, question.$2);
     emitState();
     stopTimer = true;
@@ -80,9 +92,19 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     }
   }
 
+  void previousQuestion() {
+    currentQuestion--;
+    stopTimer = false;
+    initTIme();
+    emitState();
+  }
+
   //
   //
   void startTimer() {
+    //
+
+    //
     initTIme();
     const milliseconds = 500;
     _timer = Timer.periodic(
@@ -151,28 +173,46 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
 
   void finish() {
     cancelTimer();
+
     List<(Question, int)> correct = [];
     List<(Question, int)> wrong = [];
+
     for (var q in questions) {
       if (q.$2 != null) {
         List<int> correctIndex = [];
+
         for (int i = 0; i < q.$1.answers.length; i++) {
-          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex.add(i) : null;
+          if (q.$1.answers[i].trueAnswer ?? false) {
+            correctIndex.add(i);
+          }
         }
-        (correctIndex.contains(q.$2))
-            ? correct.add((q.$1, q.$2!))
-            : wrong.add((q.$1, q.$2!));
+
+        if (correctIndex.contains(q.$2)) {
+          correct.add((q.$1, q.$2!));
+        } else {
+          if (q.$1.id - 1 >= 0 && q.$1.id - 1 < wrongAnswers.length) {
+            wrongAnswers[q.$1.id - 1] = userAnswers[q.$1.id - 1];
+          }
+          wrong.add((q.$1, q.$2!));
+        }
       } else {
         int correctIndex = 0;
         for (int i = 0; i < q.$1.answers.length; i++) {
-          (q.$1.answers[i].trueAnswer ?? false) ? correctIndex = i : null;
+          if (q.$1.answers[i].trueAnswer ?? false) {
+            correctIndex = i;
+          }
+        }
+        if (q.$1.id - 1 >= 0 && q.$1.id - 1 < wrongAnswers.length) {
+          wrongAnswers[q.$1.id - 1] = null;
         }
         wrong.add((q.$1, correctIndex));
       }
     }
-    //
-    // TODO : check this out
+
     for (var d in didNotAnswer) {
+      if (d.$1.id - 1 >= 0 && d.$1.id - 1 < wrongAnswers.length) {
+        wrongAnswers[d.$1.id - 1] = null;
+      }
       String value = "";
       value += d.$1.image ?? "";
       value += d.$1.answers.first.text ?? "";
@@ -183,37 +223,47 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
         return value == value2;
       });
     }
+
     wrong.addAll(didNotAnswer.map((e) => (e.$1, e.$2!)).toList());
+
     var result = ((correct.length / questions.length) * 100).toStringAsFixed(2);
+
     emit(PerQuestionExploreResult(
       correct: correct,
       wrong: wrong,
       result: result,
     ));
-    submitResult(wrong, result);
+
+    submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
   }
 
-  submitResult(List<(Question, int)> wrongAnswers, String result) async {
-    debugPrint("submitting");
-    String wrongAnswersStr = "";
-    for (var a in wrongAnswers) {
-      wrongAnswersStr += (a.$1.id + 1).toString();
-      wrongAnswersStr += ' , ';
+  submitResult(List<int?> wrongAnswers, double result) async {
+    if (didSubmit) {
+      debugPrint("did submit , skip submitting");
+      return;
     }
+    //
+    didSubmit = true;
+    //
+    debugPrint("submitting");
+    //
     var userInfo = locator<UserData>();
+    //
     await locator<AddResultUC>().call(
       result: Result(
         id: 0,
-        marks: result,
-        wrongAnswers: wrongAnswersStr,
+        userNumber: userInfo.id.toString(),
+        mark: result,
+        wrongAnswers: wrongAnswers,
+        answers: userAnswers,
         period: counter.inSeconds,
         date: DateTime.now(),
-        name: userInfo.name,
         testName: test.information.title,
         userId: userInfo.uuid,
-        testId: test.id.toString(),
+        testId: test.id,
+        bankId: null,
+        userName: userInfo.name,
       ),
-      test: test,
     );
   }
 }

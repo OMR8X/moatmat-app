@@ -134,6 +134,11 @@ class _LikesViewState extends State<LikesView> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => TestQuestionView(
+                              canExit: true,
+                              onExit: () {
+                                print("object");
+                                Navigator.of(context).pop();
+                              },
                               question: question,
                               selected: selected,
                               onAnswer: (question, selected) {},
@@ -155,10 +160,13 @@ class _LikesViewState extends State<LikesView> {
                                   classs: "",
                                   material: "",
                                   teacher: "",
+                                  folder: "",
                                   price: null,
                                   password: null,
                                   period: 0,
                                   video: null,
+                                  files: [],
+                                  previous: null,
                                 ),
                                 properties: TestProperties(
                                   exploreAnswers: null,
@@ -230,6 +238,7 @@ class _LikesViewState extends State<LikesView> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => BankQuestionView(
+                              canExit: true,
                               bank: Bank(
                                 id: bQuestions[index].$2,
                                 teacherEmail: "",
@@ -238,8 +247,10 @@ class _LikesViewState extends State<LikesView> {
                                   classs: "",
                                   material: "",
                                   teacher: "",
+                                  folder: "",
                                   price: 0,
                                   video: "",
+                                  files: [],
                                 ),
                                 questions: [],
                               ),
@@ -255,6 +266,7 @@ class _LikesViewState extends State<LikesView> {
                               onPrevious: () {},
                               title: "سؤال محفوظ",
                               disableActions: true,
+                              onExit: () {},
                             ),
                           ),
                         );

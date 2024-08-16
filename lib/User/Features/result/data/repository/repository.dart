@@ -13,12 +13,11 @@ class ResultsRepositoryImpl implements ResultsRepository {
   @override
   Future<Either<Failure, Unit>> addResult({
     required Result result,
-    required Test test,
   }) async {
     try {
-      await dataSource.addResult(result: result, test: test);
+      await dataSource.addResult(result: result);
       return right(unit);
-    } on Exception catch (e) {
+    } on Exception {
       return left(const AnonFailure());
     }
   }
@@ -27,6 +26,16 @@ class ResultsRepositoryImpl implements ResultsRepository {
   Future<Either<Failure, List<Result>>> getLatestResults() async {
     try {
       var res = await dataSource.getLatestResults();
+      return right(res);
+    } on Exception {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Result>>> getMyResults() async {
+    try {
+      var res = await dataSource.getMyResults();
       return right(res);
     } on Exception {
       return left(const AnonFailure());

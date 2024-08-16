@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:moatmat_app/User/Core/resources/images_r.dart';
+import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
@@ -18,20 +21,28 @@ class _StartAuthViewState extends State<StartAuthView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsResources.primary,
       appBar: AppBar(
-        title: const Text(AppBarTitles.startAuth),
+        centerTitle: false,
+        backgroundColor: ColorsResources.primary,
+        title: const Text(
+          AppBarTitles.letUsStart,
+          style: TextStyle(
+            color: ColorsResources.whiteText1,
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             const Spacer(),
-            const CircleAvatar(
-              radius: 100,
-              backgroundColor: ColorsResources.borders,
-              child: Text(
-                "ايقونة التطبيق",
-                textAlign: TextAlign.center,
+            SizedBox(
+              width: SpacingResources.mainHalfWidth(context),
+              child: SvgPicture.asset(
+                ImagesResources.appIcon,
               ),
             ),
             const Spacer(),
@@ -52,7 +63,7 @@ class _StartAuthViewState extends State<StartAuthView> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 10,
-                color: ColorsResources.blackText2,
+                color: ColorsResources.whiteText1,
               ),
             ),
             const SizedBox(height: SizesResources.s10),

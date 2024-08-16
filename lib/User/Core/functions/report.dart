@@ -58,6 +58,8 @@ class _ReportDialogState extends State<ReportDialog> {
       loading = true;
     });
     if (widget.bQuestion != null) {
+      print(widget.bQuestion?.id);
+
       await locator<ReportOnBankUseCase>()
           .call(
         questionID: widget.bQuestion!.id,
@@ -87,6 +89,8 @@ class _ReportDialogState extends State<ReportDialog> {
         );
       });
     } else if (widget.tQuestion != null) {
+      print(widget.tQuestion?.id);
+
       await locator<ReportOnTestUseCase>()
           .call(
         questionID: widget.tQuestion!.id,

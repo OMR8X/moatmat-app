@@ -1,11 +1,12 @@
 import 'package:moatmat_app/User/Features/auth/data/models/user_like_m.dart';
-import 'package:moatmat_app/User/Features/tests/data/models/test_m.dart';
-
+import 'package:moatmat_app/User/Features/notifications/data/models/notification_data_m.dart';
 import '../../domain/entites/user_data.dart';
 
 class UserDataModel extends UserData {
   UserDataModel({
+    required super.id,
     required super.uuid,
+    required super.notifications,
     required super.balance,
     required super.name,
     required super.email,
@@ -18,9 +19,11 @@ class UserDataModel extends UserData {
     required super.whatsappNumber,
     required super.likes,
     required super.tests,
+    required super.deviceId,
   });
   factory UserDataModel.fromJson(Map json) {
     return UserDataModel(
+      id: json["id"],
       uuid: json["uuid"],
       balance: json["balance"],
       name: json["name"],
@@ -32,6 +35,7 @@ class UserDataModel extends UserData {
       governorate: json["governorate"],
       phoneNumber: json["phone_number"],
       whatsappNumber: json["whatsapp_number"],
+      deviceId: json["device_id"],
       likes: List.generate(
         (json["likes"] as List).length,
         (index) => UserLikeModel.fromJson(json["likes"][index]),
@@ -42,10 +46,17 @@ class UserDataModel extends UserData {
           json["tests"][0]["name"] as String,
         );
       }),
+      notifications: json["notifications"] == null
+          ? []
+          : List.generate((json["notifications"] as List).length, (index) {
+              return NotificationDataModel.fromJson(
+                  json["notifications"][index]);
+            }),
     );
   }
   factory UserDataModel.fromClass(UserData userData) {
     return UserDataModel(
+      id: userData.id,
       uuid: userData.uuid,
       balance: userData.balance,
       name: userData.name,
@@ -59,6 +70,8 @@ class UserDataModel extends UserData {
       whatsappNumber: userData.whatsappNumber,
       tests: userData.tests,
       likes: userData.likes,
+      deviceId: userData.deviceId,
+      notifications: userData.notifications,
     );
   }
 
@@ -71,6 +84,7 @@ class UserDataModel extends UserData {
       "mother_name": motherName.trim(),
       "age": age.trim(),
       "classroom": classroom,
+      "device_id": deviceId,
       "school_name": schoolName.trim(),
       "governorate": governorate,
       "phone_number": phoneNumber.trim(),
@@ -80,6 +94,9 @@ class UserDataModel extends UserData {
       }).toList(),
       "tests": tests.map((e) {
         return {"id": e.$1, "name": e.$2};
+      }).toList(),
+      "notifications": notifications.map((e) {
+        return NotificationDataModel.fromClass(e).toJson();
       }).toList(),
     };
   }

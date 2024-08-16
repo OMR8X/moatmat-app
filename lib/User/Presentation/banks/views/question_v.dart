@@ -18,6 +18,7 @@ import 'package:moatmat_app/User/Presentation/banks/widgets/bank_q_box.dart';
 import 'package:moatmat_app/User/Presentation/banks/widgets/explore_question_appbar_w.dart';
 
 import '../../../Core/functions/report.dart';
+import '../../../Core/functions/show_alert.dart';
 import '../../../Features/tests/domain/entities/question.dart';
 
 class BankQuestionView extends StatefulWidget {
@@ -35,6 +36,8 @@ class BankQuestionView extends StatefulWidget {
     required this.title,
     this.time,
     required this.bank,
+    required this.onExit,
+    this.canExit = false,
   });
   final Bank bank;
   final String title;
@@ -46,37 +49,125 @@ class BankQuestionView extends StatefulWidget {
   final VoidCallback onNext;
   final VoidCallback onPrevious;
   final Function(Question question, int? selected) onAnswer;
+  final VoidCallback onExit;
+  final bool canExit;
 
   @override
   State<BankQuestionView> createState() => _BankQuestionViewState();
 }
 
-class _BankQuestionViewState extends State<BankQuestionView> {
+class _BankQuestionViewState extends State<BankQuestionView>
+    with WidgetsBindingObserver {
+  bool submit = true;
+  bool didWarn = false;
+  //
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive && !widget.canExit) {
+      showWarning();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  showWarning() {
+    if (didWarn) {
+      widget.onExit();
+    } else {
+      setState(() {
+        didWarn = true;
+      });
+      showAlert(
+        context: context,
+        title: "تحذير",
+        agreeBtn: "انهاء الاختبار",
+        disagreeBtn: "اكمال الاختبار",
+        body:
+            "تكرار محاولة الغش مرة اخرى سيؤدي الى انهاء الاختبار ، هل انت متأكد من انك تريد انهاء الاختبار؟",
+        onAgree: () {
+          setState(() {
+            submit = false;
+          });
+          widget.onExit();
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorsResources.primary,
-      body: Column(
-        children: [
-          ExploreQuestionAppBarWidget(
-            onPop: widget.onPop,
-            title: widget.title,
-            time: widget.time,
-          ),
-          BankQuestionBodyElements(
-            bank: widget.bank,
-            question: widget.question,
-            selected: widget.selected,
-            onNext: widget.onNext,
-            onPrevious: widget.onPrevious,
-            showNext: widget.showNext,
-            showPrevious: widget.showPrevious,
-            disableActions: widget.disableActions,
-            onAnswer: (selected) {
-              widget.onAnswer(widget.question, selected);
+    return PopScope(
+      canPop: widget.canExit,
+      onPopInvoked: (didPop) {
+        if (submit && !widget.canExit && !didPop) {
+          showAlert(
+            context: context,
+            title: "تحذير",
+            agreeBtn: "انهاء الاختبار",
+            disagreeBtn: "اكمال الاختبار",
+            body: "سيؤدي هذا إلى إنهاء الاختبار هل انت متأكد من ذلك ؟",
+            onAgree: () {
+              widget.onExit();
             },
-          ),
-        ],
+          );
+          return;
+        }
+        if (widget.canExit && !didPop) {
+          Navigator.of(context).pop();
+        }
+      },
+      //
+      child: Scaffold(
+        backgroundColor: ColorsResources.primary,
+        body: Column(
+          children: [
+            ExploreQuestionAppBarWidget(
+              onPop: () {
+                if (submit && !widget.canExit) {
+                  showAlert(
+                    context: context,
+                    title: "تحذير",
+                    agreeBtn: "انهاء الاختبار",
+                    disagreeBtn: "اكمال الاختبار",
+                    body: "سيؤدي هذا إلى إنهاء الاختبار هل انت متأكد من ذلك ؟",
+                    onAgree: () {
+                      widget.onExit();
+                    },
+                  );
+                  return;
+                }
+                if (widget.canExit) {
+                  widget.onExit();
+                }
+              },
+              title: widget.title,
+              time: widget.time,
+            ),
+            BankQuestionBodyElements(
+              bank: widget.bank,
+              question: widget.question,
+              selected: widget.selected,
+              onNext: widget.onNext,
+              onPrevious: widget.onPrevious,
+              showNext: widget.showNext,
+              showPrevious: widget.showPrevious,
+              disableActions: widget.disableActions,
+              onAnswer: (selected) {
+                widget.onAnswer(widget.question, selected);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -102,6 +193,7 @@ class BankQuestionBodyElements extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onPrevious;
   final bool? showNext, showPrevious, disableActions;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(

@@ -7,7 +7,26 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:814213526279:android:ec44360ac7f52a51350ba2",
+        "mobilesdk_app_id": "1:814213526279:android:d04b97029a6dd812350ba2",
+        "android_client_info": {
+          "package_name": "com.example.test_answers_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH93fI_O-7tD7dziTUpaKbXCYVlQAKVR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814213526279:android:4f2a6328e019d27e350ba2",
         "android_client_info": {
           "package_name": "com.moatmat.app"
         }

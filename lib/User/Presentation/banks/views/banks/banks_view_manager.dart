@@ -9,6 +9,9 @@ import 'package:moatmat_app/User/Presentation/banks/views/banks/setting_up_banke
 import 'package:moatmat_app/User/Presentation/banks/views/banks/teacher_searching_v.dart';
 import 'package:moatmat_app/User/Presentation/home/view/material_picker_v.dart';
 
+import '../../../../Core/resources/colors_r.dart';
+import '../../../../Core/widgets/view/pick_folder_v.dart';
+
 class BanksViewManager extends StatefulWidget {
   const BanksViewManager({super.key});
 
@@ -68,9 +71,9 @@ class _BanksViewManagerState extends State<BanksViewManager> {
                       MaterialPageRoute(
                         builder: (context) => TeacherSearchView(
                           teachers: state.teachers,
-                          onSelect: (s) {
-                            context.read<GetBankCubit>().selecteTeacher(
-                                  s,
+                          onSelect: (teacherData) {
+                            context.read<GetBankCubit>().selectTeacher(
+                                  teacherData,
                                 );
                           },
                         ),
@@ -81,32 +84,50 @@ class _BanksViewManagerState extends State<BanksViewManager> {
                 )
               ],
               categories: state.teachers.map((e) {
-                return e.$1;
+                return e.$1.name;
               }).toList(),
               subCategories: state.teachers.map((e) {
                 return "عدد الاختبارات : ${e.$2}";
               }).toList(),
               onPick: (clas) {
-                context.read<GetBankCubit>().selecteTeacher(clas);
+                context.read<GetBankCubit>().selectTeacher(
+                      state.teachers.firstWhere((e) => e.$1.name == clas).$1,
+                    );
               },
               onPop: () {
                 context.read<GetBankCubit>().backToClasses();
               },
             );
             //
+          } else if (state is GetBankSelecteFolder) {
+            return PickFolderView(
+              folders: state.folders,
+              teacher: state.teacherData,
+              onPop: () {
+                context.read<GetBankCubit>().backToTeachers();
+              },
+              afterPick: (t) {
+                context.read<GetBankCubit>().selectFolder(t);
+              },
+            );
           } else if (state is GetBankSelecteBank) {
             return PickBankView(
-              teacher: state.teacher,
               banks: state.banks,
               onPick: (b) {
                 context.read<GetBankCubit>().selecteBank(b.$1);
               },
+              title: state.title,
             );
           } else if (state is GetBankDone) {
             return SettingUpBankView(bank: state.bank);
           }
-          return const Center(
-            child: CupertinoActivityIndicator(),
+          return const Scaffold(
+            backgroundColor: ColorsResources.primary,
+            body: Center(
+              child: CupertinoActivityIndicator(
+                color: ColorsResources.whiteText1,
+              ),
+            ),
           );
         },
       ),

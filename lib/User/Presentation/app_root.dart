@@ -30,13 +30,17 @@ class _AppRootState extends State<AppRoot> {
         useMaterial3: true,
         fontFamily: "Tajawal",
         //
+        scaffoldBackgroundColor: ColorsResources.background,
+
         appBarTheme: const AppBarTheme(
-          titleTextStyle: TextStyle(
-            fontSize: 19,
-            color: ColorsResources.blackText1,
-            fontFamily: "Tajawal",
-          ),
-        ),
+            titleTextStyle: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w500,
+              color: ColorsResources.primary,
+              fontFamily: "Tajawal",
+            ),
+            foregroundColor: ColorsResources.primary,
+            backgroundColor: ColorsResources.background),
         inputDecorationTheme: const InputDecorationTheme(
           border: OutlineInputBorder(
             borderSide: BorderSide(

@@ -43,7 +43,7 @@ class PurchasesReporisotyrImpl implements PurchasesRepository {
       return right(res);
     } on NotEnoughBalanceException {
       return left(const NotEnoughtBalaneFailure());
-    } on Exception {
+    } on Exception catch (e) {
       return left(const AnonFailure());
     }
   }

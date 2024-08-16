@@ -7,7 +7,8 @@ import 'package:moatmat_app/User/Presentation/banks/views/list_of_answers_v.dart
 import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/result_v.dart';
 
-import '../../state/per_question_explore/per_question_explore_cubit.dart';
+import '../../../auth/state/auth_c/auth_cubit_cubit.dart';
+import '../../../auth/view/auth_views_manager.dart';
 
 class FullTimeExploreView extends StatefulWidget {
   const FullTimeExploreView({
@@ -24,74 +25,93 @@ class FullTimeExploreView extends StatefulWidget {
 class _FullTimeExploreViewState extends State<FullTimeExploreView> {
   @override
   void initState() {
+    context.read<AuthCubit>().onCheck();
     context.read<FullTimeExploreCubit>().init(widget.bank, widget.minutes);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<FullTimeExploreCubit, FullTimeExploreState>(
-        builder: (context, state) {
-          if (state is FullTimeExploreQuestion) {
-            return BankQuestionView(
-                      bank: widget.bank,
-              title: "${state.currentQ + 1} / ${state.length}",
-              time: state.time,
-              question: state.question.$1,
-              selected: state.question.$2,
-              showPrevious: false,
-              showNext: true,
-              onNext: () => context.read<FullTimeExploreCubit>().nextQuestion(),
-              onPrevious: () {},
-              onPop: () => Navigator.of(context).pop(),
-              onAnswer: (question, selected) {
-                context.read<FullTimeExploreCubit>().answerQuestion(
-                  state.currentQ,
-                  (question, selected),
-                );
-              },
-            );
-          } else if (state is FullTimeExploreResult) {
-            return BankResultView(
-              showCorrectAnswers: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ListOfBankAnswersView(
-                      bank: widget.bank,
-                      answers: state.correct,
-                    ),
-                  ),
-                );
-              },
-              showWrongAnswers: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ListOfBankAnswersView(
-                      bank: widget.bank,
-                      answers: state.wrong,
-                    ),
-                  ),
-                );
-              },
-              reOpen: () {
-                context
-                    .read<FullTimeExploreCubit>()
-                    .init(widget.bank, widget.minutes);
-              },
-              backToHome: () {
-                Navigator.of(context).pop();
-              },
-              correctAnswers: "${state.correct.length}",
-              wrongAnswers: "${state.wrong.length}",
-              result: state.result,
-            );
-          }
-
-          return const Center(
-            child: CupertinoActivityIndicator(),
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSignedOut) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const AuthViewsManager(),
+            ),
           );
-        },
+        }
+      },
+      child: Scaffold(
+        body: BlocBuilder<FullTimeExploreCubit, FullTimeExploreState>(
+          builder: (context, state) {
+            final cubit = context.read<FullTimeExploreCubit>();
+
+            if (state is FullTimeExploreQuestion) {
+              return BankQuestionView(
+                onExit: () {
+                  context.read<FullTimeExploreCubit>().finish();
+                },
+                bank: widget.bank,
+                title: "${state.currentQ + 1} / ${state.length}",
+                time: state.time,
+                question: state.question.$1,
+                selected: state.question.$2,
+                showPrevious: state.currentQ > 0,
+                showNext: true,
+                onNext: () =>
+                    context.read<FullTimeExploreCubit>().nextQuestion(),
+                onPrevious: () =>
+                    cubit.previousQuestion(index: state.currentQ - 1),
+                onPop: () => Navigator.of(context).pop(),
+                onAnswer: (question, selected) {
+                  context.read<FullTimeExploreCubit>().answerQuestion(
+                    state.currentQ,
+                    (question, selected),
+                  );
+                },
+              );
+            } else if (state is FullTimeExploreResult) {
+              return BankResultView(
+                showCorrectAnswers: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ListOfBankAnswersView(
+                        bank: widget.bank,
+                        answers: state.correct,
+                      ),
+                    ),
+                  );
+                },
+                showWrongAnswers: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ListOfBankAnswersView(
+                        bank: widget.bank,
+                        answers: state.wrong,
+                      ),
+                    ),
+                  );
+                },
+                reOpen: () {
+                  context
+                      .read<FullTimeExploreCubit>()
+                      .init(widget.bank, widget.minutes);
+                },
+                backToHome: () {
+                  Navigator.of(context).pop();
+                },
+                correctAnswers: "${state.correct.length}",
+                wrongAnswers: "${state.wrong.length}",
+                result: state.result,
+              );
+            }
+
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          },
+        ),
       ),
     );
   }

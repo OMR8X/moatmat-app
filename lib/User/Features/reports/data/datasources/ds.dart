@@ -49,7 +49,7 @@ class ReportsDataSourceImple implements ReportsDataSource {
       name: name,
       teacher: teacher,
     );
-    var data = ReportDataModel.fromClass(report).toJson();
+    var data = ReportDataModel.fromClass(report).toJson(); 
     await client.from("reports").insert(data);
     return unit;
   }

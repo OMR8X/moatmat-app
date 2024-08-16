@@ -2,6 +2,7 @@ import 'package:moatmat_app/User/Features/tests/domain/entities/answer.dart';
 
 class AnswerModel extends Answer {
   AnswerModel({
+    required super.id,
     required super.text,
     required super.equations,
     required super.trueAnswer,
@@ -9,6 +10,7 @@ class AnswerModel extends Answer {
   });
   factory AnswerModel.fromJson(Map json) {
     return AnswerModel(
+      id: json["id"],
       text: json["text"],
       equations: List.generate(
         (json["equations"] as List?)?.length ?? 0,
@@ -20,6 +22,7 @@ class AnswerModel extends Answer {
   }
   factory AnswerModel.fromClass(Answer answer) {
     return AnswerModel(
+      id: answer.id,
       text: answer.text,
       equations: answer.equations,
       trueAnswer: answer.trueAnswer,
@@ -29,6 +32,7 @@ class AnswerModel extends Answer {
 
   toJson() {
     return {
+      "id": id,
       "text": text,
       "equations": equations,
       "true_answer": trueAnswer,

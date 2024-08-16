@@ -1,37 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_math_fork/ast.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
+
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
-import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
-import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
-import 'package:moatmat_app/User/Presentation/tests/widgets/question_body_w.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/shadows_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
 import '../../../Core/widgets/math/question_body_w.dart';
-import '../../../Features/banks/domain/entites/bank_q.dart';
+import '../../../Core/widgets/view/question_explain_v.dart';
 import '../../../Features/tests/domain/entities/question.dart';
-import '../../tests/widgets/answer_w.dart';
 
 class BankQuestionBox extends StatefulWidget {
   const BankQuestionBox({
     super.key,
     required this.question,
     this.didAnswer = false,
+    this.disableActions = false,
     required this.onLike,
     required this.onShare,
     required this.onReport,
     required this.onShowAnswer,
     required this.bankID,
     required this.onUnLike,
+    this.disableExplain = false,
   });
   final int bankID;
   final Question question;
-  final bool didAnswer;
+  final bool didAnswer, disableExplain, disableActions;
   final VoidCallback onShare;
   final Function(int id) onReport;
   final VoidCallback onShowAnswer;
@@ -111,37 +107,47 @@ class _BankQuestionBoxState extends State<BankQuestionBox> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TopItems(
-                liked: liked,
-                onShare: widget.onShare,
-                onReport: () {
-                  widget.onReport(widget.question.id);
-                },
-                onLike: (b) {
-                  if (b) {
-                    widget.onLike(b);
-                  } else {
-                    widget.onUnLike(b);
-                  }
-                  setState(() {
-                    liked = b;
-                  });
-                },
-              ),
+              if (!widget.disableActions)
+                TopItems(
+                  liked: liked,
+                  onShare: widget.onShare,
+                  onReport: () {
+                    widget.onReport(widget.question.id);
+                  },
+                  onLike: (b) {
+                    if (b) {
+                      widget.onLike(b);
+                    } else {
+                      widget.onUnLike(b);
+                    }
+                    setState(() {
+                      liked = b;
+                    });
+                  },
+                ),
               QuestionBodyWidget(question: widget.question),
               const SizedBox(height: SizesResources.s2),
-              if (didAnswer &&
+              if ((didAnswer &&
+                          (widget.question.explainImage != null &&
+                              widget.question.explainImage!.isNotEmpty) ||
                       (widget.question.explain != null &&
                           widget.question.explain!.isNotEmpty) ||
-                  (widget.question.video != null &&
-                      widget.question.video != ""))
-                IconButton(
-                  onPressed: widget.onShowAnswer,
-                  icon: const Icon(
-                    Icons.info_outline,
-                    size: 18,
-                    color: ColorsResources.blackText2,
-                  ),
+                      (widget.question.video != null &&
+                          widget.question.video!.isNotEmpty &&
+                          didAnswer)) &&
+                  !widget.disableExplain)
+                Column(
+                  children: [
+                    const SizedBox(height: SizesResources.s2),
+                    const Text(
+                      "شرح الاجابة : ",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: ColorsResources.blackText1,
+                      ),
+                    ),
+                    QuestionExplainMiniView(question: widget.question),
+                  ],
                 ),
               const SizedBox(height: SizesResources.s2),
             ],
@@ -151,143 +157,6 @@ class _BankQuestionBoxState extends State<BankQuestionBox> {
     );
   }
 }
-
-// class BankQuestionBodyWidget extends StatelessWidget {
-//   const BankQuestionBodyWidget({
-//     super.key,
-//     required this.question,
-//     this.disableOpenImage = false,
-//   });
-//   final Question question;
-//   final bool disableOpenImage;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         if (question.image != null && question.image!.isNotEmpty)
-//           Column(
-//             children: [
-//               const SizedBox(height: SizesResources.s2),
-//               GestureDetector(
-//                 onTap: () {
-//                   if (disableOpenImage) return;
-//                   Navigator.of(context).push(
-//                     MaterialPageRoute(
-//                       builder: (context) =>
-//                           ExploreImage(image: question.image!),
-//                     ),
-//                   );
-//                 },
-//                 child: ClipRRect(
-//                   borderRadius: BorderRadius.circular(12),
-//                   child: Image.network(
-//                     question.image!,
-//                     width: SpacingResources.mainWidth(context) - 50,
-//                     fit: BoxFit.fitWidth,
-//                     frameBuilder:
-//                         (context, child, frame, wasSynchronouslyLoaded) {
-//                       if (frame == null) {
-//                         return SizedBox(
-//                           width: SpacingResources.mainWidth(context) - 50,
-//                           height: 200,
-//                           child: Shimmer.fromColors(
-//                               baseColor: Colors.grey[400]!,
-//                               highlightColor: Colors.grey[300]!,
-//                               child: Container(
-//                                 width: 200,
-//                                 height: 100,
-//                                 color: ColorsResources.background,
-//                               )),
-//                         );
-//                       } else {
-//                         return SizedBox(
-//                           child: child,
-//                         );
-//                       }
-//                     },
-//                     loadingBuilder: (context, child, p) {
-//                       if (p == null) {
-//                         return child;
-//                       } else {
-//                         return SizedBox(
-//                           width: SpacingResources.mainWidth(context) - 50,
-//                           height: 200,
-//                           child: Shimmer.fromColors(
-//                               baseColor: Colors.grey[400]!,
-//                               highlightColor: Colors.grey[300]!,
-//                               child: Container(
-//                                 width: 200,
-//                                 height: 100,
-//                                 color: ColorsResources.background,
-//                               )),
-//                         );
-//                       }
-//                     },
-//                   ),
-//                 ),
-//               ),
-//               const SizedBox(height: SizesResources.s3),
-//             ],
-//           ),
-//         if (question.question != null)
-//           SizedBox(
-//             child: Text(
-//               question.question!,
-//               textAlign: TextAlign.center,
-//               style: const TextStyle(
-//                 letterSpacing: 0.2,
-//                 height: 1.6,
-//                 color: ColorsResources.blackText1,
-//               ),
-//             ),
-//           ),
-//         if (question.equation != null) ...[
-//           SizedBox(
-//             width: SpacingResources.mainWidth(context),
-//             child: RichText(
-//               text: TextSpan(
-//                 style: const TextStyle(
-//                   fontSize: 14.0,
-//                   color: Colors.black,
-//                   fontFamily: "Tajawal",
-//                   height: 2,
-//                 ),
-//                 children: List.generate(
-//                   fixTheError(question.equation!).length,
-//                   (index) {
-//                     if (!containsArabic(
-//                         fixTheError(question.equation!)[index])) {
-//                       return WidgetSpan(
-//                         alignment: PlaceholderAlignment.middle,
-//                         child: Padding(
-//                           padding: const EdgeInsets.symmetric(
-//                             horizontal: 2.5,
-//                             vertical: 2,
-//                           ),
-//                           child: SizedBox(
-//                             child: Math.tex(
-//                               fixTheError(question.equation!)[index],
-//                               textStyle: const TextStyle(fontSize: 14),
-//                             ),
-//                           ),
-//                         ),
-//                       );
-//                     } else {
-//                       return TextSpan(
-//                         text: " ${fixTheError(question.equation!)[index]}  ",
-//                         style: const TextStyle(fontSize: 14),
-//                       );
-//                     }
-//                   },
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ]
-//       ],
-//     );
-//   }
-// }
 
 class TopItems extends StatelessWidget {
   const TopItems({
@@ -311,7 +180,7 @@ class TopItems extends StatelessWidget {
           icon: const Icon(
             Icons.report_problem_outlined,
             size: 18,
-            color: ColorsResources.blackText2,
+            color: Colors.cyan,
           ),
         ),
         IconButton(
@@ -319,7 +188,7 @@ class TopItems extends StatelessWidget {
           icon: const Icon(
             Icons.share,
             size: 16,
-            color: ColorsResources.blackText2,
+            color: ColorsResources.green,
           ),
         ),
         IconButton(
@@ -329,7 +198,7 @@ class TopItems extends StatelessWidget {
           icon: Icon(
             liked ? Icons.favorite : Icons.favorite_border,
             size: 16,
-            color: liked ? Colors.red : ColorsResources.blackText2,
+            color: Colors.red,
           ),
         ),
       ],

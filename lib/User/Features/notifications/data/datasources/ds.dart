@@ -1,3 +1,5 @@
+import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/notifications/data/models/notification_data_m.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,6 +24,12 @@ class NotificationsDataSourceImpl implements NotificationsDataSource {
     var res = await client.from("notifications").select();
     List<NotificationData> notifications = [];
     notifications = res.map((e) => NotificationDataModel.fromJson(e)).toList();
+    //
+    notifications +=
+        List<NotificationDataModel>.from(locator<UserData>().notifications);
+    //
+    notifications.sort((a, b) => b.date.compareTo(a.date));
+    //
     return notifications;
   }
 
@@ -34,9 +42,12 @@ class NotificationsDataSourceImpl implements NotificationsDataSource {
     //
     List<String> newIDs = notifications.map((e) => e.id.toString()).toList();
     //
+    if (oldIDs.length != newIDs.length) return true;
+    //
     for (var id in newIDs) {
       if (!oldIDs.contains(id) && !value) {
         value = true;
+        break;
       }
     }
     return value;

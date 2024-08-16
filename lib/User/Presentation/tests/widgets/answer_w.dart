@@ -14,9 +14,11 @@ class TestQuestionAnswerWidget extends StatefulWidget {
     required this.onAnswer,
     this.selected,
     this.canChange = false,
+    this.showIsTrue = false,
   });
   final bool? selected;
   final bool canChange;
+  final bool showIsTrue;
   final Answer answer;
   final VoidCallback onAnswer;
 
@@ -93,6 +95,12 @@ class _TestQuestionAnswerWidgetState extends State<TestQuestionAnswerWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     AnswerBodyWidget(answer: widget.answer),
+                    if (widget.showIsTrue &&
+                        (widget.answer.trueAnswer ?? false))
+                      const Icon(
+                        Icons.check,
+                        color: ColorsResources.green,
+                      )
                   ],
                 ),
               ),

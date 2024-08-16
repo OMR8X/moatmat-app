@@ -8,6 +8,7 @@ class QuestionModel extends Question {
     required super.upperImageText,
     required super.lowerImageText,
     required super.explain,
+    required super.explainImage,
     required super.equations,
     required super.image,
     required super.period,
@@ -22,6 +23,7 @@ class QuestionModel extends Question {
       upperImageText: json["upper_image_text"],
       lowerImageText: json["lower_image_text"],
       explain: json["explain"],
+      explainImage: json["explain_image"],
       equations: List.generate(
         (json["equations"] as List?)?.length ?? 0,
         (i) => json["equations"][i],
@@ -31,7 +33,11 @@ class QuestionModel extends Question {
       editable: json["editable"],
       answers: List.generate(
         (json["answers"] as List).length,
-        (i) => AnswerModel.fromJson(json["answers"][i]),
+        (i) {
+          Map answer = json["answers"][i];
+          answer["id"] = i;
+          return AnswerModel.fromJson(answer);
+        },
       ),
       video: json["video"],
       colors: List.generate(
@@ -53,14 +59,16 @@ class QuestionModel extends Question {
       answers: question.answers,
       video: question.video,
       colors: question.colors,
+      explainImage: question.explainImage,
     );
   }
-  toJson() {
+  Map toJson() {
     return {
       "id": id,
       "upper_image_text": upperImageText,
       "lower_image_text": lowerImageText,
       "explain": explain,
+      "explain_image": explainImage,
       "equations": equations,
       "image": image,
       "period": period,
@@ -72,7 +80,9 @@ class QuestionModel extends Question {
       ),
       "answers": List.generate(
         answers.length,
-        (i) => AnswerModel.fromClass(answers[i]).toJson(),
+        (i) {
+          return AnswerModel.fromClass(answers[i]).toJson();
+        },
       ),
     };
   }

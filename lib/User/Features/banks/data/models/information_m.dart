@@ -1,4 +1,3 @@
-
 import '../../domain/entites/bank_information.dart';
 
 class BankInformationModel extends BankInformation {
@@ -9,9 +8,12 @@ class BankInformationModel extends BankInformation {
     required super.teacher,
     required super.price,
     required super.video,
+    required super.folder,
+    required super.files,
   });
 
   factory BankInformationModel.fromJson(Map json) {
+    print(json["folder"]);
     return BankInformationModel(
       title: json["title"],
       classs: json["classs"],
@@ -19,6 +21,11 @@ class BankInformationModel extends BankInformation {
       teacher: json["teacher"],
       price: json["price"],
       video: json["video"],
+      folder: json["folder"] ?? "المجلد الرئيسي",
+      files: List.generate(
+        (json["files"] as List? ?? []).length,
+        (i) => json["files"][i],
+      ),
     );
   }
   factory BankInformationModel.fromClass(BankInformation information) {
@@ -29,6 +36,8 @@ class BankInformationModel extends BankInformation {
       teacher: information.teacher,
       price: information.price,
       video: information.video,
+      folder: information.folder,
+      files: information.files,
     );
   }
 
@@ -40,6 +49,8 @@ class BankInformationModel extends BankInformation {
       "teacher": teacher,
       "price": price,
       "video": video,
+      "folder": folder,
+      "files": files,
     };
   }
 }

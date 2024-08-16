@@ -1,5 +1,6 @@
 import 'package:moatmat_app/User/Features/tests/data/datasources/tests_ds.dart';
 import 'package:moatmat_app/User/Features/tests/domain/repository/t_repository.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/can_do_test_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
 
 import '../../Features/tests/data/repository/t_repository.dart';
@@ -32,6 +33,11 @@ void injectUC() {
   );
   locator.registerFactory<GetTestByIdUC>(
     () => GetTestByIdUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<CanDoTestUC>(
+    () => CanDoTestUC(
       repository: locator(),
     ),
   );

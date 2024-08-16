@@ -6,8 +6,6 @@ import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/fonts_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
-import '../../../Core/resources/texts_resources.dart';
-import '../../../Core/widgets/fields/elevated_button_widget.dart';
 import '../state/auth_c/auth_cubit_cubit.dart';
 
 class OnBoardingView extends StatefulWidget {
@@ -21,10 +19,17 @@ class _OnBoardingViewState extends State<OnBoardingView> {
   final PageController _controller = PageController();
   int slidesLenght = 8;
   bool lastPage = false;
+  List<Color> textColors = [
+    ColorsResources.blueText,
+    ColorsResources.orangeText,
+    ColorsResources.greenText,
+    ColorsResources.redText,
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsResources.primary,
       body: Column(
         children: [
           Expanded(
@@ -35,91 +40,99 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                   lastPage = value == slidesLenght - 1;
                 });
               },
-              children: const [
+              children: [
                 PageSlide(
-                  title: "اسئلة منوعة",
-                  image: "questions.jpg",
-                  body:
-                      "تدرب على أسئلة مدرسك المفضل ، واختبر معلوماتك ضمن كل وحدة دراسية بنظام الأسئلة المؤتمت ضمن خانة بنوك الأسئلة للمدرسين",
+                  color: textColors[0],
+                  content: Image.asset("assets/images/boarding/1.png"),
+                  text:
+                      "اسئلة منوعة شاملة ومتخصصة بكل وحدة دراسية وفق اختياراتك",
                 ),
                 PageSlide(
-                  title: "الاختبارات الإلكترونية",
-                  image: "electronic-tests.jpg",
-                  body:
-                      "عش تجربة الاختبارات النوعية المخصصة من مدرسك المفضل من خلال خانة الاختبارات الإلكترونية ، قم بحل الاختبار ضمن شروط وتوقيت محدد من قبل المدرس مما يعزز استعدادك للفحص النهائي بشكل مثالي ويضمن جودة وفعالية الاختبار",
+                  color: textColors[1],
+                  content: Image.asset("assets/images/boarding/2.png"),
+                  text:
+                      "اختبر نفسك وفق شروط الامتحان النهائي في منزلك بأسهل وامتع طريقة",
                 ),
                 PageSlide(
-                  title: "تحدى نفسك",
-                  image: "chanalnge-your-self.jpg",
-                  body:
-                      "تحدى نفسك اثناء حلك لبنوك الاسئلة من خلال تحديد وقت لكل سؤال او لاسئلة وحدة ما ، وكرر هذه العملية باستمرار وقيم مدى تحسن سرعتك وتأقلمك مع نظام الاسئلة المؤتمت",
+                  color: textColors[2],
+                  content: Image.asset("assets/images/boarding/3.png"),
+                  text:
+                      "درب نفسك على الحل السريع في بنوك الاسئلة بالوقت الذي تحدده في كل مرة",
                 ),
                 PageSlide(
-                  title: "النتائج التفصيلية",
-                  image: "results.jpg",
-                  body:
-                      "احصل على درجاتك في نهاية كل اختبار واتطلع على عدد الاسئلة التي اخطأت بها وعدد الأسئلة الصحيحة",
+                  color: textColors[3],
+                  content: Image.asset("assets/images/boarding/4.png"),
+                  text:
+                      "احصل على درجتك في نهاية كل اختبار وراجع اخطائك واحاباتك الصحيحة",
                 ),
                 PageSlide(
-                  title: "شروح توضيحية",
-                  image: "shrouh.jpg",
-                  body:
-                      "انظر إلى شرح الاسئلة التي أخطأت بها ولم تعرف تفسير الاجابة الصحيحة من خلال علامة الاستفهام الموجود إلى جانب السؤال",
+                  color: textColors[0],
+                  content: Image.asset("assets/images/boarding/5.png"),
+                  text:
+                      "اضغط على الرمز جانب السؤال طلع على الشرح التوضيحيوتفسير الاجابة الصحيحة",
                 ),
                 PageSlide(
-                  title: "ميزة الابلاغ",
-                  image: "reports.jpg",
-                  body:
-                      "قم بالابلاغ عن السؤال الذي تظن بأنه يحوي خطأ ما لتتم مراجعته من قبل ادارة التطبيق",
+                  color: textColors[1],
+                  content: Image.asset("assets/images/boarding/6.png"),
+                  text: "ابلغ ولا تتعب نفسك مع أي سؤال خاطئ الكتابة",
                 ),
                 PageSlide(
-                  title: "شارك رابط الأسئلة مع زملاءك",
-                  image: "share.jpg",
-                  body:
-                      "شارك رابط الأسئلة المميزة مع زملاءك او مع مدرسك من خلال زر المشاركة الموجود جانب السؤال",
+                  color: textColors[2],
+                  content: Image.asset("assets/images/boarding/7.png"),
+                  text:
+                      "شارك الاسئلة مع زملاءك ومدرسك من خلال زر المشاركة جانب كل سؤال",
                 ),
                 PageSlide(
-                  title: "تواصل معنا",
-                  image: "communication.jpg",
-                  body:
-                      "تواصل معنا لأي استفسار من خلال زر تواصل معنا الموجود ضمن اعدادات التطبيق وقم بمتابعتنا على صفحتنا على فيسبوك وقناتنا على تلغرام لمعرفة التحديثات بشكل مستمر",
+                  color: textColors[3],
+                  content: Image.asset("assets/images/boarding/8.png"),
+                  text:
+                      "تواصل معنا لايصال اقتراحاتك البناءة او لأي استفسار قد يخطر لك واحصل على المكافآت",
                 ),
               ],
             ),
           ),
-          SizedBox(
-            child: Column(
-              children: [
-                SmoothPageIndicator(
-                  controller: _controller,
-                  count: slidesLenght,
-                  effect: const WormEffect(
-                    dotColor: ColorsResources.borders,
-                    activeDotColor: ColorsResources.primary,
-                    dotHeight: 8,
-                    dotWidth: 8,
+          Padding(
+            padding: const EdgeInsets.only(
+              bottom: SizesResources.s8,
+              left: SizesResources.s8,
+              right: SizesResources.s8,
+            ),
+            child: SizedBox(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SmoothPageIndicator(
+                    controller: _controller,
+                    count: slidesLenght,
+                    effect: const WormEffect(
+                      dotColor: ColorsResources.borders,
+                      activeDotColor: ColorsResources.darkPrimary,
+                      dotHeight: 8,
+                      dotWidth: 8,
+                    ),
                   ),
-                ),
-                const SizedBox(height: SizesResources.s4),
-                SizedBox(
-                  width: SpacingResources.mainWidth(context) - 30,
-                  height: 50,
-                  child: ElevatedButtonWidget(
-                    text: lastPage ? TextsResources.start : TextsResources.next,
-                    onPressed: () {
-                      if (lastPage) {
-                        onFinish();
-                      } else {
-                        _controller.nextPage(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.decelerate,
-                        );
-                      }
-                    },
+                  const Spacer(),
+                  CircleAvatar(
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.navigate_next,
+                        color: ColorsResources.darkPrimary,
+                      ),
+                      onPressed: () {
+                        if (lastPage) {
+                          onFinish();
+                        } else {
+                          _controller.nextPage(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.decelerate,
+                          );
+                        }
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(height: SizesResources.s10),
-              ],
+                  const SizedBox(height: SizesResources.s10),
+                ],
+              ),
             ),
           ),
         ],
@@ -135,55 +148,45 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 class PageSlide extends StatelessWidget {
   const PageSlide({
     super.key,
-    required this.title,
-    required this.body,
-    required this.image,
+    required this.text,
+    required this.content,
+    required this.color,
   });
-  final String title;
-  final String body;
-  final String image;
+  final String text;
+  final Widget content;
+  final Color color;
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: SpacingResources.mainWidth(context) - 50,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 100,
-                backgroundColor: Colors.transparent,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(90),
-                  child: Image.asset(
-                    "assets/images/start/$image",
-                    fit: BoxFit.cover,
-                    width: 250,
-                  ),
-                ),
-              ),
-              const SizedBox(height: SizesResources.s10),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: FontsResources.boldStyle().copyWith(
-                  fontSize: 24,
-                ),
-              ),
-              const SizedBox(height: SizesResources.s3),
-              Text(
-                body,
-                textAlign: TextAlign.center,
-                style: FontsResources.reqularStyle().copyWith(
-                  height: 1.7,
-                ),
-              ),
-            ],
+    return SafeArea(
+      child: Column(
+        children: [
+          const SizedBox(height: SizesResources.s10 * 2),
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: content,
+            ),
           ),
-        ),
-      ],
+          const SizedBox(height: SizesResources.s10 * 2),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: SizesResources.s3,
+              horizontal: SizesResources.s3,
+            ),
+            child: Text(
+              text,
+              textAlign: TextAlign.start,
+              style: FontsResources.regularStyle().copyWith(
+                height: 1.2,
+                color: color,
+                fontWeight: FontWeight.w900,
+                fontSize: 19,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

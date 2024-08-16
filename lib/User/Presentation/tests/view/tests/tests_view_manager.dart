@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/texts_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/view/pick_category_v.dart.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
@@ -13,6 +14,7 @@ import 'package:moatmat_app/User/Presentation/tests/view/exploring/per_question_
 import 'package:moatmat_app/User/Presentation/tests/view/tests/check_if_test_done_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/pick_test_v.dart';
 
+import '../../../../Core/widgets/view/pick_folder_v.dart';
 import '../../../banks/views/banks/teacher_searching_v.dart';
 
 class TestsViewManager extends StatefulWidget {
@@ -74,9 +76,9 @@ class _TestsViewManagerState extends State<TestsViewManager> {
                       MaterialPageRoute(
                         builder: (context) => TeacherSearchView(
                           teachers: state.teachers,
-                          onSelect: (s) {
+                          onSelect: (teacherData) {
                             context.read<GetTestCubit>().selectTeacher(
-                                  s,
+                                  teacherData,
                                 );
                           },
                         ),
@@ -87,27 +89,40 @@ class _TestsViewManagerState extends State<TestsViewManager> {
                 )
               ],
               categories: state.teachers.map((e) {
-                return e.$1;
+                return e.$1.name;
               }).toList(),
               subCategories: state.teachers.map((e) {
                 return "عدد الاختبارات : ${e.$2}";
               }).toList(),
               onPick: (clas) {
-                context.read<GetTestCubit>().selectTeacher(clas);
+                context.read<GetTestCubit>().selectTeacher(
+                      state.teachers.firstWhere((e) => e.$1.name == clas).$1,
+                    );
               },
               onPop: () {
                 context.read<GetTestCubit>().backToClasses();
               },
             );
             //
-          } else if (state is GetTestSelectTest) {
-            return PickTestView(
-              teacher: state.teacher,
-              tests: state.tests,
+          } else if (state is GetTestSelectFolder) {
+            return PickFolderView(
+              folders: state.folders,
+              teacher: state.teacherData,
               onPop: () {
                 context.read<GetTestCubit>().backToTeachers();
               },
-              onPick: (b) {
+              afterPick: (t) {
+                context.read<GetTestCubit>().selectFolder(t);
+              },
+            );
+          } else if (state is GetTestSelectTest) {
+            return PickTestView(
+              title: state.title,
+              tests: state.tests,
+              onPop: () {
+                context.read<GetTestCubit>().backToFolders();
+              },
+              onPick: (b) async{
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => CheckIfTestDone(
@@ -118,8 +133,13 @@ class _TestsViewManagerState extends State<TestsViewManager> {
               },
             );
           }
-          return const Center(
-            child: CupertinoActivityIndicator(),
+          return const Scaffold(
+            backgroundColor: ColorsResources.primary,
+            body: Center(
+              child: CupertinoActivityIndicator(
+                color: ColorsResources.whiteText1,
+              ),
+            ),
           );
         },
       ),

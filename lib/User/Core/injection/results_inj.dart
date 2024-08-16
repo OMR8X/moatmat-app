@@ -10,6 +10,7 @@ import 'package:moatmat_app/User/Features/result/data/repository/repository.dart
 import 'package:moatmat_app/User/Features/result/domain/repository/repository.dart';
 import 'package:moatmat_app/User/Features/result/domain/usecases/add_result_uc.dart';
 import 'package:moatmat_app/User/Features/result/domain/usecases/get_latest_results_uc.dart';
+import 'package:moatmat_app/User/Features/result/domain/usecases/get_my_results_uc.dart';
 
 import '../../Features/auth/data/data_source/users_ds.dart';
 import '../../Features/auth/data/repository/users_repository_impl.dart';
@@ -35,6 +36,11 @@ void injectUC() {
   );
   locator.registerFactory<AddResultUC>(
     () => AddResultUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetMyResultsUC>(
+    () => GetMyResultsUC(
       repository: locator(),
     ),
   );

@@ -1,15 +1,20 @@
 import 'package:moatmat_app/User/Features/tests/domain/entities/test_information.dart';
 
+import 'mini_test_m.dart';
+
 class TestInformationModel extends TestInformation {
   TestInformationModel({
     required super.title,
     required super.classs,
     required super.material,
     required super.teacher,
+    required super.folder,
     required super.price,
     required super.password,
     required super.period,
     required super.video,
+    required super.files,
+    required super.previous,
   });
 
   factory TestInformationModel.fromJson(Map json) {
@@ -22,6 +27,14 @@ class TestInformationModel extends TestInformation {
       password: json["password"],
       period: json["period"],
       video: json["video"],
+      folder: json["folder"] ?? "المجلد الرئيسي",
+      files: List.generate(
+        (json["files"] as List? ?? []).length,
+        (i) => json["files"][i],
+      ),
+      previous: json["previous"] != null
+          ? MiniTestModel.fromJson(json["previous"])
+          : null,
     );
   }
   factory TestInformationModel.fromClass(TestInformation information) {
@@ -34,6 +47,9 @@ class TestInformationModel extends TestInformation {
       password: information.password,
       period: information.period,
       video: information.video,
+      folder: information.folder,
+      files: information.files,
+      previous: information.previous,
     );
   }
 
@@ -43,10 +59,15 @@ class TestInformationModel extends TestInformation {
       "classs": classs,
       "material": material,
       "teacher": teacher,
+      "folder": folder,
       "price": price,
       "password": password,
       "period": period,
       "video": video,
+      "files": files ?? <String>[],
+      "previous": previous == null
+          ? previous
+          : MiniTestModel.fromClass(previous!).toJson()
     };
   }
 }

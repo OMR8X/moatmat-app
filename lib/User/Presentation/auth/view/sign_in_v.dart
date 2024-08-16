@@ -92,7 +92,7 @@ class _SignInViewState extends State<SignInView> {
                 validator: (p0) {
                   return emailValidator(text: p0);
                 },
-                hintText: "البريد الالكترني",
+                hintText: "البريد الالكتروني",
                 textInputAction: TextInputAction.next,
                 maxLength: 45,
                 inputFormatters: [
@@ -112,11 +112,7 @@ class _SignInViewState extends State<SignInView> {
                 hintText: "الرمز السري",
                 textInputAction: TextInputAction.next,
                 obscureText: true,
-                maxLength: 30,
                 keyboardType: TextInputType.emailAddress,
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(30),
-                ],
                 onSaved: (p0) {
                   password = p0!;
                 },

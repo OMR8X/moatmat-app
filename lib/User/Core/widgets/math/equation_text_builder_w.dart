@@ -37,7 +37,7 @@ class EquationTextBuilderWidget extends StatelessWidget {
                 //
                 String equation = getEquationByFromText(e);
                 //
-                return MathTexWidget(equation: equation);
+                return FittedBox(child: MathTexWidget(equation: equation));
                 //
               } else {
                 //

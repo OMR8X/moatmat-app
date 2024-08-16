@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:moatmat_app/User/Core/constant/materials.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/use_cases/get_material_bank_classes_uc.dart';
 import 'package:moatmat_app/User/Features/banks/domain/use_cases/get_material_banks_teacher_uc.dart';
@@ -21,12 +22,12 @@ class GetBankCubit extends Cubit<GetBankState> {
   //
   List<String> materials = [];
   List<(String, int)> classes = [];
-  List<(String, int)> teachers = [];
+  List<(TeacherData, int)> teachers = [];
   List<(Bank, int)> banks = [];
   //
   String? material;
   String? clas;
-  String? teacher;
+  TeacherData? teacherData;
   Bank? bank;
   init() async {
     emit(const GetBankLoading());
@@ -77,13 +78,13 @@ class GetBankCubit extends Cubit<GetBankState> {
   }
 
   //
-  selecteTeacher(String teacher, {bool disableLoading = false}) async {
+  selectTeacher(TeacherData teacherData, {bool disableLoading = false}) async {
     if (!disableLoading) {
       emit(const GetBankLoading());
     }
-    this.teacher = teacher;
+    this.teacherData = teacherData;
     var res = locator<GetTeacherBanksUC>().call(
-      teacher: teacher,
+      teacherEmail: teacherData.email,
       clas: clas!,
       material: material!,
     );
@@ -94,10 +95,19 @@ class GetBankCubit extends Cubit<GetBankState> {
         },
         (r) {
           banks = r;
-          emit(GetBankSelecteBank(banks: banks, teacher: teacher));
+          List<String> folders = r.map((e) => e.$1.information.folder).toList();
+          emit(
+              GetBankSelecteFolder(folders: folders, teacherData: teacherData));
         },
       );
     });
+  }
+
+  selectFolder(String folder) {
+    emit(GetBankSelecteBank(
+      banks: banks.where((e) => e.$1.information.folder == folder).toList(),
+      title: folder,
+    ));
   }
 
   //
@@ -110,7 +120,7 @@ class GetBankCubit extends Cubit<GetBankState> {
 
   //
   refreshBanks() async {
-    selecteTeacher(teacher!);
+    selectTeacher(teacherData!);
   }
 
   //
@@ -124,5 +134,10 @@ class GetBankCubit extends Cubit<GetBankState> {
 
   backToTeachers() {
     emit(GetBankSelecteTeacher(teachers: teachers));
+  }
+
+  backToFolders() {
+    List<String> folders = banks.map((e) => e.$1.information.folder).toList();
+    emit(GetBankSelecteFolder(folders: folders, teacherData: teacherData!));
   }
 }

@@ -34,7 +34,7 @@ final class GetBankSelecteClass extends GetBankState {
 }
 
 final class GetBankSelecteTeacher extends GetBankState {
-  final List<(String, int)> teachers;
+  final List<(TeacherData, int)> teachers;
 
   const GetBankSelecteTeacher({
     required this.teachers,
@@ -44,17 +44,29 @@ final class GetBankSelecteTeacher extends GetBankState {
   List<Object> get props => [teachers];
 }
 
-final class GetBankSelecteBank extends GetBankState {
-  final List<(Bank, int)> banks;
-  final String teacher;
+final class GetBankSelecteFolder extends GetBankState {
+  final List<String> folders;
+  final TeacherData teacherData;
 
-  const GetBankSelecteBank({
-    required this.teacher,
-    required this.banks,
+  const GetBankSelecteFolder({
+    required this.teacherData,
+    required this.folders,
     super.error,
   });
   @override
-  List<Object> get props => [banks];
+  List<Object> get props => [folders];
+}
+final class GetBankSelecteBank extends GetBankState {
+  final String title;
+  final List<(Bank, int)> banks;
+
+  const GetBankSelecteBank({
+    required this.banks,
+    required this.title,
+    super.error,
+  });
+  @override
+  List<Object> get props => [banks,title];
 }
 
 final class GetBankDone extends GetBankState {

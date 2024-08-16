@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:moatmat_app/User/Core/errors/exceptions.dart';
 
+import '../entites/teacher_data.dart';
 import '../entites/user_data.dart';
 
 abstract class UserRepository {
@@ -22,6 +23,9 @@ abstract class UserRepository {
   //
   // get User Data
   Future<Either<Failure, UserData>> getUserData({required String uuid});
+  //
+    // get Teacher Data
+  Future<Either<Failure, TeacherData>> getTeacherData();
   //
   // get User Data
   Future<Either<Failure, Unit>> resetPassword({

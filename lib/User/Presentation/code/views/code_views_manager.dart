@@ -56,7 +56,7 @@ class _CodesViewsManagerState extends State<CodesViewsManager> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 duration: Duration(seconds: 2),
-                content: Text("تم اضافة النقاط بمجاح"),
+                content: Text("تم اضافة النقاط نجاح"),
               ),
             );
             context.read<AuthCubit>().refresh();
