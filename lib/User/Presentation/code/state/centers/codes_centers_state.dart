@@ -15,19 +15,21 @@ final class CodesCentersError extends CodesCentersState {
   const CodesCentersError({required this.error});
 }
 
-final class CodesCentersGovernorates extends CodesCentersState {
-  final List<String> governorates;
+final class CodesCentersGovernorate extends CodesCentersState {
+  final List<String> governorate;
 
-  const CodesCentersGovernorates({required this.governorates});
+  const CodesCentersGovernorate({required this.governorate});
 
   @override
-  List<Object> get props => [governorates];
+  List<Object> get props => [governorate];
 }
 
 final class CodesCentersExplore extends CodesCentersState {
+  final String governorate;
   final List<CodeCenter> centers;
 
   const CodesCentersExplore({
+    required this.governorate,
     required this.centers,
   });
   @override

@@ -35,3 +35,6 @@ class InvalidDataException implements Exception {}
 class WrongPasswordException implements Exception {}
 
 class CrossMaxSizeException implements Exception {}
+
+class CacheException implements Exception {}
+class MissingUserDataException implements Exception {}

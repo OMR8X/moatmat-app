@@ -24,6 +24,17 @@ final class NoTimeExploreQuestion extends NoTimeExploreState {
   List<Object> get props => [question, currentQ, length];
 }
 
+final class NoTimeExploreQuestionScrollable extends NoTimeExploreState {
+  //
+  final List<(Question, int?)> questions;
+
+  const NoTimeExploreQuestionScrollable({
+    required this.questions,
+  });
+  @override
+  List<Object> get props => [questions.map((e) => e.$2), DateTime.now()];
+}
+
 final class NoTimeExploreResult extends NoTimeExploreState {
   final List<(Question, int)> correct, wrong;
   final String result;

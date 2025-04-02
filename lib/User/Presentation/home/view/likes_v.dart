@@ -9,6 +9,7 @@ import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_information.dart';
+import 'package:moatmat_app/User/Features/banks/domain/entites/bank_properties.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
@@ -20,6 +21,7 @@ import 'package:moatmat_app/User/Presentation/tests/widgets/question_body_w.dart
 import 'package:moatmat_app/User/Presentation/tests/widgets/test_q_box.dart';
 
 import '../../../Core/widgets/math/question_body_w.dart';
+import '../../../Core/widgets/ui/empty_list_text.dart';
 import '../../auth/state/auth_c/auth_cubit_cubit.dart';
 import '../../banks/widgets/bank_q_box.dart';
 
@@ -94,209 +96,218 @@ class _LikesViewState extends State<LikesView> {
               ),
               Padding(
                 padding: EdgeInsets.all(10.0),
-                child: Text("بنوك الاسئلة"),
+                child: Text("بنوك الأسئلة"),
               ),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: SizesResources.s2),
-              scrollDirection: Axis.vertical,
-              itemCount: tQuestions.length,
-              itemBuilder: (context, index) {
-                var question = tQuestions[index].$1;
-                int? selected;
-                for (int i = 0; i < question.answers.length; i++) {
-                  if (question.answers[i].trueAnswer ?? false) {
-                    selected = i;
-                  }
-                }
-                return Container(
-                  margin: const EdgeInsets.all(SizesResources.s2),
-                  decoration: BoxDecoration(
-                    color: ColorsResources.onPrimary,
-                    boxShadow: ShadowsResources.mainBoxShadow,
-                    borderRadius: BorderRadius.circular(
-                      12,
-                    ),
-                  ),
-                  child: Material(
-                    borderRadius: BorderRadius.circular(
-                      12,
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => TestQuestionView(
-                              canExit: true,
-                              onExit: () {
-                                print("object");
-                                Navigator.of(context).pop();
-                              },
-                              question: question,
-                              selected: selected,
-                              onAnswer: (question, selected) {},
-                              onPop: () {
-                                Navigator.of(context).pop();
-                                initData();
-                                setState(() {});
-                              },
-                              onNext: () {},
-                              onPrevious: () {},
-                              title: "سؤال محفوظ",
-                              disableActions: true,
-                              test: Test(
-                                id: tQuestions[index].$2,
-                                teacherEmail: "",
-                                questions: [],
-                                information: TestInformation(
-                                  title: "",
-                                  classs: "",
-                                  material: "",
-                                  teacher: "",
-                                  folder: "",
-                                  price: null,
-                                  password: null,
-                                  period: 0,
-                                  video: null,
-                                  files: [],
-                                  previous: null,
+            tQuestions.isEmpty
+                ? const EmptyListTextWidget()
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: SizesResources.s2),
+                    scrollDirection: Axis.vertical,
+                    itemCount: tQuestions.length,
+                    itemBuilder: (context, index) {
+                      var question = tQuestions[index].$1;
+                      int? selected;
+                      for (int i = 0; i < question.answers.length; i++) {
+                        if (question.answers[i].trueAnswer ?? false) {
+                          selected = i;
+                        }
+                      }
+                      return Container(
+                        margin: const EdgeInsets.all(SizesResources.s2),
+                        decoration: BoxDecoration(
+                          color: ColorsResources.onPrimary,
+                          boxShadow: ShadowsResources.mainBoxShadow,
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ),
+                        ),
+                        child: Material(
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(
+                              12,
+                            ),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => TestQuestionView(
+                                    canExit: true,
+                                    onExit: () {
+                                      print("object");
+                                      Navigator.of(context).pop();
+                                    },
+                                    question: question,
+                                    selected: selected,
+                                    onAnswer: (question, selected) {},
+                                    onPop: () {
+                                      Navigator.of(context).pop();
+                                      initData();
+                                      setState(() {});
+                                    },
+                                    onNext: () {},
+                                    onPrevious: () {},
+                                    title: "سؤال محفوظ",
+                                    disableActions: true,
+                                    test: Test(
+                                      id: tQuestions[index].$2,
+                                      teacherEmail: "",
+                                      questions: [],
+                                      information: TestInformation(
+                                        title: "",
+                                        classs: "",
+                                        material: "",
+                                        teacher: "",
+                                        price: null,
+                                        password: null,
+                                        period: 0,
+                                        video: [],
+                                        files: [],
+                                        images: [],
+                                        previous: null,
+                                      ),
+                                      properties: TestProperties(
+                                        exploreAnswers: null,
+                                        showAnswers: null,
+                                        timePerQuestion: null,
+                                        repeatable: null,
+                                        visible: null,
+                                        scrollable: null,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                properties: TestProperties(
-                                  exploreAnswers: null,
-                                  showAnswers: null,
-                                  timePerQuestion: null,
-                                  repeatable: null,
-                                  visible: null,
-                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(SizesResources.s4),
+                              child: Row(
+                                children: [
+                                  QuestionBodyWidget(
+                                    question: tQuestions[index].$1,
+                                    disableOpenImage: true,
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: () {
+                                      removeTestQ(tQuestions[index]);
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: ColorsResources.red,
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(SizesResources.s4),
-                        child: Row(
-                          children: [
-                            QuestionBodyWidget(
-                              question: tQuestions[index].$1,
-                              disableOpenImage: true,
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              onPressed: () {
-                                removeTestQ(tQuestions[index]);
-                              },
-                              icon: const Icon(
-                                Icons.delete,
-                                color: ColorsResources.red,
-                              ),
-                            )
-                          ],
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-            ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: SizesResources.s2),
-              scrollDirection: Axis.vertical,
-              itemCount: bQuestions.length,
-              itemBuilder: (context, index) {
-                var question = bQuestions[index].$1;
-                int? selected;
-                for (int i = 0; i < question.answers.length; i++) {
-                  if (question.answers[i].trueAnswer ?? false) {
-                    selected = i;
-                  }
-                }
-                return Container(
-                  margin: const EdgeInsets.all(SizesResources.s2),
-                  decoration: BoxDecoration(
-                      color: ColorsResources.onPrimary,
-                      boxShadow: ShadowsResources.mainBoxShadow,
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      )),
-                  child: Material(
-                    borderRadius: BorderRadius.circular(
-                      12,
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => BankQuestionView(
-                              canExit: true,
-                              bank: Bank(
-                                id: bQuestions[index].$2,
-                                teacherEmail: "",
-                                information: BankInformation(
-                                  title: "",
-                                  classs: "",
-                                  material: "",
-                                  teacher: "",
-                                  folder: "",
-                                  price: 0,
-                                  video: "",
-                                  files: [],
+            bQuestions.isEmpty
+                ? const EmptyListTextWidget()
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: SizesResources.s2),
+                    scrollDirection: Axis.vertical,
+                    itemCount: bQuestions.length,
+                    itemBuilder: (context, index) {
+                      var question = bQuestions[index].$1;
+                      int? selected;
+                      for (int i = 0; i < question.answers.length; i++) {
+                        if (question.answers[i].trueAnswer ?? false) {
+                          selected = i;
+                        }
+                      }
+                      return Container(
+                        margin: const EdgeInsets.all(SizesResources.s2),
+                        decoration: BoxDecoration(
+                            color: ColorsResources.onPrimary,
+                            boxShadow: ShadowsResources.mainBoxShadow,
+                            borderRadius: BorderRadius.circular(
+                              12,
+                            )),
+                        child: Material(
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(
+                              12,
+                            ),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => BankQuestionView(
+                                    canExit: true,
+                                    bank: Bank(
+                                      id: bQuestions[index].$2,
+                                      teacherEmail: "",
+                                      information: BankInformation(
+                                        title: "",
+                                        classs: "",
+                                        material: "",
+                                        teacher: "",
+                                        price: 0,
+                                        images: [],
+                                        video: [],
+                                        files: [],
+                                      ),
+                                      properties: BankProperties(
+                                        scrollable: false,
+                                        visible: false,
+                                      ),
+                                      questions: [],
+                                    ),
+                                    question: question,
+                                    selected: selected,
+                                    onAnswer: (question, selected) {},
+                                    onPop: () {
+                                      Navigator.of(context).pop();
+                                      initData();
+                                      setState(() {});
+                                    },
+                                    onNext: () {},
+                                    onPrevious: () {},
+                                    title: "سؤال محفوظ",
+                                    disableActions: true,
+                                    onExit: () {},
+                                  ),
                                 ),
-                                questions: [],
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(SizesResources.s4),
+                              child: Row(
+                                children: [
+                                  QuestionBodyWidget(
+                                    question: bQuestions[index].$1,
+                                    disableOpenImage: true,
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: () {
+                                      removeBankQ(bQuestions[index]);
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: ColorsResources.red,
+                                    ),
+                                  )
+                                ],
                               ),
-                              question: question,
-                              selected: selected,
-                              onAnswer: (question, selected) {},
-                              onPop: () {
-                                Navigator.of(context).pop();
-                                initData();
-                                setState(() {});
-                              },
-                              onNext: () {},
-                              onPrevious: () {},
-                              title: "سؤال محفوظ",
-                              disableActions: true,
-                              onExit: () {},
                             ),
                           ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(SizesResources.s4),
-                        child: Row(
-                          children: [
-                            QuestionBodyWidget(
-                              question: bQuestions[index].$1,
-                              disableOpenImage: true,
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              onPressed: () {
-                                removeBankQ(bQuestions[index]);
-                              },
-                              icon: const Icon(
-                                Icons.delete,
-                                color: ColorsResources.red,
-                              ),
-                            )
-                          ],
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ],
         ),
       ),

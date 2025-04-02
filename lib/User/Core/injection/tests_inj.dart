@@ -1,6 +1,8 @@
 import 'package:moatmat_app/User/Features/tests/data/datasources/tests_ds.dart';
+import 'package:moatmat_app/User/Features/tests/domain/repository/get_tests_by_ids_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/repository/t_repository.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/can_do_test_uc.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/get_outer_test_by_id_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
 
 import '../../Features/tests/data/repository/t_repository.dart';
@@ -21,6 +23,11 @@ void injectUC() {
       repository: locator(),
     ),
   );
+  locator.registerFactory<GetTestsByIdsUC>(
+    () => GetTestsByIdsUC(
+      repository: locator(),
+    ),
+  );
   locator.registerFactory<GetMaterialTestsTeachersUC>(
     () => GetMaterialTestsTeachersUC(
       repository: locator(),
@@ -38,6 +45,11 @@ void injectUC() {
   );
   locator.registerFactory<CanDoTestUC>(
     () => CanDoTestUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetOuterTestByIdUseCase>(
+    () => GetOuterTestByIdUseCase(
       repository: locator(),
     ),
   );

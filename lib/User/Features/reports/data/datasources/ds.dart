@@ -5,8 +5,6 @@ import 'package:moatmat_app/User/Features/reports/data/models/report_d_m.dart';
 import 'package:moatmat_app/User/Features/reports/domain/entities/reposrt_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../banks/domain/entites/bank.dart';
-import '../../../tests/domain/entities/test.dart';
 
 abstract class ReportsDataSource {
   Future<Unit> reportOnTest({
@@ -49,8 +47,10 @@ class ReportsDataSourceImple implements ReportsDataSource {
       name: name,
       teacher: teacher,
     );
-    var data = ReportDataModel.fromClass(report).toJson(); 
+    var data = ReportDataModel.fromClass(report).toJson();
+    //
     await client.from("reports").insert(data);
+    //
     return unit;
   }
 
@@ -72,8 +72,12 @@ class ReportsDataSourceImple implements ReportsDataSource {
       name: name,
       teacher: teacher,
     );
+    //
     var data = ReportDataModel.fromClass(report).toJson();
+    //
     await client.from("reports").insert(data);
+    //
+
     return unit;
   }
 

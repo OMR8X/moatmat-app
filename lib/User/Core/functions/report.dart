@@ -81,7 +81,7 @@ class _ReportDialogState extends State<ReportDialog> {
           (r) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("تم ارسال الابلاغ بنجاح"),
+                content: Text("تم ارسال الإبلاغ بنجاح"),
               ),
             );
             Navigator.of(context).pop();
@@ -89,8 +89,6 @@ class _ReportDialogState extends State<ReportDialog> {
         );
       });
     } else if (widget.tQuestion != null) {
-      print(widget.tQuestion?.id);
-
       await locator<ReportOnTestUseCase>()
           .call(
         questionID: widget.tQuestion!.id,
@@ -112,7 +110,7 @@ class _ReportDialogState extends State<ReportDialog> {
           (r) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("تم ارسال الابلاغ بنجاح"),
+                content: Text("تم ارسال الإبلاغ بنجاح"),
               ),
             );
             Navigator.of(context).pop();
@@ -130,13 +128,13 @@ class _ReportDialogState extends State<ReportDialog> {
     return Form(
       key: _formKey,
       child: AlertDialog(
-        title: const Text("الابلاغ عن سؤال"),
+        title: const Text("الإبلاغ عن سؤال"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: SizesResources.s2),
             MyTextFormFieldWidget(
-              hintText: "يرجى ذكر سبب الابلاغ",
+              hintText: "يرجى ذكر سبب الإبلاغ",
               validator: (s) {
                 return notEmptyValidator(text: s);
               },
@@ -162,7 +160,7 @@ class _ReportDialogState extends State<ReportDialog> {
                   style: FilledButton.styleFrom(
                     backgroundColor: ColorsResources.borders,
                   ),
-                  child: const Text("الغاء"),
+                  child: const Text("إلغاء"),
                 ),
                 FilledButton(
                   onPressed: () {

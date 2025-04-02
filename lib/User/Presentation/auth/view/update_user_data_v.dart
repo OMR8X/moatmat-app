@@ -119,7 +119,7 @@ class _UpdateUserDataViewState extends State<UpdateUserDataView> {
                   validator: (p0) {
                     return notEmptyValidator(text: p0);
                   },
-                  hintText: "الاسم الثلاثي",
+                  hintText: "الاسم الثلاثي باللغة العربية",
                   textInputAction: TextInputAction.next,
                   maxLength: 30,
                   inputFormatters: [

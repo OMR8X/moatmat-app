@@ -1,16 +1,20 @@
 import 'dart:async';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:moatmat_app/User/Core/errors/exceptions.dart';
+import 'package:moatmat_app/User/Core/services/cache/cache_manager.dart';
 import 'package:moatmat_app/User/Core/services/device_s.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
+import 'package:moatmat_app/User/Features/auth/domain/use_cases/sign_in_with_google_uc.dart';
+import 'package:moatmat_app/User/Features/auth/domain/use_cases/sign_out_uc.dart';
 import 'package:moatmat_app/User/Features/auth/domain/use_cases/update_user_data_uc.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/get_user_purchased_uc.dart';
 import 'package:moatmat_app/User/Features/update/domain/entites/update_info.dart';
 import 'package:moatmat_app/User/Features/update/domain/usecases/check_update_state_uc.dart';
+import 'package:moatmat_app/main.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -32,7 +36,7 @@ class AuthCubit extends Cubit<AuthState> {
       timer?.cancel();
     }
     timer = Timer.periodic(
-      const Duration(minutes: 5),
+      const Duration(seconds: 60),
       (t) {
         onCheck();
       },
@@ -44,7 +48,9 @@ class AuthCubit extends Cubit<AuthState> {
     //
     if (didCheckUpdate) {
       if (user == null) {
+        //
         emit(AuthOnBoarding());
+        //
       } else {
         //
         refresh();
@@ -57,15 +63,17 @@ class AuthCubit extends Cubit<AuthState> {
     //
     res.fold(
       (l) {
-        emit(const AuthError());
+        debugPrint((l.toString().contains("Failed host lookup")).toString());
+        emit(const AuthError(error: "لا يوجد اتصال بالانترنت"));
       },
       (r) {
         injectUpdateInfo(r);
-        if (r.appVersion < r.currentVersion ||
-            r.appVersion < r.minimumVersion) {
+        if (r.appVersion < r.currentVersion || r.appVersion < r.minimumVersion) {
           emit(AuthUpdate(updateInfo: r));
         } else {
+          //
           didCheckUpdate = true;
+          //
           if (user == null) {
             emit(AuthOnBoarding());
           } else {
@@ -85,7 +93,7 @@ class AuthCubit extends Cubit<AuthState> {
     //
     if (user == null) return;
     //
-    locator<GetUserDataUC>().call(uuid: user.id).then((value) {
+    locator<GetUserDataUC>().call(uuid: user.id, update: true).then((value) {
       value.fold(
         (l) {},
         (userData) async {
@@ -95,7 +103,9 @@ class AuthCubit extends Cubit<AuthState> {
             if (timer != null && (timer?.isActive ?? false)) {
               timer?.cancel();
             }
+            //
             startSignOut(forced: true);
+            //
             if (onSignedOut != null) {
               onSignedOut();
             }
@@ -115,23 +125,28 @@ class AuthCubit extends Cubit<AuthState> {
     //
     var user = Supabase.instance.client.auth.currentUser;
     //
-    //
     await locator<GetUserDataUC>().call(uuid: user!.id).then((value) {
       value.fold(
         (l) {
-          emit(const AuthError());
+          if (l is MissingUserDataFailure) {
+            emit(EnterUserData());
+          } else {
+            emit(AuthError(error: l.text));
+          }
         },
         (userData) async {
-          if (userData.deviceId == DeviceService().deviceId) {
+          if (userData.deviceId == DeviceService().deviceId || userData.deviceId.isEmpty) {
             injectUserData(userData);
             var res = await locator<GetUserPurchasedItemsUC>().call();
             res.fold(
               (l) {
-                emit(const AuthError());
+                emit(AuthError(error: l.text));
               },
               (r) async {
                 //
                 injectPurchasedItems(r);
+                //
+                locator<CacheManager>().uploadResults();
                 //
                 emit(AuthDone());
               },
@@ -221,6 +236,8 @@ class AuthCubit extends Cubit<AuthState> {
 
   //
   startAuth() async {
+    emit(AuthLoading());
+    await locator<SignOutUC>().call();
     emit(AuthStartAuth());
   }
 
@@ -229,13 +246,35 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthSignIn());
   }
 
+  startSignInWithGoogle() async {
+    //
+    //
+    emit(AuthLoading());
+    //
+    //
+    final response = await locator<SignInUCWithGoogleUC>().call();
+    //
+    response.fold(
+      (l) {
+        if (l is MissingUserDataFailure) {
+          emit(EnterUserData());
+        } else {
+          emit(AuthError(error: l.text));
+        }
+      },
+      (r) {
+        init();
+      },
+    );
+  }
+
   //
   startSignUp() async {
     emit(AuthSignUP());
   }
 
   //
-  startRessetPassword() async {
+  startResetPassword() async {
     emit(AuthResetPassword());
   }
 
@@ -245,7 +284,9 @@ class AuthCubit extends Cubit<AuthState> {
     timer?.cancel();
     //
     emit(AuthLoading());
-    await locator<SupabaseClient>().auth.signOut();
+    //
+    await locator<SignOutUC>().call();
+    //
     emit(AuthSignedOut(forced: forced));
   }
 

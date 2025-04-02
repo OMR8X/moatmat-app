@@ -14,7 +14,11 @@ class CodesCentersCubit extends Cubit<CodesCentersState> {
     //
     emit(CodesCentersLoading());
     //
-    emit(CodesCentersGovernorates(governorates: governoratesLst));
+    emit(CodesCentersGovernorate(governorate: governoratesLst));
+  }
+
+  back() {
+    init();
   }
 
   exploreGovernorate(String governorate) async {
@@ -26,7 +30,7 @@ class CodesCentersCubit extends Cubit<CodesCentersState> {
     res.fold((l) {
       emit(CodesCentersError(error: l.toString()));
     }, (r) {
-      emit(CodesCentersExplore(centers: r));
+      emit(CodesCentersExplore(centers: r, governorate: governorate));
     });
   }
 }

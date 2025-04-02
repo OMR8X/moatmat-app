@@ -31,7 +31,6 @@ class _QuestionBodyWidgetState extends State<QuestionBodyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.question.image);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -39,24 +38,21 @@ class _QuestionBodyWidgetState extends State<QuestionBodyWidget> {
           children: [
             //
             //
-            if (widget.question.upperImageText != null &&
-                widget.question.upperImageText != "")
+            if (widget.question.upperImageText != null && widget.question.upperImageText != "")
               QuestionTextBuilderWidget(
                 text: widget.question.upperImageText!,
                 equations: widget.question.equations,
                 colors: const [],
               ),
             //
-            if (widget.question.image != null &&
-                widget.question.image != "") ...[
+            if (widget.question.image != null && widget.question.image != "") ...[
               const SizedBox(height: SizesResources.s2),
               QuestionImageBuilderWidget(image: widget.question.image!),
               const SizedBox(height: SizesResources.s2),
             ],
 
             //
-            if (widget.question.lowerImageText != null &&
-                widget.question.lowerImageText != "") ...[
+            if (widget.question.lowerImageText != null && widget.question.lowerImageText != "") ...[
               const SizedBox(height: SizesResources.s2),
               QuestionTextBuilderWidget(
                 text: widget.question.lowerImageText!,
@@ -132,8 +128,7 @@ class QuestionTextBuilderWidget extends StatefulWidget {
   final List<QuestionWordColor> colors;
 
   @override
-  State<QuestionTextBuilderWidget> createState() =>
-      _QuestionTextBuilderWidgetState();
+  State<QuestionTextBuilderWidget> createState() => _QuestionTextBuilderWidgetState();
 }
 
 class _QuestionTextBuilderWidgetState extends State<QuestionTextBuilderWidget> {
@@ -154,6 +149,7 @@ class _QuestionTextBuilderWidgetState extends State<QuestionTextBuilderWidget> {
       if (color.index >= colors.length - 1) {
         continue;
       }
+
       colors[color.index] = color.color;
     }
     super.initState();
@@ -181,51 +177,78 @@ class _QuestionTextBuilderWidgetState extends State<QuestionTextBuilderWidget> {
 
   @override
   Widget build(BuildContext context) {
+    //
+    final RegExp englishWordRegExp = RegExp(r'^[a-zA-Z0-9\s.,;?!\()-]+$');
+
+    // Check if all words are English
+    bool allEnglish = words.every((word) => englishWordRegExp.hasMatch(word));
+    bool allNotEquations = words.every((word) => !containsEscapeSequence(word));
+
+    // If all words are English, return a normal Text widget
+    if (allEnglish && allNotEquations) {
+      return SizedBox(
+        width: SpacingResources.mainWidth(context) - SpacingResources.sidePadding - 70,
+        child: Directionality(
+          textDirection: isArabic(words.join(' ')) ? TextDirection.rtl : TextDirection.ltr,
+          child: Text(
+            words.join(' '),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.black, // Adjust color as needed
+            ),
+          ),
+        ),
+      );
+    }
     return SizedBox(
-      width: SpacingResources.mainWidth(context) -
-          SpacingResources.sidePadding -
-          70,
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: List.generate(words.length, (index) {
-          //
-          if (containsEscapeSequence(words[index])) {
+      width: SpacingResources.mainWidth(context) - SpacingResources.sidePadding - 70,
+      child: Directionality(
+        textDirection: isArabic(words.join(' ')) ? TextDirection.rtl : TextDirection.ltr,
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: List.generate(words.length, (index) {
             //
-            String equation = getEquationByFromText(words[index]);
-            //
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                return ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: constraints
-                        .maxWidth, // Ensure the widget does not exceed the parent width
-                  ),
-                  child: FittedBox(
-                    child: MathTexWidget(
-                      equation: equation,
-                      color: colors[index],
-                    ),
-                  ),
-                );
-              },
-            );
-            //
-          } else {
-            //
-            if (words[index] == '\n') {
+            if (containsEscapeSequence(words[index])) {
               //
-              return const NewLineWidget();
+              String equation = getEquationByFromText(words[index]);
+              //
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: constraints.maxWidth, // Ensure the widget does not exceed the parent width
+                    ),
+                    child: FittedBox(
+                      child: MathTexWidget(
+                        equation: equation,
+                        color: colors[index],
+                      ),
+                    ),
+                  );
+                },
+              );
               //
             } else {
               //
-              return TextWidget(text: words[index], color: colors[index]);
-              //
+              if (words[index] == '\n') {
+                //
+                return const NewLineWidget();
+                //
+              } else {
+                //
+                return TextWidget(text: words[index], color: colors[index]);
+                //
+              }
             }
-          }
-        }),
+          }),
+        ),
       ),
     );
+  }
+
+  bool isArabic(String text) {
+    return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
   }
 
   bool containsEscapeSequence(String input) {

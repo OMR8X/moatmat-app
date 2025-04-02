@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
+import 'package:moatmat_app/User/Core/services/encryption_s.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
 import 'package:moatmat_app/User/Features/notifications/domain/entities/notifications_data.dart';
-
 
 class UserData {
   //
@@ -41,6 +45,24 @@ class UserData {
     required this.phoneNumber,
     required this.whatsappNumber,
   });
+
+  String toQrValue() {
+    if (kDebugMode) {
+      final value = Random().nextInt(1000);
+      String str = json.encode({
+        "id": value,
+        "name": "student $value",
+      });
+      str = EncryptionService.encryptData(str);
+      return str;
+    }
+    String str = json.encode({
+      "id": id,
+      "name": name,
+    });
+    str = EncryptionService.encryptData(str);
+    return str;
+  }
 
   UserData copyWith({
     int? id,

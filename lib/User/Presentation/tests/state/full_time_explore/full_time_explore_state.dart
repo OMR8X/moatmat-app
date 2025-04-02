@@ -30,6 +30,21 @@ final class FullTimeExploreQuestion extends FullTimeExploreState {
   List<Object> get props => [question, currentQ, length, time];
 }
 
+final class FullTimeExploreQuestionScrollable extends FullTimeExploreState {
+  //
+  final List<(Question, int?)> questions;
+  //
+  final Duration time;
+
+  const FullTimeExploreQuestionScrollable({
+    required this.questions,
+    required this.time,
+  });
+
+  @override
+  List<Object> get props => [questions.map((e) => e.$2), time];
+}
+
 final class FullTimeExploreResult extends FullTimeExploreState {
   final List<(Question, int)> correct, wrong;
   final String result;

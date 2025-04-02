@@ -42,11 +42,7 @@ class TestQuestionView extends StatefulWidget {
   final Duration? time;
   final Question question;
   final int? selected;
-  final bool? showNext,
-      showPrevious,
-      disableActions,
-      enableActions,
-      disableExplain;
+  final bool? showNext, showPrevious, disableActions, enableActions, disableExplain;
   final VoidCallback onPop;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
@@ -57,8 +53,7 @@ class TestQuestionView extends StatefulWidget {
   State<TestQuestionView> createState() => _TestQuestionViewState();
 }
 
-class _TestQuestionViewState extends State<TestQuestionView>
-    with WidgetsBindingObserver {
+class _TestQuestionViewState extends State<TestQuestionView> with WidgetsBindingObserver {
   bool submit = true;
   bool didWarn = false;
   //
@@ -85,16 +80,15 @@ class _TestQuestionViewState extends State<TestQuestionView>
     if (didWarn) {
       widget.onExit();
     } else {
-      setState(() {
-        didWarn = true;
-      });
+      // setState(() {
+      //   didWarn = true;
+      // });
       showAlert(
         context: context,
         title: "تحذير",
         agreeBtn: "انهاء الاختبار",
         disagreeBtn: "اكمال الاختبار",
-        body:
-            "تكرار محاولة الغش مرة اخرى سيؤدي الى انهاء الاختبار ، هل انت متأكد من انك تريد انهاء الاختبار؟",
+        body: "تكرار محاولة الغش مرة اخرى سيؤدي إلى انهاء الاختبار ، هل انت متأكد من انك تريد انهاء الاختبار؟",
         onAgree: () {
           setState(() {
             submit = false;

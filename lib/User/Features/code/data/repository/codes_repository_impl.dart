@@ -19,14 +19,12 @@ class CodesRepositoryImpl implements CodesRepository {
     } on CodesUsedException {
       return left(const CodesUsedFailure());
     } on PostgrestException catch (e) {
-      print("failure  is $e");
       if (e.code == "22P02") {
         return left(const InvalidDataFailure());
       } else {
         return left(const AnonFailure());
       }
     } on Exception catch (e) {
-      print("filaure  is $e");
       return left(const AnonFailure());
     }
   }

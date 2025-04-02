@@ -4,7 +4,7 @@ import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/can_do_test_uc.dart';
-import 'package:moatmat_app/User/Presentation/videos/view/test_video_v.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/test_assets_v.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../Core/functions/show_alert.dart';
@@ -24,9 +24,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.test.information.previous != null) {
-        locator<CanDoTestUC>()
-            .call(test: widget.test.information.previous!)
-            .then((v) {
+        locator<CanDoTestUC>().call(test: widget.test.information.previous!).then((v) {
           v.fold(
             (l) {
               exitWithMsg("حصل خطآ اثناء الاتصال بالخادم");
@@ -40,8 +38,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
                 showAlert(
                   context: context,
                   title: "تنبيه",
-                  body:
-                      "يجب عليك حل الاختبار : \"$title\" \n لكي تتمكن من فتح الاختبار",
+                  body: "يجب عليك حل الاختبار : \"$title\" \n لكي تتمكن من فتح الاختبار",
                   onAgree: () {},
                 );
               }
@@ -73,11 +70,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
       onOpen();
       return;
     }
-    var res = await Supabase.instance.client
-        .from("results")
-        .select()
-        .eq("user_id", locator<UserData>().uuid)
-        .eq("test_id", widget.test.id);
+    var res = await Supabase.instance.client.from("results").select().eq("user_id", locator<UserData>().uuid).eq("test_id", widget.test.id);
     if (res.isEmpty) {
       onOpen();
     } else {
@@ -98,12 +91,13 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   }
 
   onOpen() {
-    bool con1 = widget.test.information.video != null;
+    bool con1 = widget.test.information.video?.isNotEmpty ?? false;
     bool con2 = widget.test.information.files?.isNotEmpty ?? false;
-    if (con1 || con2) {
+    bool con3 = widget.test.information.images?.isNotEmpty ?? false;
+    if (con1 || con2 || con3) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => TestVideoView(
+          builder: (context) => TestAssetsView(
             test: widget.test,
           ),
         ),
@@ -114,8 +108,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   }
 
   openTest() async {
-    if (widget.test.information.period == 0 ||
-        widget.test.information.period == null) {
+    if (widget.test.information.period == 0 || widget.test.information.period == null) {
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => TestExploreNoTimeView(

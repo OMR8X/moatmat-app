@@ -11,6 +11,7 @@ import 'package:moatmat_app/User/Features/notifications/domain/usecases/read_not
 import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cubit.dart';
 
 import '../../../Core/resources/texts_resources.dart';
+import '../../../Core/widgets/ui/empty_list_text.dart';
 
 class NotificationsView extends StatefulWidget {
   const NotificationsView({super.key});
@@ -37,68 +38,69 @@ class _NotificationsViewState extends State<NotificationsView> {
         builder: (context, state) {
           if (state is NotificationsInitial) {
             locator<ReadNotificationsUC>().call(state.notifications);
-            return ListView.builder(
-                itemCount: state.notifications.length,
-                itemBuilder: (context, index) {
-                  var format = DateFormat("yyyy / MM / dd");
-                  var dateString =
-                      format.format(state.notifications[index].date);
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: SizesResources.s1,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: SizesResources.s3,
-                          horizontal: SizesResources.s3,
-                        ),
-                        width: SpacingResources.mainWidth(context),
-                        decoration: BoxDecoration(
-                          color: ColorsResources.onPrimary,
-                          boxShadow: ShadowsResources.mainBoxShadow,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              child: Text(
-                                state.notifications[index].title,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: ColorsResources.blackText1,
-                                ),
-                              ),
+            return state.notifications.isEmpty
+                ? const EmptyListTextWidget()
+                : ListView.builder(
+                    itemCount: state.notifications.length,
+                    itemBuilder: (context, index) {
+                      var format = DateFormat("yyyy / MM / dd");
+                      var dateString = format.format(state.notifications[index].date);
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                              vertical: SizesResources.s1,
                             ),
-                            const SizedBox(height: SizesResources.s3),
-                            SizedBox(
-                              child: Text(
-                                state.notifications[index].content,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: ColorsResources.blackText2,
-                                ),
-                              ),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: SizesResources.s3,
+                              horizontal: SizesResources.s3,
                             ),
-                            const SizedBox(height: SizesResources.s3),
-                            SizedBox(
-                              child: Text(
-                                dateString,
-                                textAlign: TextAlign.end,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: ColorsResources.blackText2,
-                                ),
-                              ),
+                            width: SpacingResources.mainWidth(context),
+                            decoration: BoxDecoration(
+                              color: ColorsResources.onPrimary,
+                              boxShadow: ShadowsResources.mainBoxShadow,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                });
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  child: Text(
+                                    state.notifications[index].title,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: ColorsResources.blackText1,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: SizesResources.s3),
+                                SizedBox(
+                                  child: Text(
+                                    state.notifications[index].content,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: ColorsResources.blackText2,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: SizesResources.s3),
+                                SizedBox(
+                                  child: Text(
+                                    dateString,
+                                    textAlign: TextAlign.end,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: ColorsResources.blackText2,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    });
           } else {
             return const Center(
               child: CupertinoActivityIndicator(),

@@ -6,6 +6,7 @@ import 'package:moatmat_app/User/Features/update/domain/entites/update_info.dart
 import 'package:moatmat_app/User/Presentation/home/view/about_us_v.dart';
 import 'package:moatmat_app/User/Presentation/home/view/communicate_with_us_v.dart';
 import 'package:moatmat_app/User/Presentation/home/view/how_to_use_v.dart';
+import 'package:moatmat_app/User/Presentation/home/view/my_qr_code_view.dart';
 import '../../../Core/injection/app_inj.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/texts_resources.dart';
@@ -27,6 +28,14 @@ class _SettingsViewState extends State<SettingsView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppBarTitles.settings),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyQrCodeView()));
+            },
+            icon: Icon(Icons.qr_code),
+          )
+        ],
       ),
       body: Center(
         child: Column(

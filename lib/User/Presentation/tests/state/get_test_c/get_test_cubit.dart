@@ -88,22 +88,15 @@ class GetTestCubit extends Cubit<GetTestState> {
         },
         (r) {
           tests = r;
-          List<String> folders = r.map((e) => e.$1.information.folder).toList();
-          emit(GetTestSelectFolder(folders: folders, teacherData: teacherData));
+          emit(GetTestSelectFolder(teacherData: teacherData, tests: r, material: material!));
         },
       );
     });
   }
 
-  selectFolder(String folder) {
-    emit(GetTestSelectTest(
-      tests: tests.where((e) => e.$1.information.folder == folder).toList(),
-      title: folder,
-    ));
-  }
+  selectFolder(String folder) {}
 
   //
-
 
   //
   backToMaterials() {
@@ -118,8 +111,5 @@ class GetTestCubit extends Cubit<GetTestState> {
     emit(GetTestSelectTeacher(teachers: teachers));
   }
 
-  backToFolders() {
-    List<String> folders = tests.map((e) => e.$1.information.folder).toList();
-    emit(GetTestSelectFolder(folders: folders, teacherData: teacherData!));
-  }
+  backToFolders() {}
 }

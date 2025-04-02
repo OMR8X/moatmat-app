@@ -9,6 +9,8 @@ import 'package:moatmat_app/User/Presentation/banks/views/result_v.dart';
 
 import '../../../auth/state/auth_c/auth_cubit_cubit.dart';
 import '../../../auth/view/auth_views_manager.dart';
+import '../../state/full_time_explore/full_time_explore_cubit.dart';
+import '../questions_v.dart';
 
 class ExploreNoTimeView extends StatefulWidget {
   const ExploreNoTimeView({super.key, required this.bank});
@@ -69,8 +71,26 @@ class _ExploreNoTimeViewState extends State<ExploreNoTimeView> {
                 },
                 disableActions: false,
               );
-            }
-            if (state is NoTimeExploreResult) {
+            } else if (state is NoTimeExploreQuestionScrollable) {
+              return BankQuestionsView(
+                onAnswer: (index, question, selected) {
+                  context.read<NoTimeExploreCubit>().answerQuestion(
+                    index,
+                    (question, selected),
+                  );
+                },
+                onPop: () => Navigator.of(context).pop(),
+                title: "",
+                bank: widget.bank,
+                onExit: () {
+                  context.read<NoTimeExploreCubit>().finish(force: true);
+                },
+                questions: state.questions,
+                onFinish: () {
+                  context.read<NoTimeExploreCubit>().finish();
+                },
+              );
+            } else if (state is NoTimeExploreResult) {
               return BankResultView(
                 showCorrectAnswers: () {
                   Navigator.of(context).push(

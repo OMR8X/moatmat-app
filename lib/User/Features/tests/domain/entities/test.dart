@@ -1,9 +1,26 @@
+import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
+
 import '../../../../Core/injection/app_inj.dart';
 import '../../../purchase/domain/entites/purchase_item.dart';
 import 'test_information.dart';
 import 'test_properties.dart';
 import 'question.dart';
 
+/*
+TestInformation.title
+TestInformation.price
+TestInformation.period
+TestInformation.video
+TestInformation.files
+TestInformation.previous
+//
+TestProperties.exploreAnswers
+TestProperties.showAnswers
+TestProperties.timePerQuestion
+TestProperties.repeatable
+//
+questions
+*/
 class Test {
   final int id;
   final String teacherEmail;
@@ -36,6 +53,7 @@ class Test {
 
   PurchaseItem toPurchaseItem() {
     return PurchaseItem(
+      userName: locator<UserData>().name,
       amount: information.price ?? 0,
       itemId: "$id",
       itemType: "test",
@@ -48,7 +66,6 @@ class Test {
     //
     var items = locator<List<PurchaseItem>>();
     //
-
     for (var i in items) {
       if (i.itemId == "$id" && i.itemType == "test") {
         purchased = true;

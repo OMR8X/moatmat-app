@@ -10,7 +10,7 @@ abstract class BanksRepository {
     required String material,
   });
   // material teachers
-  Future<Either<Failure, List<(TeacherData,int)>>> getMaterialBanksTeachers({
+  Future<Either<Failure, List<(TeacherData, int)>>> getMaterialBanksTeachers({
     required String clas,
     required String material,
   });
@@ -24,5 +24,10 @@ abstract class BanksRepository {
   // bank by id
   Future<Either<Failure, Bank>> getBankById({
     required int id,
+  });
+  //
+  //
+  Future<Either<Exception, List<Bank>>> getBanksByIds({
+    required List<int> ids,
   });
 }

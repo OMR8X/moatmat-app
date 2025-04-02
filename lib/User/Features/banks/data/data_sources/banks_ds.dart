@@ -22,6 +22,11 @@ abstract class BanksDataSource {
     required String clas,
     required String material,
   });
+  //
+  //
+  Future<List<Bank>> getBanksByIds({
+    required List<int> ids,
+  });
   // bank by id
   Future<Bank> getBankById({required int id});
 }
@@ -37,11 +42,7 @@ class BanksDataSourceImpl implements BanksDataSource {
     //
     List<String> classes = [];
     //
-    var res = await client
-        .from("banks")
-        .select("information->>classs")
-        .eq("information->>material", material)
-        .or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
+    var res = await client.from("banks").select("information->>classs").eq("information->>material", material).or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
     //
     classes = res.map<String>((e) => e["classs"]).toList();
     //
@@ -60,12 +61,7 @@ class BanksDataSourceImpl implements BanksDataSource {
     //
     List<TeacherData> teachers = [];
 
-    var query1 = await client
-        .from("banks")
-        .select("teacher_email")
-        .eq("information->>material", material)
-        .eq("information->>classs", clas)
-        .or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
+    var query1 = await client.from("banks").select("teacher_email").eq("information->>material", material).eq("information->>classs", clas).or("properties->>visible.eq.true,properties->>visible.is.null");
     //
     var res = query1;
     //
@@ -73,18 +69,17 @@ class BanksDataSourceImpl implements BanksDataSource {
     //
     teachersEmails.removeWhere((e) => e.isEmpty);
     //
-    //
     var query2 = client
         .from("teachers_data")
         .select("")
-        //
-        .inFilter("email", teachersEmails);
+        //x
+        .inFilter("email", teachersEmails.toSet().toList());
     //
     var res2 = await query2;
     //
     teachers = res2.map((e) => TeacherDataModel.fromJson(e)).toList();
     //
-    return listTeacherToListWithCount(teachers,teachersEmails);
+    return listTeacherToListWithCount(teachers, teachersEmails);
   }
 
   @override
@@ -95,16 +90,30 @@ class BanksDataSourceImpl implements BanksDataSource {
   }) async {
     List<Bank> banks = [];
     //
-    var res = await client
-        .from("banks")
-        .select()
-        .eq("teacher_email", teacherEmail)
-        .eq("information->>material", material)
-        .eq("information->>classs", clas)
-        .or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
+    var res = await client.from("banks").select().eq("teacher_email", teacherEmail).eq("information->>material", material).eq("information->>classs", clas).or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
     //
     banks = res.map<Bank>((e) => BankModel.fromJson(e)).toList();
     return banksToBanksWithCount(banks);
+  }
+
+  @override
+  Future<List<Bank>> getBanksByIds({
+    required List<int> ids,
+  }) async {
+    //
+    final client = Supabase.instance.client;
+    //
+    final res = await client.from("banks").select().inFilter("id", ids).or(
+          "properties->>visible.eq.true,properties->>visible.is.null,properties.is.null",
+        );
+
+    //
+    if (res.isNotEmpty) {
+      final banks = res.map((e) => BankModel.fromJson(e)).toList();
+      return banks;
+    }
+    //
+    return [];
   }
 
   @override
@@ -134,8 +143,7 @@ List<(Bank, int)> banksToBanksWithCount(List<Bank> list) {
   return res;
 }
 
-List<(TeacherData, int)> listTeacherToListWithCount(
-    List<TeacherData> list, List<String> teacherStr) {
+List<(TeacherData, int)> listTeacherToListWithCount(List<TeacherData> list, List<String> teacherStr) {
   Map<String, int> value = {};
   for (var l in teacherStr) {
     if (value[l] != null) {

@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:moatmat_app/User/Core/functions/math/calculate_mark_f.dart';
-
-import '../../../Core/functions/math/mark_to_latter_f.dart';
 import '../../../Core/functions/parsers/date_to_text_f.dart';
 import '../../../Core/functions/parsers/period_to_text_f.dart';
 import '../../../Core/resources/colors_r.dart';
@@ -72,11 +68,21 @@ class ResultTileWidget extends StatelessWidget {
                               ),
                             )
                           ],
-                          if (result.bankId != null ||
-                              result.testId != null) ...[
+                          if (result.bankId != null || result.testId != null) ...[
                             const SizedBox(height: SizesResources.s2),
                             Text(
                               "الوقت المنقضي : ${periodToTextFunction(result.period)}",
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: ColorsResources.blackText1,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                          if (result.bankId == null || result.testId == null || result.outerTestId == null) ...[
+                            const SizedBox(height: SizesResources.s2),
+                            Text(
+                              "الدرجة : ${(result.mark)}",
                               style: const TextStyle(
                                 fontSize: 10,
                                 color: ColorsResources.blackText1,
@@ -98,17 +104,27 @@ class ResultTileWidget extends StatelessWidget {
                     ),
                   ),
                   //
-                  // if (result.bankId != null || result.testId != null)
-                  TextButton(
-                    onPressed: onExploreResult,
-                    child: const Text(
-                      "تفاصيل",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: ColorsResources.primary,
+                  if (result.bankId != null || result.testId != null || result.outerTestId != null)
+                    TextButton(
+                      onPressed: onExploreResult,
+                      child: const Text(
+                        "تفاصيل",
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: ColorsResources.primary,
+                        ),
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "نتيجة خارجية",
+                        style: TextStyle(
+                          fontSize: 10,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

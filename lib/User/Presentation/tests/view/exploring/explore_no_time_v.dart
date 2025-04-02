@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/functions/show_alert.dart';
+import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/auth_views_manager.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/no_time_explore/no_time_explore_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:moatmat_app/User/Presentation/tests/state/no_time_explore/no_tim
 import '../../../../Features/tests/domain/entities/test.dart';
 import '../list_of_answers_v.dart';
 import '../question_v.dart';
+import '../questions_v.dart';
 import '../result_v.dart';
 
 class TestExploreNoTimeView extends StatefulWidget {
@@ -20,7 +22,8 @@ class TestExploreNoTimeView extends StatefulWidget {
 
 class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView> {
   @override
-  void initState() {context.read<AuthCubit>().onCheck();
+  void initState() {
+    context.read<AuthCubit>().onCheck();
     super.initState();
     context.read<TestNoTimeExploreCubit>().init(widget.test);
   }
@@ -62,9 +65,33 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView> {
                   );
                 },
               );
+            } else if (state is NoTimeExploreQuestionScrollable) {
+              return TestQuestionsView(
+                onExit: () {
+                  context.read<TestNoTimeExploreCubit>().finish(force: true);
+                },
+                test: widget.test,
+                title: "",
+                questions: state.questions,
+                showPrevious: false,
+                showNext: false,
+                onNext: () {},
+                onPrevious: () {},
+                onPop: () => Navigator.of(context).pop(),
+                onAnswer: (index, question, selected) {
+                  cubit.answerQuestion(
+                    index,
+                    (question, selected),
+                  );
+                },
+                onFinish: () {
+                  context.read<TestNoTimeExploreCubit>().finish();
+                },
+              );
             }
             if (state is NoTimeExploreResult) {
               return TestResultView(
+                sendResultCompleter: cubit.sendResultCompleter,
                 explorable: widget.test.properties.exploreAnswers ?? false,
                 canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {
@@ -98,8 +125,17 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView> {
                 result: state.result,
               );
             }
-            return const Center(
-              child: CupertinoActivityIndicator(),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CupertinoActivityIndicator(),
+                  SizedBox(
+                    height: SizesResources.s6,
+                  ),
+                  Text("جار التحميل"),
+                ],
+              ),
             );
           },
         ),

@@ -12,4 +12,8 @@ abstract class ResultsRepository {
   Future<Either<Failure, List<Result>>> getLatestResults();
   //
   Future<Either<Failure, List<Result>>> getMyResults();
+  Future<Either<Failure, List<Result>>> getMyRepositoryResults({
+    int? testId,
+    int? bankId,
+  });
 }

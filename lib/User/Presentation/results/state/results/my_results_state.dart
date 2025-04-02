@@ -41,3 +41,17 @@ final class MyResultsExploreResult extends MyResultsState {
     required this.mark,
   });
 }
+
+final class MyResultsExploreResultOuterResult extends MyResultsState {
+  final int length;
+  final double mark;
+  final List<int?> answers;
+  final List<OuterQuestion> questions;
+
+  const MyResultsExploreResultOuterResult({
+    required this.length,
+    required this.mark,
+    required this.questions,
+    required this.answers,
+  });
+}

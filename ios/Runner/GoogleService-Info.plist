@@ -2,18 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>359748080763-81e9q7f7e49a9lqsi157jed7f38rht0h.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.359748080763-81e9q7f7e49a9lqsi157jed7f38rht0h</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>359748080763-7vl5ubi4o48g5t625c1dkaul80e9q130.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDBR5kOLCciFDCYq3alKrZvQfP7VbVcQlE</string>
+	<string>AIzaSyCzr5yweozr9Apx15ve130_A8A3unnOIpU</string>
 	<key>GCM_SENDER_ID</key>
-	<string>814213526279</string>
+	<string>359748080763</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.moatmat.app</string>
 	<key>PROJECT_ID</key>
-	<string>notifications-46c03</string>
+	<string>moatmat-project</string>
 	<key>STORAGE_BUCKET</key>
-	<string>notifications-46c03.appspot.com</string>
+	<string>moatmat-project.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:814213526279:ios:1596b31cc2a9baa5350ba2</string>
+	<string>1:359748080763:ios:22046be4c15709016dbede</string>
 </dict>
 </plist>

@@ -5,19 +5,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
-import 'package:moatmat_app/User/Core/resources/shadows_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
-import 'package:moatmat_app/User/Core/resources/texts_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/fields/text_input_field.dart';
-import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
-import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/pucrhase_list_of_item.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
-import 'package:moatmat_app/User/Presentation/teachers/view/teacher_profile_v.dart';
-import 'package:moatmat_app/User/Presentation/tests/state/get_test_c/get_test_cubit.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/test_searching_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/widgets/test_tile_w.dart';
 
@@ -89,10 +83,7 @@ class _PickTestViewState extends State<PickTestView> {
                           context: context,
                           barrierDismissible: false,
                           builder: (context) => BuyTestsWidget(
-                            tests: widget.tests
-                                .map((e) => e.$1)
-                                .where((e) => !e.isPurchased())
-                                .toList(),
+                            tests: widget.tests.map((e) => e.$1).where((e) => !e.isPurchased()).toList(),
                           ),
                         );
                       },
@@ -153,7 +144,15 @@ class _PickTestViewState extends State<PickTestView> {
                         TestTileWidget(
                           test: widget.tests[index].$1,
                           onPick: () {
-                            widget.onPick(widget.tests[index]);
+                            showDialog(
+                              context: context,
+                              builder: (context) => BuyTestWidget(
+                                test: widget.tests[index].$1,
+                                onPick: () {
+                                  widget.onPick(widget.tests[index]);
+                                },
+                              ),
+                            );
                           },
                         ),
                       ],
@@ -170,8 +169,7 @@ class _PickTestViewState extends State<PickTestView> {
 
   Widget getSubTitle(int index) {
     var test = widget.tests[index].$1;
-    if (test.information.password != null &&
-        test.information.password!.isNotEmpty) {
+    if (test.information.password != null && test.information.password!.isNotEmpty) {
       return const Text(
         "كلمة السر مطلوبة",
         style: TextStyle(
@@ -199,8 +197,7 @@ class EnterTestPasswordWidget extends StatefulWidget {
   final String password;
   final VoidCallback onOpen;
   @override
-  State<EnterTestPasswordWidget> createState() =>
-      _EnterTestPasswordWidgetState();
+  State<EnterTestPasswordWidget> createState() => _EnterTestPasswordWidgetState();
 }
 
 class _EnterTestPasswordWidgetState extends State<EnterTestPasswordWidget> {
@@ -307,7 +304,7 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
                   Navigator.of(context).pop();
                 },
                 child: const Text(
-                  "الغاء",
+                  "إلغاء",
                 ),
               ),
               FilledButton(
@@ -323,9 +320,7 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
                   //
                   items = widget.tests.map((e) => e.toPurchaseItem()).toList();
                   //
-                  await locator<PurchaseListOfItemUC>()
-                      .call(items: items)
-                      .then((value) {
+                  await locator<PurchaseListOfItemUC>().call(items: items).then((value) {
                     value.fold(
                       (l) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -376,5 +371,276 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
 
   String getCount() {
     return "${widget.tests.length} عنصر";
+  }
+}
+
+class BuyTestWidget extends StatefulWidget {
+  const BuyTestWidget({super.key, required this.test, this.onPick});
+  final Test test;
+  final VoidCallback? onPick;
+  @override
+  State<BuyTestWidget> createState() => _BuyTestWidgetState();
+}
+
+class _BuyTestWidgetState extends State<BuyTestWidget> {
+  bool loading = false;
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 16,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ///
+            const SizedBox(height: SizesResources.s3),
+
+            ///
+            Row(
+              children: [
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontFamily: "Tajawal",
+                      ),
+                      children: [
+                        TextSpan(
+                          text: widget.test.information.title,
+                          style: const TextStyle(
+                            color: ColorsResources.blackText1,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "  ${widget.test.questions.length} سؤال",
+                          style: const TextStyle(
+                            color: ColorsResources.blackText2,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s3),
+
+            ///
+            Text(
+              "المدة : ${getPeriodText()}",
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s1),
+
+            ///
+            Text(
+              parsOptionAvailabilityText("تصفح الأسئلة بعد الاختبار", widget.test.properties.exploreAnswers == true),
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s1),
+
+            ///
+            Text(
+              parsOptionAvailabilityText("عرض الإجابات الصحيحة", widget.test.properties.showAnswers == true),
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s1),
+
+            ///
+            Text(
+              parsOptionAbalebliltyText("قابل للاعادة", widget.test.properties.repeatable == true),
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s1),
+
+            ///
+            Text(
+              parsOptionExcitabilityText("يوجد اختبار شرطي", widget.test.information.previous != null),
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s1),
+
+            ///
+            Text(
+              "مقاطع فيديو : ${widget.test.information.video?.length ?? 0}",
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            Text(
+              "ملفات : ${widget.test.information.files?.length ?? 0}",
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            Text(
+              "صور : ${widget.test.information.images?.length ?? 0}",
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s3),
+
+            ///
+            if ((widget.onPick != null))
+              Row(
+                children: [
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      widget.onPick!();
+                    },
+                    child: const Text(
+                      "فتح",
+                      style: TextStyle(fontWeight: FontWeight.bold, color: ColorsResources.whiteText1),
+                    ),
+                  ),
+                ],
+              )
+
+            ///
+            else
+              Row(
+                children: [
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: ColorsResources.red,
+                    ),
+                    onPressed: loading
+                        ? null
+                        : () {
+                            Navigator.of(context).pop();
+                          },
+                    child: const Text(
+                      "إلغاء",
+                    ),
+                  ),
+                  const SizedBox(width: SizesResources.s2),
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: ColorsResources.green,
+                    ),
+                    onPressed: loading
+                        ? null
+                        : () async {
+                            setState(() {
+                              loading = true;
+                            });
+
+                            //
+                            await locator<PurchaseListOfItemUC>().call(items: [widget.test.toPurchaseItem()]).then((value) {
+                              value.fold(
+                                (l) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(l.text),
+                                    ),
+                                  );
+                                  Navigator.of(context).pop();
+                                },
+                                (r) async {
+                                  //
+                                  await context.read<AuthCubit>().refresh();
+                                  //
+                                  Navigator.of(context).pop();
+                                  //
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("تمت عملية الشراء بنجاح"),
+                                    ),
+                                  );
+                                },
+                              );
+                            });
+                          },
+                    child: loading
+                        ? const CupertinoActivityIndicator()
+                        : const Text(
+                            "شراء",
+                          ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String getPeriodText() {
+    if (widget.test.information.period == null) {
+      return "وقت مفتوح";
+    }
+    return "  ${widget.test.information.period! ~/ 60} دقيقة";
+  }
+
+  String parsOptionAvailabilityText(String text, bool allowed) {
+    String result = allowed ? "يسمح ب" : "غير مسموح ب";
+    return result + text;
+  }
+
+  String parsOptionAbalebliltyText(String text, bool allowed) {
+    String result = allowed ? "" : "غير ";
+    return result + text;
+  }
+
+  String parsOptionExcitabilityText(String text, bool allowed) {
+    String result = allowed ? "" : "لا ";
+    return result + text;
   }
 }

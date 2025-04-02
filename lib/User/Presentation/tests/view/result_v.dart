@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/shadows_r.dart';
@@ -18,6 +21,7 @@ class TestResultView extends StatelessWidget {
     required this.result,
     required this.canReTest,
     required this.explorable,
+    this.sendResultCompleter,
   });
   final String correctAnswers;
   final String wrongAnswers;
@@ -27,6 +31,7 @@ class TestResultView extends StatelessWidget {
   final VoidCallback reOpen;
   final VoidCallback backToHome;
   final bool canReTest, explorable;
+  final Completer<void>? sendResultCompleter;
 
   @override
   Widget build(BuildContext context) {
@@ -132,27 +137,40 @@ class TestResultView extends StatelessWidget {
                           ),
                         ),
                         if (wrongAnswers != '0' && explorable == true)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 20),
-                              TextButton.icon(
-                                onPressed: showWrongAnswers,
-                                icon: const Text(
-                                  TextsResources.show,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: ColorsResources.whiteText1,
-                                  ),
-                                ),
-                                label: const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 10,
-                                  color: ColorsResources.whiteText1,
-                                ),
-                              )
-                            ],
-                          ),
+                          FutureBuilder(
+                              future: sendResultCompleter?.future,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CupertinoActivityIndicator(
+                                      radius: 8,
+                                      color: Colors.white,
+                                    ),
+                                  );
+                                }
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const SizedBox(width: 20),
+                                    TextButton.icon(
+                                      onPressed: showWrongAnswers,
+                                      icon: const Text(
+                                        TextsResources.show,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: ColorsResources.whiteText1,
+                                        ),
+                                      ),
+                                      label: const Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 10,
+                                        color: ColorsResources.whiteText1,
+                                      ),
+                                    )
+                                  ],
+                                );
+                              }),
                       ],
                     ),
                   ),

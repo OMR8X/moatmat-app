@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:moatmat_app/User/Core/functions/show_answer.dart';
-import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Core/services/deep_links_s.dart';
 import 'package:moatmat_app/User/Core/widgets/fields/elevated_button_widget.dart';
-import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
-import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
 import 'package:moatmat_app/User/Presentation/banks/widgets/b_answer_w.dart';
 import 'package:moatmat_app/User/Presentation/banks/widgets/bank_q_box.dart';
@@ -56,8 +52,7 @@ class BankQuestionView extends StatefulWidget {
   State<BankQuestionView> createState() => _BankQuestionViewState();
 }
 
-class _BankQuestionViewState extends State<BankQuestionView>
-    with WidgetsBindingObserver {
+class _BankQuestionViewState extends State<BankQuestionView> with WidgetsBindingObserver {
   bool submit = true;
   bool didWarn = false;
   //
@@ -84,16 +79,15 @@ class _BankQuestionViewState extends State<BankQuestionView>
     if (didWarn) {
       widget.onExit();
     } else {
-      setState(() {
-        didWarn = true;
-      });
+      // setState(() {
+      //   didWarn = true;
+      // });
       showAlert(
         context: context,
         title: "تحذير",
         agreeBtn: "انهاء الاختبار",
         disagreeBtn: "اكمال الاختبار",
-        body:
-            "تكرار محاولة الغش مرة اخرى سيؤدي الى انهاء الاختبار ، هل انت متأكد من انك تريد انهاء الاختبار؟",
+        body: "تكرار محاولة الغش مرة اخرى سيؤدي إلى انهاء الاختبار ، هل انت متأكد من انك تريد انهاء الاختبار؟",
         onAgree: () {
           setState(() {
             submit = false;

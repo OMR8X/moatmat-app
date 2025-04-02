@@ -5,6 +5,7 @@ import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Presentation/banks/state/full_time_explore/full_time_explore_cubit.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/list_of_answers_v.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
+import 'package:moatmat_app/User/Presentation/banks/views/questions_v.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/result_v.dart';
 
 import '../../../auth/state/auth_c/auth_cubit_cubit.dart';
@@ -46,11 +47,10 @@ class _FullTimeExploreViewState extends State<FullTimeExploreView> {
         body: BlocBuilder<FullTimeExploreCubit, FullTimeExploreState>(
           builder: (context, state) {
             final cubit = context.read<FullTimeExploreCubit>();
-
             if (state is FullTimeExploreQuestion) {
               return BankQuestionView(
-                onExit: () {
-                  context.read<FullTimeExploreCubit>().finish();
+                onExit: () { 
+                  context.read<FullTimeExploreCubit>().finish(force: true);
                 },
                 bank: widget.bank,
                 title: "${state.currentQ + 1} / ${state.length}",
@@ -59,16 +59,34 @@ class _FullTimeExploreViewState extends State<FullTimeExploreView> {
                 selected: state.question.$2,
                 showPrevious: state.currentQ > 0,
                 showNext: true,
-                onNext: () =>
-                    context.read<FullTimeExploreCubit>().nextQuestion(),
-                onPrevious: () =>
-                    cubit.previousQuestion(index: state.currentQ - 1),
+                onNext: () => context.read<FullTimeExploreCubit>().nextQuestion(),
+                onPrevious: () => cubit.previousQuestion(index: state.currentQ - 1),
                 onPop: () => Navigator.of(context).pop(),
                 onAnswer: (question, selected) {
                   context.read<FullTimeExploreCubit>().answerQuestion(
                     state.currentQ,
                     (question, selected),
                   );
+                },
+              );
+            } else if (state is FullTimeExploreQuestionScrollable) {
+              return BankQuestionsView(
+                onAnswer: (index, question, selected) {
+                  context.read<FullTimeExploreCubit>().answerQuestion(
+                    index,
+                    (question, selected),
+                  );
+                },
+                onPop: () => Navigator.of(context).pop(),
+                title: "",
+                time: state.time,
+                bank: widget.bank,
+                onExit: () {
+                  context.read<FullTimeExploreCubit>().finish();
+                },
+                questions: state.questions,
+                onFinish: () {
+                  context.read<FullTimeExploreCubit>().finish();
                 },
               );
             } else if (state is FullTimeExploreResult) {
@@ -94,9 +112,7 @@ class _FullTimeExploreViewState extends State<FullTimeExploreView> {
                   );
                 },
                 reOpen: () {
-                  context
-                      .read<FullTimeExploreCubit>()
-                      .init(widget.bank, widget.minutes);
+                  context.read<FullTimeExploreCubit>().init(widget.bank, widget.minutes);
                 },
                 backToHome: () {
                   Navigator.of(context).pop();

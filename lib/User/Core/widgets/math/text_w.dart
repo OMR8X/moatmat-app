@@ -8,15 +8,22 @@ class TextWidget extends StatelessWidget {
   final Color? color;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 1),
-      child: Text(
-        " $text",
-        style: TextStyle(
-          fontSize: 16,
-          color: color ?? ColorsResources.blackText1,
+    return Directionality(
+      textDirection: isArabic(text) ? TextDirection.rtl : TextDirection.ltr,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 1),
+        child: Text(
+          " $text ",
+          style: TextStyle(
+            fontSize: 16,
+            color: color ?? ColorsResources.blackText1,
+          ),
         ),
       ),
     );
+  }
+
+  bool isArabic(String text) {
+    return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
   }
 }

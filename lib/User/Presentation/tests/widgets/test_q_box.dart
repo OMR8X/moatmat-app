@@ -49,7 +49,6 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
   @override
   void initState() {
     didAnswer = didAnswer;
-    checkLiked();
     super.initState();
   }
 
@@ -59,24 +58,7 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
     setState(() {
       didAnswer = widget.didAnswer;
     });
-    checkLiked();
     super.didUpdateWidget(oldWidget);
-  }
-
-  checkLiked() {
-    var likes = locator<UserData>().likes;
-    bool isLiked = false;
-    for (var l in likes) {
-      if (l.tQuestion?.id == widget.question.id) {
-        if ((l.testId) == widget.testID) {
-          isLiked = true;
-          break;
-        }
-      }
-    }
-    setState(() {
-      liked = isLiked;
-    });
   }
 
   @override
@@ -85,13 +67,11 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
     setState(() {
       didAnswer = widget.didAnswer;
     });
-    checkLiked();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -114,7 +94,7 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
             children: [
               if (!widget.disableActions)
                 TopItems(
-                  liked: liked,
+                  liked: locator<UserData>().likes.any((e) => e.tQuestion?.id == widget.question.id && e.testId == widget.testID),
                   onShare: widget.onShare,
                   onReport: widget.onReport,
                   onLike: (b) {
@@ -131,14 +111,9 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
               const SizedBox(height: SizesResources.s2),
               QuestionBodyWidget(question: widget.question),
               const SizedBox(height: SizesResources.s2),
-              if ((didAnswer &&
-                          (widget.question.explainImage != null &&
-                              widget.question.explainImage!.isNotEmpty) ||
-                      (widget.question.explain != null &&
-                          widget.question.explain!.isNotEmpty) ||
-                      (widget.question.video != null &&
-                          widget.question.video!.isNotEmpty &&
-                          didAnswer)) &&
+              if ((didAnswer && (widget.question.explainImage != null && widget.question.explainImage!.isNotEmpty) ||
+                      (widget.question.explain != null && widget.question.explain!.isNotEmpty) ||
+                      (widget.question.video != null && widget.question.video!.isNotEmpty && didAnswer)) &&
                   !widget.disableExplain)
                 Column(
                   children: [
@@ -161,151 +136,6 @@ class _TestQuestionBoxState extends State<TestQuestionBox> {
     );
   }
 }
-
-// class TestQuestionBodyWidget extends StatelessWidget {
-//   const TestQuestionBodyWidget({
-//     super.key,
-//     required this.question,
-//     this.disableOpenImage = false,
-//   });
-//   final Question question;
-//   final bool disableOpenImage;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         if (question.image != null && question.image!.isNotEmpty)
-//           Column(
-//             children: [
-//               const SizedBox(height: SizesResources.s2),
-//               GestureDetector(
-//                 onTap: () {
-//                   if (disableOpenImage) return;
-//                   Navigator.of(context).push(
-//                     MaterialPageRoute(
-//                       builder: (context) =>
-//                           ExploreImage(image: question.image!),
-//                     ),
-//                   );
-//                 },
-//                 child: ClipRRect(
-//                   borderRadius: BorderRadius.circular(12),
-//                   child: Image.network(
-//                     question.image!,
-//                     width: SpacingResources.mainWidth(context) - 50,
-//                     fit: BoxFit.fitWidth,
-//                     frameBuilder:
-//                         (context, child, frame, wasSynchronouslyLoaded) {
-//                       if (frame == null) {
-//                         return SizedBox(
-//                           width: SpacingResources.mainWidth(context) - 50,
-//                           height: 200,
-//                           child: Shimmer.fromColors(
-//                               baseColor: Colors.grey[400]!,
-//                               highlightColor: Colors.grey[300]!,
-//                               child: const SizedBox(
-//                                 width: 200,
-//                                 height: 100,
-//                                 // color: ColorsResources.background,
-//                               )),
-//                         );
-//                       } else {
-//                         return SizedBox(
-//                           child: child,
-//                         );
-//                       }
-//                     },
-//                     loadingBuilder: (context, child, p) {
-//                       if (p == null) {
-//                         return child;
-//                       } else {
-//                         return SizedBox(
-//                           width: SpacingResources.mainWidth(context) - 50,
-//                           height: 200,
-//                           child: Shimmer.fromColors(
-//                               baseColor: Colors.grey[400]!,
-//                               highlightColor: Colors.grey[300]!,
-//                               child: Container(
-//                                 width: 200,
-//                                 height: 100,
-//                                 color: ColorsResources.background,
-//                               )),
-//                         );
-//                       }
-//                     },
-//                   ),
-//                 ),
-//               ),
-//               const SizedBox(height: SizesResources.s3),
-//             ],
-//           ),
-//         if (question.question != null)
-//           SizedBox(
-//             child: Text(
-//               question.question!,
-//               textAlign: TextAlign.center,
-//               style: const TextStyle(
-//                 letterSpacing: 0.2,
-//                 height: 1.6,
-//                 color: ColorsResources.blackText1,
-//               ),
-//             ),
-//           ),
-//         if (question.equation != null &&
-//             question.equation != "" &&
-//             question.question != null &&
-//             question.question != "")
-//           const SizedBox(height: SizesResources.s3),
-//         if (question.equation != null) ...[
-//           SizedBox(
-//             width: SpacingResources.mainWidth(context),
-//             child: RichText(
-//               text: TextSpan(
-//                 style: const TextStyle(
-//                   fontSize: 14.0,
-//                   color: Colors.black,
-//                   fontFamily: "Almarai",
-//                   height: 2,
-//                 ),
-//                 children: List.generate(
-//                   fixTheError(question.equation!).length,
-//                   (index) {
-//                     if (!containsArabic(
-//                         fixTheError(question.equation!)[index])) {
-//                       return WidgetSpan(
-//                         alignment: PlaceholderAlignment.middle,
-//                         child: Padding(
-//                           padding: const EdgeInsets.symmetric(
-//                             horizontal: 2.5,
-//                             vertical: 2,
-//                           ),
-//                           child: Padding(
-//                             padding: const EdgeInsets.only(top: 5),
-//                             child: SizedBox(
-//                               child: Math.tex(
-//                                 fixTheError(question.equation!)[index],
-//                                 textStyle: const TextStyle(fontSize: 17),
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       );
-//                     } else {
-//                       return TextSpan(
-//                         text: " ${fixTheError(question.equation!)[index]}  ",
-//                         style: const TextStyle(fontSize: 14),
-//                       );
-//                     }
-//                   },
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ]
-//       ],
-//     );
-//   }
-// }
 
 class TopItems extends StatelessWidget {
   const TopItems({
@@ -361,7 +191,11 @@ class ExploreImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        foregroundColor: ColorsResources.whiteText1,
+        backgroundColor: ColorsResources.blackText1,
+      ),
+      backgroundColor: ColorsResources.blackText1,
       body: Center(
         child: SizedBox(
           width: SpacingResources.mainWidth(context),

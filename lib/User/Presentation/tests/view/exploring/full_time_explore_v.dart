@@ -5,11 +5,13 @@ import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/result_v.dart';
 
 import '../../../../Core/functions/show_alert.dart';
+import '../../../../Core/resources/sizes_resources.dart';
 import '../../../auth/state/auth_c/auth_cubit_cubit.dart';
 import '../../../auth/view/auth_views_manager.dart';
 import '../../state/full_time_explore/full_time_explore_cubit.dart';
 import '../list_of_answers_v.dart';
 import '../question_v.dart';
+import '../questions_v.dart';
 
 class TestFullTimeExploreView extends StatefulWidget {
   const TestFullTimeExploreView({
@@ -20,15 +22,15 @@ class TestFullTimeExploreView extends StatefulWidget {
   final int minutes;
   final Test test;
   @override
-  State<TestFullTimeExploreView> createState() =>
-      _TestFullTimeExploreViewState();
+  State<TestFullTimeExploreView> createState() => _TestFullTimeExploreViewState();
 }
 
 class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
   bool submit = true;
   bool didAlert = false;
   @override
-  void initState() {context.read<AuthCubit>().onCheck();
+  void initState() {
+    context.read<AuthCubit>().onCheck();
     context.read<TestFullTimeExploreCubit>().init(widget.test, widget.minutes);
 
     super.initState();
@@ -65,8 +67,7 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
                 showPrevious: state.currentQ > 0,
                 showNext: true,
                 onNext: () => cubit.nextQuestion(),
-                onPrevious: () =>
-                    cubit.previousQuestion(index: state.currentQ - 1),
+                onPrevious: () => cubit.previousQuestion(index: state.currentQ - 1),
                 onPop: () => Navigator.of(context).pop(),
                 onAnswer: (question, selected) {
                   context.read<TestFullTimeExploreCubit>().answerQuestion(
@@ -75,9 +76,35 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
                   );
                 },
               );
+            } else if (state is FullTimeExploreQuestionScrollable) {
+              return TestQuestionsView(
+                onExit: () {
+                  context.read<TestFullTimeExploreCubit>().finish(force: true);
+                },
+                enableActions: true,
+                test: widget.test,
+                title: "",
+                time: state.time,
+                questions: state.questions,
+                showPrevious: true,
+                showNext: true,
+                onNext: () {},
+                onPrevious: () {},
+                onPop: () => Navigator.of(context).pop(),
+                onAnswer: (index, question, selected) {
+                  context.read<TestFullTimeExploreCubit>().answerQuestion(
+                    index,
+                    (question, selected),
+                  );
+                },
+                onFinish: () {
+                  context.read<TestFullTimeExploreCubit>().finish();
+                },
+              );
             } else if (state is FullTimeExploreResult) {
               submit = false;
               return TestResultView(
+                sendResultCompleter: cubit.sendResultCompleter,
                 explorable: widget.test.properties.exploreAnswers ?? false,
                 canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {
@@ -101,9 +128,7 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
                   );
                 },
                 reOpen: () {
-                  context
-                      .read<TestFullTimeExploreCubit>()
-                      .init(widget.test, widget.minutes);
+                  context.read<TestFullTimeExploreCubit>().init(widget.test, widget.minutes);
                 },
                 backToHome: () {
                   Navigator.of(context).pop();
@@ -114,8 +139,17 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
               );
             }
 
-            return const Center(
-              child: CupertinoActivityIndicator(),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CupertinoActivityIndicator(),
+                  SizedBox(
+                    height: SizesResources.s6,
+                  ),
+                  Text("جار التحميل"),
+                ],
+              ),
             );
           },
         ),

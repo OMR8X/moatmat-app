@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
@@ -10,8 +11,7 @@ import '../../widgets/test_tile_w.dart';
 import 'check_if_test_done_v.dart';
 
 class TestSearchingView extends StatefulWidget {
-  const TestSearchingView(
-      {super.key, required this.tests, required this.onSelect});
+  const TestSearchingView({super.key, required this.tests, required this.onSelect});
   final List<(Test, int)> tests;
   final Function((Test, int)) onSelect;
   @override
@@ -28,9 +28,7 @@ class _TestSearchingViewState extends State<TestSearchingView> {
     _controller.addListener(() {
       setState(() {
         searchedText = _controller.value.text;
-        result = widget.tests
-            .where((e) => e.$1.information.title.contains(searchedText))
-            .toList();
+        result = widget.tests.where((e) => e.$1.information.title.contains(searchedText)).toList();
       });
     });
     super.initState();
@@ -39,6 +37,7 @@ class _TestSearchingViewState extends State<TestSearchingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsResources.primary,
       body: SafeArea(
           child: Column(
         children: [
@@ -46,30 +45,34 @@ class _TestSearchingViewState extends State<TestSearchingView> {
             padding: const EdgeInsets.all(SpacingResources.sidePadding),
             child: TextFormField(
               controller: _controller,
+              style: const TextStyle(color: ColorsResources.whiteText1),
               decoration: InputDecoration(
                 hintText: "البحث عن اختبار",
                 border: const OutlineInputBorder(),
+                hintStyle: const TextStyle(color: ColorsResources.whiteText1),
                 suffixIcon: IconButton(
                   onPressed: () {
                     _controller.clear();
                   },
-                  icon: const Icon(Icons.replay),
+                  icon: const Icon(
+                    Icons.close,
+                    color: ColorsResources.whiteText1,
+                  ),
                 ),
                 icon: IconButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: ColorsResources.whiteText1,
+                  ),
                 ),
               ),
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1,
-              ),
+            child: ListView.builder(
               padding: const EdgeInsets.symmetric(
                 vertical: SizesResources.s2,
               ),
@@ -97,16 +100,6 @@ class _TestSearchingViewState extends State<TestSearchingView> {
                 );
               },
             ),
-            // child: ListView.builder(
-            //   itemCount: result.length,
-            //   itemBuilder: (context, index) => TouchableTileWidget(
-            //     title: result[index].$1.information.title,
-            //     iconData: Icons.arrow_forward_ios,
-            //     onTap: () {
-            //       widget.onSelect(result[index]);
-            //     },
-            //   ),
-            // ),
           ),
         ],
       )),

@@ -33,11 +33,28 @@ class ResultsRepositoryImpl implements ResultsRepository {
   }
 
   @override
+  Future<Either<Failure, List<Result>>> getMyRepositoryResults({
+    int? testId,
+    int? bankId,
+  }) async {
+    try {
+      var res = await dataSource.getMyRepositoryResults(
+        testId: testId,
+        bankId: bankId,
+      );
+      return right(res);
+    } on Exception {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
   Future<Either<Failure, List<Result>>> getMyResults() async {
     try {
       var res = await dataSource.getMyResults();
       return right(res);
-    } on Exception {
+    } on Exception catch (e) {
+      print(e);
       return left(const AnonFailure());
     }
   }

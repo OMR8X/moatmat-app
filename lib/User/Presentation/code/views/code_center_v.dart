@@ -23,6 +23,12 @@ class CodeCenterView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(center.name),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Image.asset(ImagesResources.whatsappImage),
+          ),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: SizesResources.s10),
@@ -66,8 +72,7 @@ class CodeCenterView extends StatelessWidget {
             //
             GestureDetector(
               onPanDown: (details) {
-                Clipboard.setData(ClipboardData(text: center.phone))
-                    .then((value) {
+                Clipboard.setData(ClipboardData(text: center.phone)).then((value) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("تم النسخ"),

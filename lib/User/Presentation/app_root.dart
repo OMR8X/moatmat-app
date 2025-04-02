@@ -1,4 +1,3 @@
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
@@ -16,17 +15,17 @@ class AppRoot extends StatefulWidget {
 class _AppRootState extends State<AppRoot> {
   @override
   void initState() {
-    //
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'تطبيق موتمت',
+      title: 'موتمت',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: ColorsResources.primary),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: ColorsResources.primary,
+        ),
         useMaterial3: true,
         fontFamily: "Tajawal",
         //
@@ -49,9 +48,17 @@ class _AppRootState extends State<AppRoot> {
           ),
         ),
         filledButtonTheme: FilledButtonThemeData(
-            style: FilledButton.styleFrom(
-          backgroundColor: ColorsResources.primary,
-        )),
+          style: FilledButton.styleFrom(
+            backgroundColor: ColorsResources.primary,
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(
+              color: ColorsResources.darkPrimary,
+            ),
+          ),
+        ),
         //
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

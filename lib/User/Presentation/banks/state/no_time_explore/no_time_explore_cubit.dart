@@ -4,6 +4,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
 
@@ -22,8 +23,9 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   late List<(Question, int?)> questions;
   late int currentQuestion;
   bool didSubmit = false;
-  late Duration period;
   Timer? _timer;
+  late Duration period;
+
   late List<int?> userAnswers;
   List<int?> wrongAnswers = [];
   void init(Bank bank) {
@@ -57,6 +59,9 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
       userAnswers[index] = question.$1.answers[question.$2!].id;
     }
     //
+    questions[index] = (question.$1, question.$2);
+    emitState();
+    //
     Question currentQuestion = questions[index].$1;
     List<int> trueIndexes = [];
     for (int i = 0; i < currentQuestion.answers.length; i++) {
@@ -69,8 +74,6 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     } else {
       AudioPlayer().play(AssetSource(AudiosResources.wrongAnswer), volume: 2);
     }
-    questions[index] = (question.$1, question.$2);
-    emitState();
   }
 
   void variables(Bank bank) {
@@ -104,7 +107,22 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     });
   }
 
-  void finish() {
+  void finish({bool force = false}) {
+    //
+    if (bank.properties.scrollable == true && !force) {
+      //
+      bool leftQuestion = false;
+      //
+      for (var q in questions) {
+        if (q.$2 == null) {
+          leftQuestion = true;
+        }
+      }
+      if (leftQuestion) {
+        Fluttertoast.showToast(msg: "يجب الاجابة على جميع الأسئلة");
+        return;
+      }
+    }
     List<(Question, int)> correct = [];
     List<(Question, int)> wrong = [];
     for (var q in questions) {
@@ -135,9 +153,6 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
       wrong: wrong,
       result: ((correct.length / questions.length) * 100).toStringAsFixed(2),
     ));
-    if (_timer?.isActive ?? false) {
-      _timer!.cancel();
-    }
   }
 
   submitResult(List<int?> wrongAnswers, double result) async {
@@ -152,7 +167,7 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     //
     var userData = locator<UserData>();
 //
-    print(period.inSeconds);
+
     //
     await locator<AddResultUC>().call(
       result: Result(
@@ -166,6 +181,8 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
         testName: bank.information.title,
         userId: userData.uuid,
         testId: null,
+        form: null,
+        outerTestId: null,
         bankId: bank.id,
         userName: userData.name,
       ),
@@ -173,11 +190,17 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   }
 
   emitState() {
-    emit(NoTimeExploreQuestion(
-      question: questions[currentQuestion],
-      currentQ: currentQuestion,
-      length: questions.length,
-    ));
+    if (bank.properties.scrollable == true) {
+      emit(NoTimeExploreQuestionScrollable(
+        questions: questions,
+      ));
+    } else {
+      emit(NoTimeExploreQuestion(
+        question: questions[currentQuestion],
+        currentQ: currentQuestion,
+        length: questions.length,
+      ));
+    }
   }
 }
 // result

@@ -61,8 +61,7 @@ class ExploreQuestionAppBarWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                       decoration: BoxDecoration(
                         color: ColorsResources.darkPrimary,
                         borderRadius: BorderRadius.circular(12),
@@ -91,20 +90,20 @@ class ExploreQuestionAppBarWidget extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 14, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: ColorsResources.darkPrimary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      title,
-                      style: FontsResources.extraBoldStyle().copyWith(
-                        color: ColorsResources.whiteText1,
+                  if (title.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: ColorsResources.darkPrimary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        title,
+                        style: FontsResources.extraBoldStyle().copyWith(
+                          color: ColorsResources.whiteText1,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

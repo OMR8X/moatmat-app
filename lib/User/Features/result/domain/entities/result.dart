@@ -12,6 +12,10 @@ class Result {
   //
   final int? bankId;
   //
+  final int? outerTestId;
+  //
+  final int? form;
+  //
   final List<int?> answers;
   //
   final List<int?> wrongAnswers;
@@ -34,6 +38,8 @@ class Result {
     required this.userNumber,
     required this.testId,
     required this.bankId,
+    required this.form,
+    required this.outerTestId,
     required this.mark,
     required this.answers,
     required this.wrongAnswers,
@@ -59,6 +65,8 @@ class Result {
     String? testName,
     String? userName,
     double? testAverage,
+    int? form,
+    int? outerTestId,
   }) {
     return Result(
       id: id ?? this.id,
@@ -73,6 +81,8 @@ class Result {
       period: period ?? this.period,
       testName: testName ?? this.testName,
       userName: userName ?? this.userName,
+      form: form ?? this.form,
+      outerTestId: outerTestId ?? this.outerTestId,
     );
   }
 }

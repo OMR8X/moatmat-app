@@ -41,6 +41,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
+    //
     context.read<NotificationsCubit>().init();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       DeepLinkService.initDeepLinks(
@@ -95,7 +96,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
               );
             },
-            onOpenNotifications: () {
+            onOpenNotifications: () async {
               Navigator.of(context)
                   .push(
                 MaterialPageRoute(
@@ -230,8 +231,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                                 errorBuilder: (context, error, stackTrace) {
                                   return const SizedBox(
                                     child: Center(
-                                      child:
-                                          Text("حدث خطا ما اثناء تحميل الصورة"),
+                                      child: Text("حدث خطا ما اثناء تحميل الصورة"),
                                     ),
                                   );
                                 },
@@ -240,9 +240,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                                     return child;
                                   } else {
                                     return SizedBox(
-                                      width:
-                                          SpacingResources.mainWidth(context) -
-                                              50,
+                                      width: SpacingResources.mainWidth(context) - 50,
                                       height: 200,
                                       child: Shimmer.fromColors(
                                         baseColor: Colors.grey[400]!,
@@ -274,7 +272,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                       color: ColorsResources.homeBanks,
                       tColor: ColorsResources.blueText,
                       image: "assets/images/home/banks.png",
-                      title: "بنوك الاسئلة",
+                      title: "بنوك الأسئلة",
                       onTap: () {
                         context.read<AuthCubit>().onCheck(
                           onSignedOut: () {
@@ -489,9 +487,7 @@ class HomeAppBarWidget extends StatelessWidget {
                               return Positioned(
                                 child: Icon(
                                   Icons.brightness_1,
-                                  color: state.newNotifications
-                                      ? Colors.red
-                                      : Colors.transparent,
+                                  color: state.newNotifications ? Colors.red : Colors.transparent,
                                   size: 9,
                                 ),
                               );

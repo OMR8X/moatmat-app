@@ -1,4 +1,3 @@
-
 import 'package:moatmat_app/User/Features/code/domain/use_cases/get_codes_centers_uc.dart';
 
 import '../../Features/code/data/data_sources/codes_ds.dart';
@@ -42,6 +41,9 @@ void injectRepo() {
 
 void injectDS() {
   locator.registerFactory<CodesDataSource>(
-    () => CodesDataSourceImpl(client: locator()),
+    () => CodesDataSourceImpl(
+      client: locator(),
+      cacheManager: locator(),
+    ),
   );
 }

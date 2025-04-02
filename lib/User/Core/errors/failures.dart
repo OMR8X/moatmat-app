@@ -12,6 +12,12 @@ class AnonFailure extends Failure {
   List<Object?> get props => [];
 }
 
+class CancelFailure extends Failure {
+  const CancelFailure() : super("تم إلغاء العملية");
+  @override
+  List<Object?> get props => [];
+}
+
 class OfflineFailure extends Failure {
   const OfflineFailure() : super("لا يوجد اتصال بالإنترنت.");
   @override
@@ -49,8 +55,13 @@ class InvalidDataFailure extends Failure {
 }
 
 class NotEnoughtBalaneFailure extends Failure {
-  const NotEnoughtBalaneFailure()
-      : super("لا يوجد رصيد كافي لاتمام عملية الشراء.!");
+  const NotEnoughtBalaneFailure() : super("لا يوجد رصيد كافي لاتمام عملية الشراء.!");
+  @override
+  List<Object?> get props => [];
+}
+
+class MissingUserDataFailure extends Failure {
+  const MissingUserDataFailure() : super("لم يتم العثور على معلومات المستخدم.!");
   @override
   List<Object?> get props => [];
 }

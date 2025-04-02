@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:moatmat_app/User/Core/injection/banks_inj.dart';
+import 'package:moatmat_app/User/Core/injection/cash_inj.dart';
 import 'package:moatmat_app/User/Core/injection/notifications_inf.dart';
 import 'package:moatmat_app/User/Core/injection/reports_inj.dart';
 import 'package:moatmat_app/User/Core/injection/results_inj.dart';
@@ -16,7 +17,6 @@ initGetIt() async {
   var sp = await SharedPreferences.getInstance();
   locator.registerSingleton(sp);
   //
-
   injectAuth();
   codesInjector();
   injectBanks();
@@ -26,4 +26,5 @@ initGetIt() async {
   injectNotifications();
   injectResults();
   injectUpdate();
+  injectCache();
 }

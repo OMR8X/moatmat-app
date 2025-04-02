@@ -4,6 +4,7 @@ import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 
 import 'package:moatmat_app/User/Core/resources/texts_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
+import 'package:moatmat_app/User/Core/widgets/ui/empty_list_text.dart';
 import 'package:moatmat_app/User/Presentation/banks/state/get_bank_c/get_bank_cubit.dart';
 
 class PickCategoryView extends StatefulWidget {
@@ -57,19 +58,19 @@ class _PickCategoryViewState extends State<PickCategoryView> {
               : null,
           actions: widget.actions,
         ),
-        body: ListView.builder(
-          itemCount: widget.categories.length,
-          itemBuilder: (context, index) => TouchableTileWidget(
-            title: widget.categories[index],
-            subTitle: widget.subCategories != null
-                ? widget.subCategories![index]
-                : null,
-            iconData: Icons.arrow_forward_ios,
-            onTap: () {
-              widget.onPick(widget.categories[index]);
-            },
-          ),
-        ),
+        body: widget.categories.isEmpty
+            ? const EmptyListTextWidget()
+            : ListView.builder(
+                itemCount: widget.categories.length,
+                itemBuilder: (context, index) => TouchableTileWidget(
+                  title: widget.categories[index],
+                  subTitle: widget.subCategories != null ? widget.subCategories![index] : null,
+                  iconData: Icons.arrow_forward_ios,
+                  onTap: () {
+                    widget.onPick(widget.categories[index]);
+                  },
+                ),
+              ),
       ),
     );
   }

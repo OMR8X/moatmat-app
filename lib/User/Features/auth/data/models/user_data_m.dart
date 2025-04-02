@@ -23,8 +23,8 @@ class UserDataModel extends UserData {
   });
   factory UserDataModel.fromJson(Map json) {
     return UserDataModel(
-      id: json["id"],
-      uuid: json["uuid"],
+      id: json["id"] ?? "",
+      uuid: json["uuid"] ?? "",
       balance: json["balance"],
       name: json["name"],
       email: json["email"],
@@ -49,8 +49,7 @@ class UserDataModel extends UserData {
       notifications: json["notifications"] == null
           ? []
           : List.generate((json["notifications"] as List).length, (index) {
-              return NotificationDataModel.fromJson(
-                  json["notifications"][index]);
+              return NotificationDataModel.fromJson(json["notifications"][index]);
             }),
     );
   }
@@ -76,8 +75,7 @@ class UserDataModel extends UserData {
   }
 
   toJson() {
-    return {
-      "uuid": uuid,
+    Map json = {
       "balance": balance,
       "name": name.trim(),
       "email": email.trim(),
@@ -99,5 +97,12 @@ class UserDataModel extends UserData {
         return NotificationDataModel.fromClass(e).toJson();
       }).toList(),
     };
+    if (id != 0) {
+      json['id'] = id;
+    }
+    if (uuid.isNotEmpty) {
+      json['uuid'] = uuid;
+    }
+    return json;
   }
 }

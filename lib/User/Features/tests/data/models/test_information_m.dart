@@ -8,16 +8,17 @@ class TestInformationModel extends TestInformation {
     required super.classs,
     required super.material,
     required super.teacher,
-    required super.folder,
     required super.price,
     required super.password,
     required super.period,
     required super.video,
+    required super.images,
     required super.files,
     required super.previous,
   });
 
   factory TestInformationModel.fromJson(Map json) {
+    print(json);
     return TestInformationModel(
       title: json["title"],
       classs: json["classs"],
@@ -26,17 +27,28 @@ class TestInformationModel extends TestInformation {
       price: json["price"],
       password: json["password"],
       period: json["period"],
-      video: json["video"],
-      folder: json["folder"] ?? "المجلد الرئيسي",
+      images: (json["images"] ?? []).cast<String>(),
+      video: stringToList(json["video"]),
       files: List.generate(
         (json["files"] as List? ?? []).length,
         (i) => json["files"][i],
       ),
-      previous: json["previous"] != null
-          ? MiniTestModel.fromJson(json["previous"])
-          : null,
+      previous: json["previous"] != null ? MiniTestModel.fromJson(json["previous"]) : null,
     );
   }
+
+  static List<String> stringToList(String? value) {
+    try {
+      if (value == null || value == '') {
+        return [];
+      } else {
+        return value.split(',');
+      }
+    } on Exception {
+      return [];
+    }
+  }
+
   factory TestInformationModel.fromClass(TestInformation information) {
     return TestInformationModel(
       title: information.title,
@@ -46,8 +58,8 @@ class TestInformationModel extends TestInformation {
       price: information.price,
       password: information.password,
       period: information.period,
+      images: information.images,
       video: information.video,
-      folder: information.folder,
       files: information.files,
       previous: information.previous,
     );
@@ -59,15 +71,13 @@ class TestInformationModel extends TestInformation {
       "classs": classs,
       "material": material,
       "teacher": teacher,
-      "folder": folder,
       "price": price,
       "password": password,
+      "video": (video?.isNotEmpty ?? false) ? video!.join(",") : null,
+      "images": images,
       "period": period,
-      "video": video,
       "files": files ?? <String>[],
-      "previous": previous == null
-          ? previous
-          : MiniTestModel.fromClass(previous!).toJson()
+      "previous": previous == null ? previous : MiniTestModel.fromClass(previous!).toJson()
     };
   }
 }

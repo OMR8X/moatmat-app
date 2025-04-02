@@ -4,8 +4,8 @@ import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
 
 class ErrorView extends StatefulWidget {
-  const ErrorView({super.key});
-
+  const ErrorView({super.key, this.error});
+  final String? error;
   @override
   State<ErrorView> createState() => _ErrorViewState();
 }
@@ -28,13 +28,17 @@ class _ErrorViewState extends State<ErrorView> {
             const SizedBox(
               height: SizesResources.s5,
             ),
-            const Text("حصل خطا ما اثناء محاولة الاتصال الخادم"),
+            Text(widget.error ?? "حصل خطا ما اثناء محاولة الاتصال الخادم"),
             const SizedBox(
               height: SizesResources.s2,
             ),
             TextButton(
               onPressed: () {
-                context.read<AuthCubit>().startAuth();
+                if (widget.error == "لا يوجد اتصال بالانترنت") {
+                  context.read<AuthCubit>().init();
+                } else {
+                  context.read<AuthCubit>().startAuth();
+                }
               },
               child: const Text("اعادة التحميل"),
             ),

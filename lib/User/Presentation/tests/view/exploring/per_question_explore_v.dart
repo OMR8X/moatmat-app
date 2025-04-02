@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 
 import '../../../../Core/functions/show_alert.dart';
+import '../../../../Core/resources/sizes_resources.dart';
 import '../../../auth/state/auth_c/auth_cubit_cubit.dart';
 import '../../../auth/view/auth_views_manager.dart';
 import '../../state/per_question_explore/per_question_explore_cubit.dart';
@@ -20,18 +21,14 @@ class TestPerQuestionExploreView extends StatefulWidget {
   final int minutes;
   final Test test;
   @override
-  State<TestPerQuestionExploreView> createState() =>
-      _TestPerQuestionExploreViewState();
+  State<TestPerQuestionExploreView> createState() => _TestPerQuestionExploreViewState();
 }
 
-class _TestPerQuestionExploreViewState
-    extends State<TestPerQuestionExploreView> {
+class _TestPerQuestionExploreViewState extends State<TestPerQuestionExploreView> {
   @override
   void initState() {
     context.read<AuthCubit>().onCheck();
-    context
-        .read<TestPerQuestionExploreCubit>()
-        .init(widget.test, widget.minutes);
+    context.read<TestPerQuestionExploreCubit>().init(widget.test, widget.minutes);
 
     super.initState();
   }
@@ -76,6 +73,7 @@ class _TestPerQuestionExploreViewState
               );
             } else if (state is PerQuestionExploreResult) {
               return TestResultView(
+                sendResultCompleter: cubit.sendResultCompleter,
                 explorable: widget.test.properties.exploreAnswers ?? false,
                 canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {
@@ -99,9 +97,7 @@ class _TestPerQuestionExploreViewState
                   );
                 },
                 reOpen: () {
-                  context
-                      .read<TestPerQuestionExploreCubit>()
-                      .init(widget.test, widget.minutes);
+                  context.read<TestPerQuestionExploreCubit>().init(widget.test, widget.minutes);
                 },
                 backToHome: () {
                   Navigator.of(context).pop();
@@ -111,8 +107,17 @@ class _TestPerQuestionExploreViewState
                 result: state.result,
               );
             } else {
-              return const Center(
-                child: CupertinoActivityIndicator(),
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CupertinoActivityIndicator(),
+                    SizedBox(
+                      height: SizesResources.s6,
+                    ),
+                    Text("جار التحميل"),
+                  ],
+                ),
               );
             }
           },

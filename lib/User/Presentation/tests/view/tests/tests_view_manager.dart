@@ -13,6 +13,7 @@ import 'package:moatmat_app/User/Presentation/tests/view/exploring/full_time_exp
 import 'package:moatmat_app/User/Presentation/tests/view/exploring/per_question_explore_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/check_if_test_done_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/pick_test_v.dart';
+import 'package:moatmat_app/User/Presentation/tests/view/tests/test_searching_v.dart';
 
 import '../../../../Core/widgets/view/pick_folder_v.dart';
 import '../../../banks/views/banks/teacher_searching_v.dart';
@@ -106,8 +107,25 @@ class _TestsViewManagerState extends State<TestsViewManager> {
             //
           } else if (state is GetTestSelectFolder) {
             return PickFolderView(
-              folders: state.folders,
+              isTest: true,
+              material: state.material,
               teacher: state.teacherData,
+              onSearch: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => TestSearchingView(
+                    tests: state.tests,
+                    onSelect: (t) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CheckIfTestDone(
+                            test: t.$1,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ));
+              },
               onPop: () {
                 context.read<GetTestCubit>().backToTeachers();
               },
@@ -122,7 +140,7 @@ class _TestsViewManagerState extends State<TestsViewManager> {
               onPop: () {
                 context.read<GetTestCubit>().backToFolders();
               },
-              onPick: (b) async{
+              onPick: (b) async {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => CheckIfTestDone(

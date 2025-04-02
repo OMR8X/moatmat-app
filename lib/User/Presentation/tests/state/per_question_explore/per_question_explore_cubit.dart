@@ -20,6 +20,7 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   late List<int?> userAnswers;
   late List<(Question, int?)> didNotAnswer;
   late int currentQuestion;
+  Completer<void>? sendResultCompleter;
   late int seconds;
   List<int?> wrongAnswers = [];
   Timer? _timer;
@@ -171,9 +172,9 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     }
   }
 
-  void finish() {
+  void finish() async {
     cancelTimer();
-
+    sendResultCompleter = Completer<void>();
     List<(Question, int)> correct = [];
     List<(Question, int)> wrong = [];
 
@@ -233,8 +234,8 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
       wrong: wrong,
       result: result,
     ));
-
-    submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
+    await submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
+    sendResultCompleter?.complete();
   }
 
   submitResult(List<int?> wrongAnswers, double result) async {
@@ -262,6 +263,8 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
         userId: userInfo.uuid,
         testId: test.id,
         bankId: null,
+        form: null,
+        outerTestId: null,
         userName: userInfo.name,
       ),
     );

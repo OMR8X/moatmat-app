@@ -32,6 +32,15 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>com.googleusercontent.apps.359748080763-81e9q7f7e49a9lqsi157jed7f38rht0h</string>
+      </array>
+    </dict>
+  </array>
 	<key>LSApplicationQueriesSchemes</key>
     <array>
       <string>sms</string>

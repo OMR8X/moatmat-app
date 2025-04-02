@@ -5,7 +5,7 @@ import 'package:moatmat_app/User/Features/reports/domain/usecases/get_reports_uc
 import 'package:moatmat_app/User/Features/reports/domain/usecases/report_on_bank_uc.dart';
 import 'package:moatmat_app/User/Features/reports/domain/usecases/report_on_test_uc.dart';
 
-import '../../Features/auth/data/data_source/users_ds.dart';
+import '../../Features/auth/data/data_source/users_remote_ds.dart';
 import '../../Features/auth/data/repository/users_repository_impl.dart';
 import '../../Features/auth/domain/repository/users_repository.dart';
 import '../../Features/auth/domain/use_cases/get_user_data.dart';

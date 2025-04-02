@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/widgets/fields/elevated_button_widget.dart';
 import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
+import 'package:moatmat_app/User/Presentation/folders/view/folders_views_manager.dart';
 
 import '../../../Features/purchase/domain/entites/purchase_item.dart';
 import '../../../Features/purchase/domain/use_cases/pucrhase_list_of_item.dart';
@@ -15,17 +18,22 @@ import '../../resources/colors_r.dart';
 import '../../resources/shadows_r.dart';
 import '../../resources/sizes_resources.dart';
 import '../../resources/spacing_resources.dart';
+import '../ui/empty_list_text.dart';
 
 class PickFolderView extends StatefulWidget {
   const PickFolderView({
     super.key,
-    required this.folders,
+    this.onSearch,
     required this.afterPick,
     required this.teacher,
     required this.onPop,
+    required this.isTest,
+    required this.material,
   });
-  final List<String> folders;
+  final String material;
+  final VoidCallback? onSearch;
   final TeacherData teacher;
+  final bool isTest;
   final VoidCallback onPop;
   final Function(String key) afterPick;
 
@@ -34,94 +42,65 @@ class PickFolderView extends StatefulWidget {
 }
 
 class _PickFolderViewState extends State<PickFolderView> {
-  List<(String, int)> folders = [];
-  //
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((t) {
-      initFolders();
-    });
-    super.initState();
-  }
-
-  initFolders() {
-    //
-    Map<String, int> foldersData = {};
-
-    for (var f in widget.folders) {
-      //
-      if (foldersData[f] == null) {
-        foldersData[f] = 0;
-      }
-
-      foldersData[f] = foldersData[f]! + 1;
-    }
-    //
-    foldersData.forEach((key, value) {
-      folders.add((key, value));
-    });
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        widget.onPop();
-      },
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: ColorsResources.primary,
+      appBar: AppBar(
         backgroundColor: ColorsResources.primary,
-        appBar: AppBar(
-          backgroundColor: ColorsResources.primary,
-          foregroundColor: ColorsResources.whiteText1,
-          title: Text(
-            "مجلدات اختبارات ${widget.teacher.name}",
-            style: const TextStyle(
-              fontSize: 14,
-              color: ColorsResources.whiteText1,
-            ),
-          ),
-          centerTitle: false,
-          leading: IconButton(
-            onPressed: widget.onPop,
-            icon: const Icon(Icons.arrow_back_ios),
+        foregroundColor: ColorsResources.whiteText1,
+        title: Text(
+          "مجلدات ${widget.isTest ? "اختبارات" : "بنوك"} ${widget.teacher.name}",
+          style: const TextStyle(
+            fontSize: 14,
+            color: ColorsResources.whiteText1,
           ),
         ),
-        body: Column(
-          children: [
-            const SizedBox(height: SizesResources.s2),
-            BuyTeacherWidget(teacher: widget.teacher),
-            const SizedBox(height: SizesResources.s2),
-            TouchableTileWidget(
-              title: "لمحة حول المدرس ${widget.teacher.name}",
-              iconData: Icons.arrow_forward_ios,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => TeacherProfileView(
-                      teacherData: widget.teacher,
-                    ),
-                  ),
-                );
+        centerTitle: false,
+        leading: IconButton(
+          onPressed: widget.onPop,
+          icon: const Icon(Icons.close),
+        ),
+        actions: [
+          if (widget.onSearch != null)
+            IconButton(
+              onPressed: () {
+                widget.onSearch!();
               },
+              icon: const Icon(Icons.search),
             ),
-            const SizedBox(height: SizesResources.s2),
-            Expanded(
-              child: ListView.builder(
-                itemCount: folders.length,
-                itemBuilder: (context, index) {
-                  return FolderItemWidget(
-                    name: folders[index].$1,
-                    onTap: () {
-                      widget.afterPick(folders[index].$1);
-                    },
-                  );
-                },
-              ),
+        ],
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: SizesResources.s2),
+          BuyTeacherWidget(teacher: widget.teacher),
+          const SizedBox(height: SizesResources.s2),
+          TouchableTileWidget(
+            title: "لمحة حول ${widget.teacher.name}",
+            iconData: Icons.arrow_forward_ios,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => TeacherProfileView(
+                    teacherData: widget.teacher,
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: SizesResources.s2),
+          Expanded(
+            child: FoldersViewManager(
+              title: "",
+              material: widget.material,
+              isTest: widget.isTest,
+              openContent: (id) {},
+              onPop: widget.onPop,
+              directories: widget.isTest ? widget.teacher.testsFolders : widget.teacher.banksFolders,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -178,7 +157,7 @@ class _BuyTeacherWidgetState extends State<BuyTeacherWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "اشترك لدى المدرس ${widget.teacher.name}",
+            "اشترك لدى  ${widget.teacher.name}",
             style: const TextStyle(
               fontSize: 16,
               color: Colors.cyan,
@@ -187,7 +166,7 @@ class _BuyTeacherWidgetState extends State<BuyTeacherWidget> {
           ),
           const SizedBox(height: SizesResources.s1),
           Text(
-            "اشترك لدى المدرس ${widget.teacher.name} للحصول على كامل محتوى المدرس من الاختبارات والبنوك التي ستنشر على مدى العام الدراسي",
+            "اشترك لدى  ${widget.teacher.name} للحصول على كامل محتوى المدرس من الاختبارات والبنوك التي ستنشر على مدى العام الدراسي",
             style: const TextStyle(
               fontSize: 12,
               color: ColorsResources.whiteText2,
@@ -255,6 +234,7 @@ class _BuyTeacherDialogWidgetState extends State<BuyTeacherDialogWidget> {
     return SizedBox(
       width: MediaQuery.sizeOf(context).width * 0.75,
       child: Container(
+        // height: MediaQuery.sizeOf(context).height * 0.50,
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 30,
@@ -267,93 +247,94 @@ class _BuyTeacherDialogWidgetState extends State<BuyTeacherDialogWidget> {
           padding: const EdgeInsets.symmetric(
             horizontal: 10,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: SizesResources.s3),
-              Text(
-                "اشترك لدى المدرس ${widget.teacher.name}",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.cyan,
-                  fontWeight: FontWeight.w600,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: SizesResources.s3),
+                Text(
+                  "اشترك لدى  ${widget.teacher.name}",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.cyan,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: SizesResources.s3),
-              Text(
-                widget.teacher.purchaseDescription,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: ColorsResources.whiteText2,
-                  fontWeight: FontWeight.w400,
+                const SizedBox(height: SizesResources.s3),
+                Text(
+                  widget.teacher.purchaseDescription,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: ColorsResources.whiteText2,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
-              const SizedBox(height: SizesResources.s7),
-              Text(
-                "السعر : ${widget.teacher.price}",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 19,
-                  color: ColorsResources.green,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: SizesResources.s7),
+                Text(
+                  "السعر : ${widget.teacher.price}",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 19,
+                    color: ColorsResources.green,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: SizesResources.s7),
-              ElevatedButtonWidget(
-                text: "اشتراك",
-                loading: loading,
-                onPressed: loading
-                    ? null
-                    : () async {
-                        setState(() {
-                          loading = true;
-                        });
-                        //
-                        List<PurchaseItem> items = [
-                          PurchaseItem(
-                            amount: widget.teacher.price,
-                            itemType: "teacher",
-                            itemId: widget.teacher.email,
-                          ),
-                        ];
-                        //
-                        await locator<PurchaseListOfItemUC>()
-                            .call(items: items)
-                            .then((value) {
-                          value.fold(
-                            (l) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(l.text),
-                                ),
-                              );
-                              Navigator.of(context).pop();
-                            },
-                            (r) {
-                              Navigator.of(context).pop();
-                              context.read<AuthCubit>().refresh();
-                              context.read<GetBankCubit>().refreshBanks();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("تمت عملية الشراء بنجاح"),
-                                ),
-                              );
-                            },
-                          );
-                        });
-                        setState(() {
-                          loading = false;
-                        });
-                        widget.onUpdate();
-                      },
-                width: SpacingResources.mainHalfWidth(
-                  context,
+                const SizedBox(height: SizesResources.s7),
+                ElevatedButtonWidget(
+                  text: "اشتراك",
+                  loading: loading,
+                  onPressed: loading
+                      ? null
+                      : () async {
+                          setState(() {
+                            loading = true;
+                          });
+                          //
+                          List<PurchaseItem> items = [
+                            PurchaseItem(
+                              userName: locator<UserData>().name,
+                              amount: widget.teacher.price,
+                              itemType: "teacher",
+                              itemId: widget.teacher.email,
+                            ),
+                          ];
+                          //
+                          await locator<PurchaseListOfItemUC>().call(items: items).then((value) {
+                            value.fold(
+                              (l) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(l.text),
+                                  ),
+                                );
+                                Navigator.of(context).pop();
+                              },
+                              (r) {
+                                Navigator.of(context).pop();
+                                context.read<AuthCubit>().refresh();
+                                context.read<GetBankCubit>().refreshBanks();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("تمت عملية الشراء بنجاح"),
+                                  ),
+                                );
+                              },
+                            );
+                          });
+                          setState(() {
+                            loading = false;
+                          });
+                          widget.onUpdate();
+                        },
+                  width: SpacingResources.mainHalfWidth(
+                    context,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -375,20 +356,19 @@ class FolderItemWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          margin: const EdgeInsets.symmetric(
-            vertical: SizesResources.s1,
-          ),
           width: SpacingResources.mainWidth(context),
-          decoration: BoxDecoration(
-            color: ColorsResources.onPrimary,
-            boxShadow: ShadowsResources.mainBoxShadow,
-            borderRadius: BorderRadius.circular(10),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+            border: Border(
+              bottom: BorderSide(
+                width: 0.5,
+                color: Colors.white24,
+              ),
+            ),
           ),
           child: Material(
-            borderRadius: BorderRadius.circular(10),
             color: Colors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(10),
               onTap: onTap,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -401,21 +381,29 @@ class FolderItemWidget extends StatelessWidget {
                     //
                     const Icon(
                       Icons.folder,
-                      color: ColorsResources.primary,
+                      color: ColorsResources.orangeText,
                     ),
                     //
                     const SizedBox(width: SizesResources.s2),
                     //
-                    Padding(
-                      padding: const EdgeInsets.only(top: 3),
-                      child: Text(name),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 3),
+                        child: Text(
+                          name,
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: ColorsResources.whiteText1,
+                          ),
+                        ),
+                      ),
                     ),
-                    //
-                    const Spacer(),
                     //
                     const Icon(
                       Icons.arrow_forward_ios,
                       size: 12,
+                      color: ColorsResources.whiteText1,
                     ),
                   ],
                 ),

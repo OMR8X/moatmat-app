@@ -4,6 +4,7 @@ class TestProperties {
   final bool? timePerQuestion;
   final bool? repeatable;
   final bool? visible;
+  final bool? scrollable;
 
   TestProperties({
     required this.exploreAnswers,
@@ -11,6 +12,7 @@ class TestProperties {
     required this.timePerQuestion,
     required this.repeatable,
     required this.visible,
+    required this.scrollable,
   });
   TestProperties copyWith({
     bool? exploreAnswers,
@@ -18,6 +20,7 @@ class TestProperties {
     bool? timePerQuestion,
     bool? repeatable,
     bool? visible,
+    bool? scrollable,
   }) {
     return TestProperties(
       exploreAnswers: exploreAnswers ?? this.exploreAnswers,
@@ -25,6 +28,7 @@ class TestProperties {
       timePerQuestion: timePerQuestion ?? this.timePerQuestion,
       repeatable: repeatable ?? this.repeatable,
       visible: visible ?? this.visible,
+      scrollable: scrollable ?? this.scrollable,
     );
   }
 }

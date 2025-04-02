@@ -5,9 +5,10 @@ import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
 import 'package:moatmat_app/User/Presentation/banks/state/get_bank_c/get_bank_cubit.dart';
 
+import '../../../../Core/widgets/ui/empty_list_text.dart';
+
 class TeacherSearchView extends StatefulWidget {
-  const TeacherSearchView(
-      {super.key, required this.teachers, required this.onSelect});
+  const TeacherSearchView({super.key, required this.teachers, required this.onSelect});
   final List<(TeacherData, int)> teachers;
   final Function(TeacherData) onSelect;
   @override
@@ -24,10 +25,7 @@ class _TeacherSearchViewState extends State<TeacherSearchView> {
     _controller.addListener(() {
       setState(() {
         searchedText = _controller.value.text;
-        result = widget.teachers
-            .map((e) => e.$1)
-            .where((e) => e.name.contains(searchedText))
-            .toList();
+        result = widget.teachers.map((e) => e.$1).where((e) => e.name.contains(searchedText)).toList();
       });
     });
     super.initState();
@@ -62,20 +60,22 @@ class _TeacherSearchViewState extends State<TeacherSearchView> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: result.length,
-              itemBuilder: (context, index) => TouchableTileWidget(
-                title: result[index].name,
-                iconData: Icons.arrow_forward_ios,
-                onTap: () {
-                  widget.onSelect(result[index]);
-                  context.read<GetBankCubit>().selectTeacher(
-                        result[index],
-                      );
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
+            child: result.isEmpty
+                ? const EmptyListTextWidget()
+                : ListView.builder(
+                    itemCount: result.length,
+                    itemBuilder: (context, index) => TouchableTileWidget(
+                      title: result[index].name,
+                      iconData: Icons.arrow_forward_ios,
+                      onTap: () {
+                        widget.onSelect(result[index]);
+                        context.read<GetBankCubit>().selectTeacher(
+                              result[index],
+                            );
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
           ),
         ],
       )),

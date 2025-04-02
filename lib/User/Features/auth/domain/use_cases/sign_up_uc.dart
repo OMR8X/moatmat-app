@@ -7,7 +7,7 @@ class SignUpUC {
   final UserRepository repository;
 
   SignUpUC({required this.repository});
-  Future<Either<Failure, UserData>> call({
+  Future<Either<Failure, Unit>> call({
     required UserData userData,
     required String password,
   }) async {

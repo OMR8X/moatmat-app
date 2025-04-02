@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -95,9 +93,10 @@ class GetBankCubit extends Cubit<GetBankState> {
         },
         (r) {
           banks = r;
-          List<String> folders = r.map((e) => e.$1.information.folder).toList();
+          // List<String> folders = r.map((e) => e.$1.information.folder).toList();
           emit(
-              GetBankSelecteFolder(folders: folders, teacherData: teacherData));
+            GetBankSelecteFolder(teacherData: teacherData, banks: r, material: material!),
+          );
         },
       );
     });
@@ -105,7 +104,7 @@ class GetBankCubit extends Cubit<GetBankState> {
 
   selectFolder(String folder) {
     emit(GetBankSelecteBank(
-      banks: banks.where((e) => e.$1.information.folder == folder).toList(),
+      banks: banks.where((e) => "" == folder).toList(),
       title: folder,
     ));
   }
@@ -137,7 +136,6 @@ class GetBankCubit extends Cubit<GetBankState> {
   }
 
   backToFolders() {
-    List<String> folders = banks.map((e) => e.$1.information.folder).toList();
-    emit(GetBankSelecteFolder(folders: folders, teacherData: teacherData!));
+    emit(GetBankSelecteFolder(teacherData: teacherData!, banks: const [], material: material!));
   }
 }

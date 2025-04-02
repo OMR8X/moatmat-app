@@ -47,7 +47,7 @@ class TeacherProfileView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(),
               child: Text(
-                "الاستاذ ${teacherData.name}",
+                teacherData.name,
                 textAlign: TextAlign.center,
               ),
             ),

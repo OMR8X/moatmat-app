@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moatmat_app/User/Presentation/auth/view/enter_user_data_view.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/error_v.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/signed_out_v.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/update_view.dart';
 
+import '../../../Core/resources/colors_r.dart';
 import '../../home/view/home_v.dart';
 import '../state/auth_c/auth_cubit_cubit.dart';
 import 'on_boarding_v.dart';
@@ -30,6 +32,7 @@ class _AuthViewsManagerState extends State<AuthViewsManager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsResources.primary,
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {},
         builder: (context, state) {
@@ -46,15 +49,18 @@ class _AuthViewsManagerState extends State<AuthViewsManager> {
           } else if (state is AuthResetPassword) {
             return const SendResetCodeView();
           } else if (state is AuthError) {
-            return const ErrorView();
+            return ErrorView(error: state.error);
+          } else if (state is EnterUserData) {
+            return const EnterUserDataView();
           } else if (state is AuthSignedOut) {
             return SignedOutView(state: state);
-          } 
-          else if (state is AuthUpdate) {
+          } else if (state is AuthUpdate) {
             return UpdateView(updateInfo: state.updateInfo);
           } else {
             return const Center(
-              child: CupertinoActivityIndicator(),
+              child: CupertinoActivityIndicator(
+                color: Colors.white,
+              ),
             );
           }
         },

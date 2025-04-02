@@ -4,6 +4,7 @@ import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 
 import '../../../../Core/errors/exceptions.dart';
 import '../../../auth/domain/entites/teacher_data.dart';
+import '../entities/outer_test.dart';
 
 abstract class TestsRepository {
   // material teachers
@@ -15,6 +16,10 @@ abstract class TestsRepository {
     required String clas,
     required String material,
   });
+  //
+  // get outer test
+  Future<Either<Failure, OuterTest>> getOuterTestById({required int id});
+  //
   // teacher Tests
   Future<Either<Failure, List<(Test, int)>>> getTeacherTests({
     required String teacherEmail,
@@ -24,6 +29,10 @@ abstract class TestsRepository {
   // test by id
   Future<Either<Failure, Test>> getTestById({
     required int id,
+  });
+  //
+  Future<Either<Failure, List<Test>>> getTestsByIds({
+    required List<int> ids,
   });
   //
   Future<Either<Failure, bool>> canDoTest(MiniTest test);

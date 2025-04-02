@@ -4,10 +4,12 @@ import 'package:moatmat_app/User/Features/tests/data/models/test_m.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/mini_test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import '../../../../Core/errors/exceptions.dart';
 import '../../../../Core/injection/app_inj.dart';
 import '../../../auth/domain/entites/teacher_data.dart';
 import '../../../auth/domain/entites/user_data.dart';
+import '../../domain/entities/outer_test.dart';
+import '../models/outer_test_model.dart';
 
 abstract class TestsDataSource {
   // material teachers
@@ -24,8 +26,15 @@ abstract class TestsDataSource {
     required String clas,
     required String material,
   });
+  //
+  // get outer test
+  Future<OuterTest> getOuterTestById({required int id});
   // test by id
   Future<Test> getTestById({required int id});
+  //
+  Future<List<Test>> getTestsByIds({
+    required List<int> ids,
+  });
   //
   Future<bool> canDoTest({required MiniTest test});
 }
@@ -69,15 +78,9 @@ class TestsDataSourceImpl implements TestsDataSource {
     //
     List<TeacherData> teachers = [];
     //
-    var query1 = client
-        .from("tests")
-        .select("teacher_email")
-        //
-        .eq("information->>material", material)
-        //
-        .eq("information->>classs", clas)
-        //
-        .or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null");
+    var query1 = client.from("tests").select("teacher_email").eq("information->>material", material).eq("information->>classs", clas).or(
+          "properties->>visible.eq.true,properties->>visible.is.null",
+        );
 
     //
     var res = await query1;
@@ -86,11 +89,7 @@ class TestsDataSourceImpl implements TestsDataSource {
     //
     teachersEmails.removeWhere((e) => e.isEmpty);
     //
-    //
-    var query2 = client
-        .from("teachers_data")
-        .select("")
-        .inFilter("email", teachersEmails);
+    var query2 = client.from("teachers_data").select("").inFilter("email", teachersEmails.toSet().toList());
     //
     var res2 = await query2;
     //
@@ -136,17 +135,32 @@ class TestsDataSourceImpl implements TestsDataSource {
   }
 
   @override
+  Future<List<Test>> getTestsByIds({
+    required List<int> ids,
+  }) async {
+    //
+    final client = Supabase.instance.client;
+    //
+    final res = await client.from("tests").select().inFilter("id", ids).or(
+          "properties->>visible.eq.true,properties->>visible.is.null,properties.is.null",
+        );
+    //
+    if (res.isNotEmpty) {
+      final test = res.map((e) => TestModel.fromJson(e)).toList();
+      return test;
+    }
+    //
+    return [];
+  }
+
+  @override
   Future<bool> canDoTest({required MiniTest test}) async {
     //
     debugPrint("test id is : ${test.id}");
     //
     // get all tests id that user done.
     // checks if test id in them.
-    var res = await client
-        .from("results")
-        .select('test_id')
-        .eq("user_id", locator<UserData>().uuid)
-        .eq("test_id", test.id);
+    var res = await client.from("results").select('test_id').eq("user_id", locator<UserData>().uuid).eq("test_id", test.id);
 
     if (res.isNotEmpty) {
       return true;
@@ -154,13 +168,23 @@ class TestsDataSourceImpl implements TestsDataSource {
 
     return false;
   }
+
+  @override
+  Future<OuterTest> getOuterTestById({required int id}) async {
+    final response = await Supabase.instance.client.from("outer_tests").select().eq("id", id).limit(1);
+    if (response.isNotEmpty) {
+      final List<OuterTest> tests = response.map((e) => OuterTestModel.fromJson(e)).toList();
+      return tests.first;
+    }
+    throw NotFoundException();
+  }
 }
 
 List<(Test, int)> testsToBanksWithCount(List<Test> list) {
   Map<int, int> value = {};
   for (var l in list) {
     if (value[l.id] != null) {
-      value[l.id] = value[l.id]! + 1;
+      value[l.id] = (value[l.id]!) + 1;
     } else {
       value[l.id] = 1;
     }
@@ -173,8 +197,7 @@ List<(Test, int)> testsToBanksWithCount(List<Test> list) {
   return res;
 }
 
-List<(TeacherData, int)> listTeacherToListWithCount(
-    List<TeacherData> list, List<String> teacherStr) {
+List<(TeacherData, int)> listTeacherToListWithCount(List<TeacherData> list, List<String> teacherStr) {
   Map<String, int> value = {};
   for (var l in teacherStr) {
     if (value[l] != null) {

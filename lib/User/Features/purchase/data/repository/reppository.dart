@@ -1,20 +1,33 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/errors/exceptions.dart';
 import 'package:moatmat_app/User/Features/purchase/data/datasources/date_source.dart';
+import 'package:moatmat_app/User/Features/purchase/data/datasources/purchased_local_datasource.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/repository/repository.dart';
 
 class PurchasesReporisotyrImpl implements PurchasesRepository {
-  final PurchasedItemsDataSource dataSource;
+  final PurchasedItemsRemoteDataSource dataSource;
+  final PurchasedLocalDatasource localDatasource;
 
-  PurchasesReporisotyrImpl({required this.dataSource});
+  PurchasesReporisotyrImpl({required this.dataSource, required this.localDatasource});
   @override
   Future<Either<Failure, List<PurchaseItem>>> getUserPurchased() async {
     try {
-      var list = await dataSource.getUserPurchased();
-      return right(list);
-    } on Exception {
-      return left(const AnonFailure());
+      //
+      final response = await localDatasource.getUserPurchased();
+      //
+      return right(response);
+      //
+    } catch (e) {
+      debugPrint(e.toString());
+      //
+      try {
+        var list = await dataSource.getUserPurchased();
+        return right(list);
+      } on Exception {
+        return left(const AnonFailure());
+      }
     }
   }
 
@@ -26,10 +39,8 @@ class PurchasesReporisotyrImpl implements PurchasesRepository {
       var res = await dataSource.purchaseItem(item: item);
       return right(res);
     } on NotEnoughBalanceException catch (e) {
-      print(e);
       return left(const NotEnoughtBalaneFailure());
     } on Exception catch (e) {
-      print(e);
       return left(const AnonFailure());
     }
   }

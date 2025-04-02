@@ -45,16 +45,18 @@ final class GetTestSelectTeacher extends GetTestState {
 }
 
 final class GetTestSelectFolder extends GetTestState {
-  final List<String> folders;
+  final String material;
+  final List<(Test, int)> tests;
   final TeacherData teacherData;
 
   const GetTestSelectFolder({
+    required this.material,
+    required this.tests,
     required this.teacherData,
-    required this.folders,
     super.error,
   });
   @override
-  List<Object> get props => [folders];
+  List<Object> get props => [tests];
 }
 
 final class GetTestSelectTest extends GetTestState {

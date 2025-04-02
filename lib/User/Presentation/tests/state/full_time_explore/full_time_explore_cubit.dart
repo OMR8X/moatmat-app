@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:moatmat_app/User/Features/auth/domain/use_cases/update_user_data_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
@@ -20,6 +21,7 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   late List<(Question, int?)> didNotAnswer;
   late int currentQuestion;
   late int seconds;
+  Completer<void>? sendResultCompleter;
   late Duration counter;
   Timer? _timer;
   late Duration time;
@@ -65,7 +67,9 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
     if (question.$2 != null) {
       userAnswers[index] = question.$1.answers[question.$2!].id;
     }
+    //
     questions[index] = (question.$1, question.$2);
+    //
     emitState();
   }
 
@@ -106,10 +110,12 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
           finish();
           return;
         }
-        // did answer
-        // if (questions[currentQuestion].$2 != null) {
-        //   return;
-        // }
+        // did finish
+        if (test.properties.scrollable != true) {
+          if (questions[questions.length - 1].$2 != null) {
+            return;
+          }
+        }
         // did finish
         if (questions[questions.length - 1].$2 != null) {
           return;
@@ -123,12 +129,19 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   }
 
   emitState() {
-    emit(FullTimeExploreQuestion(
-      question: questions[currentQuestion],
-      currentQ: currentQuestion,
-      length: questions.length,
-      time: time,
-    ));
+    if (test.properties.scrollable == true) {
+      emit(FullTimeExploreQuestionScrollable(
+        questions: questions,
+        time: time,
+      ));
+    } else {
+      emit(FullTimeExploreQuestion(
+        question: questions[currentQuestion],
+        currentQ: currentQuestion,
+        length: questions.length,
+        time: time,
+      ));
+    }
   }
 
   void collectRestQuestions() {
@@ -154,7 +167,23 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
     }
   }
 
-  void finish() {
+  void finish({bool force = false}) async {
+    sendResultCompleter = Completer<void>();
+    //
+    if (test.properties.scrollable == true && !force) {
+      //
+      bool leftQuestion = false;
+      //
+      for (var q in questions) {
+        if (q.$2 == null) {
+          leftQuestion = true;
+        }
+      }
+      if (leftQuestion) {
+        Fluttertoast.showToast(msg: "يجب الاجابة على جميع الأسئلة");
+        return;
+      }
+    }
     //
     cancelTimer();
     //
@@ -203,7 +232,8 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
       wrong: wrong,
       result: result,
     ));
-    submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
+    await submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
+    sendResultCompleter?.complete();
   }
 
   submitResult(List<int?> wrongAnswers, double result) async {
@@ -231,6 +261,8 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
         userId: userData.uuid,
         testId: test.id,
         bankId: null,
+        form: null,
+        outerTestId: null,
         userName: userData.name,
       ),
     );

@@ -50,7 +50,7 @@ class _SignedOutViewState extends State<SignedOutView> {
             if (widget.state.forced) ...[
               const SizedBox(height: SizesResources.s2),
               const Text(
-                "تم تسجيل الدخول الى حسابك من جهاز اخر",
+                "تم تسجيل الدخول إلى حسابك من جهاز اخر",
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                 ),

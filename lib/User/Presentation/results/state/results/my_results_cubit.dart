@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:moatmat_app/User/Core/errors/exceptions.dart';
@@ -7,7 +8,9 @@ import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/use_cases/get_bank_by_id.dart';
 import 'package:moatmat_app/User/Features/result/domain/usecases/get_my_results_uc.dart';
+import 'package:moatmat_app/User/Features/tests/domain/entities/outer_test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/get_outer_test_by_id_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
 
 import '../../../../Features/result/domain/entities/result.dart';
@@ -29,20 +32,21 @@ class MyResultsCubit extends Cubit<MyResultsState> {
     //
     testsResults = [];
     banksResults = [];
+    outerResults = [];
     //
     var res = await locator<GetMyResultsUC>().call();
     //
     res.fold((l) => emit(MyResultsError(error: l.toString())), (r) {
       //
       testsResults = r.where((e) {
-        return e.testId != null;
+        return e.testId != null || (e.bankId == null && e.outerTestId == null && e.testId == null);
       }).toList();
       banksResults = r.where((e) {
         return e.bankId != null;
       }).toList();
       //
       outerResults = r.where((e) {
-        return e.bankId == null && e.testId == null;
+        return e.bankId == null && e.testId == null && e.outerTestId != null;
       }).toList();
       //
       emit(MyResultsInitial(
@@ -72,8 +76,6 @@ class MyResultsCubit extends Cubit<MyResultsState> {
     //
     emit(MyResultsLoading());
     //
-
-    //
     if (result.testId != null) {
       //
       var res = await locator<GetTestByIdUC>().call(id: result.testId!);
@@ -97,6 +99,46 @@ class MyResultsCubit extends Cubit<MyResultsState> {
             wrongAnswers: wrongAnswers,
             showTrueAnswers: r.properties.showAnswers ?? false,
           ));
+        },
+      );
+    } else if (result.outerTestId != null) {
+      var res = await locator<GetOuterTestByIdUseCase>().call(id: result.outerTestId!);
+      //
+      res.fold(
+        (l) {
+          emit(MyResultsError(error: l.toString()));
+        },
+        (r) {
+          //
+          List<(Question, int?)> wrongAnswers = [];
+          //
+          for (int i = 0; i < result.answers.length && i < r.forms[result.form!].questions.length; i++) {
+            final answer = result.answers[i];
+            final question = r.forms[result.form!].questions[i];
+
+            if (answer != null) {
+              if (answer != (question.trueAnswer + 1)) {
+                wrongAnswers.add((question.toQuestion(), answer));
+              }
+            } else {
+              wrongAnswers.add((question.toQuestion(), null));
+            }
+          }
+
+          //
+          int wrong = wrongAnswers.length;
+          int truee = r.forms.first.questions.length - wrong;
+          //
+
+          //
+          emit(
+            MyResultsExploreResultOuterResult(
+              length: r.information.length,
+              mark: (truee / r.forms.first.questions.length) * 100,
+              questions: r.forms[result.form!].questions,
+              answers: result.answers,
+            ),
+          );
         },
       );
     } else if (result.bankId != null) {

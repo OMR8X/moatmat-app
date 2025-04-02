@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:moatmat_app/User/Core/errors/exceptions.dart';
 
 import '../../../Core/injection/app_inj.dart';
 import '../../../Core/resources/colors_r.dart';
@@ -41,24 +42,22 @@ class _SignInViewState extends State<SignInView> {
     await query.then((value) {
       value.fold(
         (l) {
+          if (l is MissingUserDataFailure) {
+            context.read<AuthCubit>().init();
+            return;
+          }
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l.text),
-            ),
+            SnackBar(content: Text(l.text)),
           );
         },
         (r) {
-          if (!GetIt.instance.isRegistered<UserData>()) {
-            locator.registerFactory<UserData>(() => r);
-          } else {
-            GetIt.instance.unregister<UserData>();
-            locator.registerFactory<UserData>(() => r);
-          }
+          //
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("تم تسجيل الدخول بنجاح"),
             ),
           );
+          //
           context.read<AuthCubit>().finishAuth();
         },
       );
@@ -142,7 +141,7 @@ class _SignInViewState extends State<SignInView> {
                       text: AppBarTitles.forgetPassword,
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          context.read<AuthCubit>().startRessetPassword();
+                          context.read<AuthCubit>().startResetPassword();
                         },
                       style: const TextStyle(
                         fontSize: 10,

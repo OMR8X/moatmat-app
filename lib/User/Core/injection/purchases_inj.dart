@@ -5,6 +5,7 @@ import 'package:moatmat_app/User/Features/purchase/domain/use_cases/get_user_pur
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/pucrhase_list_of_item.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/purchase_item_uc.dart';
 
+import '../../Features/purchase/data/datasources/purchased_local_datasource.dart';
 import 'app_inj.dart';
 
 purchasesInjector() {
@@ -35,12 +36,16 @@ void injectRepo() {
   locator.registerFactory<PurchasesRepository>(
     () => PurchasesReporisotyrImpl(
       dataSource: locator(),
+      localDatasource: locator(),
     ),
   );
 }
 
 void injectDS() {
-  locator.registerFactory<PurchasedItemsDataSource>(
-    () => PurchasedItemsDataSourceImpl(client: locator()),
+  locator.registerFactory<PurchasedItemsRemoteDataSource>(
+    () => PurchasedItemsRemoteDataSourceImpl(client: locator(), cacheManager: locator()),
+  );
+  locator.registerFactory<PurchasedLocalDatasource>(
+    () => PurchasedLocalDatasourceImplement(cacheManager: locator()),
   );
 }

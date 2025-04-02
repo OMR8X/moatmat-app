@@ -11,6 +11,8 @@ class ResultModel extends Result {
     required super.userId,
     required super.userNumber,
     required super.testId,
+    required super.form,
+    required super.outerTestId,
     required super.bankId,
     required super.testName,
     required super.userName,
@@ -27,9 +29,11 @@ class ResultModel extends Result {
       date: DateTime.parse(json["date"]),
       testName: json["test_name"],
       userId: json["user_id"],
+      form: json["form"],
       userNumber: json["user_number"].toString(),
       testId: json["test_id"] == null ? null : int.parse(json["test_id"]),
       bankId: json["bank_id"] == null ? null : int.parse(json["bank_id"]),
+      outerTestId: json["outer_test_id"] == null ? null : int.parse(json["outer_test_id"]),
       userName: json["user_name"],
       teacherEmail: json["teacher_email"],
     );
@@ -45,26 +49,50 @@ class ResultModel extends Result {
       testName: result.testName,
       userId: result.userId,
       testId: result.testId,
+      form: result.form,
+      outerTestId: result.outerTestId,
       bankId: result.bankId,
       userName: result.userName,
       userNumber: result.userNumber,
       teacherEmail: result.teacherEmail,
     );
   }
-  toJson() {
-    return {
-      "user_id": userId,
-      "user_number": userNumber,
-      "mark": mark,
-      "test_id": testId,
-      "bank_id": bankId,
-      "answers": answers,
-      "wrong_answers": wrongAnswers,
-      "period": period,
-      "date": date.toString(),
-      "test_name": testName,
-      "user_name": userName,
-      "teacher_email": teacherEmail,
-    };
+  toJson({bool addId = false}) {
+    if (addId) {
+      return {
+        "id": id,
+        "user_id": userId,
+        "user_number": userNumber,
+        "mark": mark,
+        "form": form,
+        "test_id": testId,
+        "bank_id": bankId,
+        "outer_test_id": outerTestId,
+        "answers": answers,
+        "wrong_answers": wrongAnswers,
+        "period": period,
+        "date": date.toString(),
+        "test_name": testName,
+        "user_name": userName,
+        "teacher_email": teacherEmail,
+      };
+    } else {
+      return {
+        "user_id": userId,
+        "user_number": userNumber,
+        "mark": mark,
+        "form": form,
+        "test_id": testId,
+        "bank_id": bankId,
+        "outer_test_id": outerTestId,
+        "answers": answers,
+        "wrong_answers": wrongAnswers,
+        "period": period,
+        "date": date.toString(),
+        "test_name": testName,
+        "user_name": userName,
+        "teacher_email": teacherEmail,
+      };
+    }
   }
 }

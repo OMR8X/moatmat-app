@@ -70,3 +70,8 @@ final class AuthSimulation extends AuthState {
   @override
   List<Object> get props => [];
 }
+
+final class EnterUserData extends AuthState {
+  @override
+  List<Object> get props => [];
+}

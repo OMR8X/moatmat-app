@@ -44,32 +44,27 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                 PageSlide(
                   color: textColors[0],
                   content: Image.asset("assets/images/boarding/1.png"),
-                  text:
-                      "اسئلة منوعة شاملة ومتخصصة بكل وحدة دراسية وفق اختياراتك",
+                  text: "اسئلة منوعة شاملة ومتخصصة بكل وحدة دراسية وفق اختياراتك",
                 ),
                 PageSlide(
                   color: textColors[1],
                   content: Image.asset("assets/images/boarding/2.png"),
-                  text:
-                      "اختبر نفسك وفق شروط الامتحان النهائي في منزلك بأسهل وامتع طريقة",
+                  text: "اختبر نفسك وفق شروط الامتحان النهائي في منزلك بأسهل وامتع طريقة",
                 ),
                 PageSlide(
                   color: textColors[2],
                   content: Image.asset("assets/images/boarding/3.png"),
-                  text:
-                      "درب نفسك على الحل السريع في بنوك الاسئلة بالوقت الذي تحدده في كل مرة",
+                  text: "درب نفسك على الحل السريع في بنوك الأسئلة بالوقت الذي تحدده في كل مرة",
                 ),
                 PageSlide(
                   color: textColors[3],
                   content: Image.asset("assets/images/boarding/4.png"),
-                  text:
-                      "احصل على درجتك في نهاية كل اختبار وراجع اخطائك واحاباتك الصحيحة",
+                  text: "احصل على درجتك في نهاية كل اختبار وراجع اخطائك واحاباتك الصحيحة",
                 ),
                 PageSlide(
                   color: textColors[0],
                   content: Image.asset("assets/images/boarding/5.png"),
-                  text:
-                      "اضغط على الرمز جانب السؤال طلع على الشرح التوضيحيوتفسير الاجابة الصحيحة",
+                  text: "اضغط على الرمز جانب السؤال طلع على الشرح التوضيحيوتفسير الاجابة الصحيحة",
                 ),
                 PageSlide(
                   color: textColors[1],
@@ -79,14 +74,12 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                 PageSlide(
                   color: textColors[2],
                   content: Image.asset("assets/images/boarding/7.png"),
-                  text:
-                      "شارك الاسئلة مع زملاءك ومدرسك من خلال زر المشاركة جانب كل سؤال",
+                  text: "شارك الأسئلة مع زملاءك ومدرسك من خلال زر المشاركة جانب كل سؤال",
                 ),
                 PageSlide(
                   color: textColors[3],
                   content: Image.asset("assets/images/boarding/8.png"),
-                  text:
-                      "تواصل معنا لايصال اقتراحاتك البناءة او لأي استفسار قد يخطر لك واحصل على المكافآت",
+                  text: "تواصل معنا لايصال اقتراحاتك البناءة او لأي استفسار قد يخطر لك واحصل على المكافآت",
                 ),
               ],
             ),

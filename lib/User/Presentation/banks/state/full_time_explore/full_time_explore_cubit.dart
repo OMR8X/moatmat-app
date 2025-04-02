@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:moatmat_app/User/Core/resources/audios_r.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank_q.dart';
@@ -71,6 +72,9 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
       userAnswers[index] = question.$1.answers[question.$2!].id;
     }
     //
+    questions[index] = (question.$1, question.$2);
+    emitState();
+    //
     Question currentQuestion = questions[index].$1;
     List<int> trueIndexes = [];
     //
@@ -84,8 +88,6 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
     } else {
       AudioPlayer().play(AssetSource(AudiosResources.wrongAnswer), volume: 2);
     }
-    questions[index] = (question.$1, question.$2);
-    emitState();
   }
 
   void nextQuestion() {
@@ -125,17 +127,16 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
           finish();
           return;
         }
-        // // did answer
-        // if (questions[currentQuestion].$2 != null) {
-        //   return;
-        // }
         // did finish
-        if (questions[questions.length - 1].$2 != null) {
-          return;
+        if (bank.properties.scrollable != true) {
+          if (questions[questions.length - 1].$2 != null) {
+            return;
+          }
         }
         time = Duration(milliseconds: time.inMilliseconds - milliseconds);
         //
         counter = Duration(milliseconds: counter.inMilliseconds + 500);
+        //
         emitState();
         return;
       },
@@ -143,12 +144,19 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   }
 
   emitState() {
-    emit(FullTimeExploreQuestion(
-      question: questions[currentQuestion],
-      currentQ: currentQuestion,
-      length: questions.length,
-      time: time,
-    ));
+    if (bank.properties.scrollable == true) {
+      emit(FullTimeExploreQuestionScrollable(
+        questions: questions,
+        time: time,
+      ));
+    } else {
+      emit(FullTimeExploreQuestion(
+        question: questions[currentQuestion],
+        currentQ: currentQuestion,
+        length: questions.length,
+        time: time,
+      ));
+    }
   }
 
   void collectRestQuestions() {
@@ -175,7 +183,23 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
     }
   }
 
-  void finish() {
+  void finish({bool force = false}) {
+    //
+    if (bank.properties.scrollable == true && !force) {
+      //
+      bool leftQuestion = false;
+      //
+      for (var q in questions) {
+        if (q.$2 == null) {
+          leftQuestion = true;
+        }
+      }
+      if (leftQuestion) {
+        Fluttertoast.showToast(msg: "يجب الاجابة على جميع الأسئلة");
+        return;
+      }
+    }
+    //
     cancelTimer();
     // collectRestQuestions();
     List<(Question, int)> correct = [];
@@ -259,6 +283,8 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
         testName: bank.information.title,
         userId: userData.uuid,
         testId: null,
+        form: null,
+        outerTestId: null,
         bankId: bank.id,
         userName: userData.name,
       ),

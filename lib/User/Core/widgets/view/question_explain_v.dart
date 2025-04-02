@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
+import 'package:moatmat_app/User/Core/widgets/math/math_tex_w.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/question_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/widgets/test_q_box.dart';
@@ -12,6 +13,7 @@ import 'package:moatmat_app/User/Presentation/videos/view/video_player_w.dart';
 import 'package:video_player/video_player.dart';
 
 import '../fields/elevated_button_widget.dart';
+import '../math/question_body_w.dart';
 
 class QuestionExplainView extends StatefulWidget {
   const QuestionExplainView({super.key, required this.question});
@@ -51,8 +53,7 @@ class _QuestionExplainViewState extends State<QuestionExplainView> {
           return;
         }
         final NavigatorState navigator = Navigator.of(context);
-        final bool? shouldPop =
-            _flickManager?.flickControlManager?.isFullscreen;
+        final bool? shouldPop = _flickManager?.flickControlManager?.isFullscreen;
         if (shouldPop ?? false) {
           _flickManager?.flickControlManager?.exitFullscreen();
         } else {
@@ -140,8 +141,7 @@ class QuestionExplainMiniView extends StatefulWidget {
   const QuestionExplainMiniView({super.key, required this.question});
   final Question question;
   @override
-  State<QuestionExplainMiniView> createState() =>
-      _QuestionExplainMiniViewState();
+  State<QuestionExplainMiniView> createState() => _QuestionExplainMiniViewState();
 }
 
 class _QuestionExplainMiniViewState extends State<QuestionExplainMiniView> {
@@ -168,69 +168,67 @@ class _QuestionExplainMiniViewState extends State<QuestionExplainMiniView> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.question.explainImage);
     return PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop) async {
-          if (didPop) {
-            return;
-          }
-          final NavigatorState navigator = Navigator.of(context);
-          final bool? shouldPop =
-              _flickManager?.flickControlManager?.isFullscreen;
-          if (shouldPop ?? false) {
-            _flickManager?.flickControlManager?.exitFullscreen();
-          } else {
-            navigator.pop();
-          }
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            //
-            if (_flickManager != null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: VideoPlayerWidget(
-                        flickManager: _flickManager!,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            if (widget.question.explainImage != null) ...[
-              const SizedBox(height: SizesResources.s4),
-              SizedBox(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(19),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.question.explainImage!,
-                      placeholder: (context, url) {
-                        return const CupertinoActivityIndicator(
-                          color: ColorsResources.primary,
-                        );
-                      },
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
+        final NavigatorState navigator = Navigator.of(context);
+        final bool? shouldPop = _flickManager?.flickControlManager?.isFullscreen;
+        if (shouldPop ?? false) {
+          _flickManager?.flickControlManager?.exitFullscreen();
+        } else {
+          navigator.pop();
+        }
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          //
+          if (_flickManager != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: VideoPlayerWidget(
+                      flickManager: _flickManager!,
                     ),
                   ),
                 ),
-              ),
-            ],
-            if (widget.question.explain != null) ...[
-              const SizedBox(height: SizesResources.s4),
-              SizedBox(
-                child: Text(
-                  widget.question.explain!,
-                  textAlign: TextAlign.center,
+              ],
+            ),
+          if (widget.question.explainImage != null) ...[
+            const SizedBox(height: SizesResources.s4),
+            SizedBox(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(19),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.question.explainImage!,
+                    placeholder: (context, url) {
+                      return const CupertinoActivityIndicator(
+                        color: ColorsResources.primary,
+                      );
+                    },
+                  ),
                 ),
               ),
-            ],
+            ),
           ],
-        ));
+          if (widget.question.explain != null) ...[
+            const SizedBox(height: SizesResources.s4),
+            QuestionTextBuilderWidget(
+              text: widget.question.explain!,
+              equations: widget.question.equations,
+              colors: [],
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }

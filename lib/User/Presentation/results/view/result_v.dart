@@ -18,6 +18,7 @@ import 'package:moatmat_app/User/Presentation/tests/widgets/answer_w.dart';
 import '../../../Core/functions/parsers/num_to_latter.dart';
 import '../../../Core/functions/show_answer.dart';
 import '../../../Core/widgets/toucheable_tile_widget.dart';
+import '../../../Core/widgets/ui/empty_list_text.dart';
 import '../state/results/my_results_cubit.dart';
 
 class ResultView extends StatelessWidget {
@@ -34,13 +35,20 @@ class ResultView extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         context.read<MyResultsCubit>().backToResults();
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text("تفاصيل النتيجة"),
           centerTitle: false,
+          leading: IconButton(
+              onPressed: () {
+                context.read<MyResultsCubit>().backToResults();
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+              )),
           actions: [
             TextButton(
               onPressed: () {},
@@ -59,6 +67,7 @@ class ResultView extends StatelessWidget {
                   return Column(children: [
                     BankQuestionBox(
                       question: q!,
+                      disableExplain: false,
                       onLike: (like) {},
                       onShare: () {},
                       onReport: (id) {},
@@ -115,31 +124,31 @@ class OuterWrongAnswersBuilder extends StatelessWidget {
   final List<int?> wrongAnswers;
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: wrongAnswers.length,
-      //
-      itemBuilder: (context, index) {
-        //
-        int? selection = wrongAnswers[index];
-        //
-        if (selection == -1) {
-          return const SizedBox();
-        }
-        return TouchableTileWidget(
-          title: "رقم السؤال : ${index + 1}",
-          subTitle: getSubTitle(selection),
-          icon: Icon(
-            selection == null ? Icons.question_mark : Icons.close,
-            color: selection == null ? Colors.orange : Colors.red,
-          ),
-        );
-      },
-    );
+    return wrongAnswers.isEmpty
+        ? const EmptyListTextWidget()
+        : ListView.builder(
+            itemCount: wrongAnswers.length,
+            //
+            itemBuilder: (context, index) {
+              //
+              int? selection = wrongAnswers[index];
+              //
+              if (selection == -1) {
+                return const SizedBox();
+              }
+              return TouchableTileWidget(
+                title: "رقم السؤال : ${index + 1}",
+                subTitle: getSubTitle(selection),
+                icon: Icon(
+                  selection == null ? Icons.question_mark : Icons.close,
+                  color: selection == null ? Colors.orange : Colors.red,
+                ),
+              );
+            },
+          );
   }
 
   getSubTitle(int? selection) {
-    return selection == null
-        ? "لم يتم الاختيار"
-        : "تم اختيار  ${numberToLetter(selection)}";
+    return selection == null ? "لم يتم الاختيار" : "تم اختيار  ${numberToLetter(selection)}";
   }
 }

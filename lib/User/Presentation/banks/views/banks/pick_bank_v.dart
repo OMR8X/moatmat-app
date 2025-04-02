@@ -11,6 +11,9 @@ import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/pucrhase_list_of_item.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
 import 'package:moatmat_app/User/Presentation/banks/state/get_bank_c/get_bank_cubit.dart';
+import 'package:moatmat_app/User/Presentation/folders/state/cubit/folders_manager_cubit.dart';
+
+import '../../../../Core/widgets/ui/empty_list_text.dart';
 
 class PickBankView extends StatefulWidget {
   const PickBankView({
@@ -80,10 +83,7 @@ class _PickBankViewState extends State<PickBankView> {
                           context: context,
                           barrierDismissible: false,
                           builder: (context) => BuyBanksWidget(
-                            banks: widget.banks
-                                .map((e) => e.$1)
-                                .where((e) => !e.isPurchased())
-                                .toList(),
+                            banks: widget.banks.map((e) => e.$1).where((e) => !e.isPurchased()).toList(),
                           ),
                         );
                       },
@@ -101,78 +101,89 @@ class _PickBankViewState extends State<PickBankView> {
           body: Column(
             children: [
               Expanded(
-                child: ListView.builder(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: SizesResources.s2),
-                    itemCount: widget.banks.length,
-                    itemBuilder: (context, index) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(
-                                vertical: SizesResources.s1),
-                            width: SpacingResources.mainWidth(context),
-                            decoration: BoxDecoration(
-                              color: ColorsResources.onPrimary,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: ShadowsResources.mainBoxShadow,
-                            ),
-                            child: ListTile(
-                              title: Text(
-                                widget.banks[index].$1.information.title,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorsResources.blackText2,
+                child: widget.banks.isEmpty
+                    ? const EmptyListTextWidget()
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: SizesResources.s2),
+                        itemCount: widget.banks.length,
+                        itemBuilder: (context, index) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.symmetric(vertical: SizesResources.s1),
+                                width: SpacingResources.mainWidth(context),
+                                decoration: BoxDecoration(
+                                  color: ColorsResources.onPrimary,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: ShadowsResources.mainBoxShadow,
+                                ),
+                                child: ListTile(
+                                  title: Text(
+                                    widget.banks[index].$1.information.title,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: ColorsResources.blackText2,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    "عدد الأسئلة : ${widget.banks[index].$1.questions.length.toString()}",
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: ColorsResources.blackText2,
+                                    ),
+                                  ),
+                                  trailing: FilledButton(
+                                    onPressed: () async {
+                                      onTap(index);
+                                    },
+                                    child: widget.banks[index].$1.isPurchased()
+                                        ? const Text(
+                                            "فتح",
+                                            style: TextStyle(fontWeight: FontWeight.bold, color: ColorsResources.whiteText1),
+                                          )
+                                        : Text(
+                                            "${widget.banks[index].$1.information.price} نقطة",
+                                            style: const TextStyle(fontWeight: FontWeight.bold, color: ColorsResources.whiteText1),
+                                          ),
+                                  ),
                                 ),
                               ),
-                              subtitle: Text(
-                                "عدد الاسئلة : ${widget.banks[index].$1.questions.length.toString()}",
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  color: ColorsResources.blackText2,
-                                ),
-                              ),
-                              trailing: FilledButton(
-                                onPressed: () {
-                                  if (widget.banks[index].$1.isPurchased()) {
-                                    widget.onPick(widget.banks[index]);
-                                  } else {
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (context) => BuyBanksWidget(
-                                        banks: [widget.banks[index].$1],
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: widget.banks[index].$1.isPurchased()
-                                    ? const Text(
-                                        "فتح",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: ColorsResources.whiteText1),
-                                      )
-                                    : Text(
-                                        "${widget.banks[index].$1.information.price} نقطة",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: ColorsResources.whiteText1),
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
+                            ],
+                          );
+                        }),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  onTap(int index) async {
+    if (widget.banks[index].$1.isPurchased()) {
+      showDialog(
+        context: context,
+        builder: (context) => BuyBankWidget(
+          bank: widget.banks[index].$1,
+          onPick: () {
+            widget.onPick(widget.banks[index]);
+          },
+        ),
+      );
+    } else {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BuyBankWidget(
+          bank: widget.banks[index].$1,
+        ),
+      );
+      if (context.mounted) {
+        context.read<FoldersManagerCubit>().refresh();
+      }
+    }
   }
 }
 
@@ -228,7 +239,7 @@ class _BuyBanksWidgetState extends State<BuyBanksWidget> {
                   Navigator.of(context).pop();
                 },
                 child: const Text(
-                  "الغاء",
+                  "إلغاء",
                 ),
               ),
               FilledButton(
@@ -244,9 +255,7 @@ class _BuyBanksWidgetState extends State<BuyBanksWidget> {
                   //
                   items = widget.banks.map((e) => e.toPurchaseItem()).toList();
                   //
-                  await locator<PurchaseListOfItemUC>()
-                      .call(items: items)
-                      .then((value) {
+                  await locator<PurchaseListOfItemUC>().call(items: items).then((value) {
                     value.fold(
                       (l) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -294,5 +303,181 @@ class _BuyBanksWidgetState extends State<BuyBanksWidget> {
 
   String getCount() {
     return "${widget.banks.length} عنصر";
+  }
+}
+
+class BuyBankWidget extends StatefulWidget {
+  const BuyBankWidget({super.key, required this.bank, this.onPick});
+
+  final VoidCallback? onPick;
+  final Bank bank;
+
+  @override
+  State<BuyBankWidget> createState() => _BuyBankWidgetState();
+}
+
+class _BuyBankWidgetState extends State<BuyBankWidget> {
+  bool loading = false;
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 16,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ///
+            const SizedBox(height: SizesResources.s3),
+
+            ///
+            Row(
+              children: [
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontFamily: "Tajawal",
+                      ),
+                      children: [
+                        TextSpan(
+                          text: widget.bank.information.title,
+                          style: const TextStyle(
+                            color: ColorsResources.blackText1,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "  ${widget.bank.questions.length + 1} سؤال",
+                          style: const TextStyle(
+                            color: ColorsResources.blackText2,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s1),
+
+            ///
+            Text(
+              "مقاطع فيديو : ${widget.bank.information.video?.length ?? 0}",
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            Text(
+              "ملفات : ${widget.bank.information.files?.length ?? 0}",
+              style: const TextStyle(
+                color: ColorsResources.blackText1,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+            ),
+
+            ///
+            const SizedBox(height: SizesResources.s3),
+
+            ///
+            if ((widget.onPick != null))
+              Row(
+                children: [
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      widget.onPick!();
+                    },
+                    child: const Text(
+                      "فتح",
+                      style: TextStyle(fontWeight: FontWeight.bold, color: ColorsResources.whiteText1),
+                    ),
+                  ),
+                ],
+              )
+
+            ///
+            else
+              Row(
+                children: [
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: ColorsResources.red,
+                    ),
+                    onPressed: loading
+                        ? null
+                        : () {
+                            Navigator.of(context).pop();
+                          },
+                    child: const Text(
+                      "إلغاء",
+                    ),
+                  ),
+                  const SizedBox(width: SizesResources.s2),
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: ColorsResources.green,
+                    ),
+                    onPressed: loading
+                        ? null
+                        : () async {
+                            setState(() {
+                              loading = true;
+                            });
+
+                            //
+                            await locator<PurchaseListOfItemUC>().call(items: [widget.bank.toPurchaseItem()]).then((value) {
+                              value.fold(
+                                (l) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(l.text),
+                                    ),
+                                  );
+                                  Navigator.of(context).pop();
+                                },
+                                (r) async {
+                                  //
+                                  await context.read<AuthCubit>().refresh();
+                                  //
+                                  Navigator.of(context).pop();
+                                  //
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("تمت عملية الشراء بنجاح"),
+                                    ),
+                                  );
+                                },
+                              );
+                            });
+                          },
+                    child: loading
+                        ? const CupertinoActivityIndicator()
+                        : const Text(
+                            "شراء",
+                          ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -46,7 +46,7 @@ showAlert({
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text(disagreeBtn ?? "الغاء"),
+          child: Text(disagreeBtn ?? "إلغاء"),
         ),
       ],
     ),

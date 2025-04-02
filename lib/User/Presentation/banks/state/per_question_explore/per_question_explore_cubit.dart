@@ -278,6 +278,8 @@ class PerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
         testName: bank.information.title,
         userId: userData.uuid,
         testId: null,
+        form: null,
+        outerTestId: null,
         bankId: bank.id,
         userName: userData.name,
       ),

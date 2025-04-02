@@ -8,6 +8,7 @@ import 'package:moatmat_app/User/Presentation/banks/views/banks/pick_bank_v.dart
 import 'package:moatmat_app/User/Presentation/banks/views/banks/setting_up_banke.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/banks/teacher_searching_v.dart';
 import 'package:moatmat_app/User/Presentation/home/view/material_picker_v.dart';
+import 'package:moatmat_app/User/Presentation/tests/view/tests/bank_searching_v.dart';
 
 import '../../../../Core/resources/colors_r.dart';
 import '../../../../Core/widgets/view/pick_folder_v.dart';
@@ -101,8 +102,27 @@ class _BanksViewManagerState extends State<BanksViewManager> {
             //
           } else if (state is GetBankSelecteFolder) {
             return PickFolderView(
-              folders: state.folders,
               teacher: state.teacherData,
+              material: state.material,
+              isTest: false,
+              onSearch: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => BankSearchingView(
+                      banks: state.banks,
+                      onSelect: (p0) async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => SettingUpBankView(
+                              bank: p0.$1,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
               onPop: () {
                 context.read<GetBankCubit>().backToTeachers();
               },

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 import '../../../Core/resources/colors_r.dart';
 import '../state/codes_c/codes_cubit.dart';
@@ -57,6 +57,5 @@ class _CodeScannerViewState extends State<CodeScannerView> {
     } else if (Platform.isIOS) {
       _controller?.resumeCamera();
     }
-    // _controller?.resumeCamera();
   }
 }

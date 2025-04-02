@@ -8,26 +8,39 @@ class BankInformationModel extends BankInformation {
     required super.teacher,
     required super.price,
     required super.video,
-    required super.folder,
+    required super.images,
     required super.files,
   });
 
   factory BankInformationModel.fromJson(Map json) {
-    print(json["folder"]);
+    print(json["video"]);
     return BankInformationModel(
       title: json["title"],
       classs: json["classs"],
       material: json["material"],
       teacher: json["teacher"],
       price: json["price"],
-      video: json["video"],
-      folder: json["folder"] ?? "المجلد الرئيسي",
+      images: (json["images"] ?? []).cast<String>(),
+      video: stringToList(json["video"]),
       files: List.generate(
         (json["files"] as List? ?? []).length,
         (i) => json["files"][i],
       ),
     );
   }
+
+  static List<String> stringToList(String? value) {
+    try {
+      if (value == null || value == '') {
+        return [];
+      } else {
+        return value.split(',');
+      }
+    } on Exception {
+      return [];
+    }
+  }
+
   factory BankInformationModel.fromClass(BankInformation information) {
     return BankInformationModel(
       title: information.title,
@@ -36,7 +49,7 @@ class BankInformationModel extends BankInformation {
       teacher: information.teacher,
       price: information.price,
       video: information.video,
-      folder: information.folder,
+      images: information.images,
       files: information.files,
     );
   }
@@ -48,8 +61,8 @@ class BankInformationModel extends BankInformation {
       "material": material,
       "teacher": teacher,
       "price": price,
-      "video": video,
-      "folder": folder,
+      "video": (video?.isNotEmpty ?? false) ? video!.join(",") : null,
+      "images": images,
       "files": files,
     };
   }

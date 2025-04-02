@@ -16,8 +16,11 @@ import 'package:moatmat_app/User/Presentation/banks/views/exploring/full_time_ex
 import 'package:moatmat_app/User/Presentation/banks/views/exploring/per_question_explore_v.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../../Core/functions/coders/decode.dart';
 import '../../../../Core/widgets/toucheable_tile_widget.dart';
-import '../../../videos/view/test_video_v.dart';
+import '../../../tests/widgets/test_q_box.dart';
+import '../../../videos/view/test_assets_v.dart';
+import '../../../videos/view/video_play_view.dart';
 import '../../../videos/view/video_player_w.dart';
 import '../exploring/explore_no_time_v.dart';
 
@@ -31,33 +34,12 @@ class SettingUpBankView extends StatefulWidget {
 
 class _SettingUpBankViewState extends State<SettingUpBankView> {
   //
-  FlickManager? flickManager;
-
-  //
   final _formKey = GlobalKey<FormState>();
   bool isExpanded = false;
   bool perQuestions = false;
   int minutes = 0;
   int seconds = 0;
   //
-  @override
-  void initState() {
-    String? link = widget.bank.information.video;
-    if (link != null) {
-      flickManager = FlickManager(
-        videoPlayerController: VideoPlayerController.networkUrl(
-          Uri.parse(link),
-        ),
-      );
-    }
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    flickManager?.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +59,7 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
           TextButton(
             onPressed: null,
             child: Text(
-              "عدد الاسئلة : ${widget.bank.questions.length}",
+              "عدد الأسئلة : ${widget.bank.questions.length}",
               style: const TextStyle(
                 color: ColorsResources.whiteText2,
               ),
@@ -91,53 +73,106 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
           child: Column(
             children: [
               const SizedBox(width: double.infinity),
-              if (widget.bank.information.video != null) ...[
-                const SizedBox(height: SizesResources.s4),
-                VideoPlayerWidget(
-                  flickManager: flickManager!,
+              if (widget.bank.information.images?.isNotEmpty ?? false) ...[
+                const MiniBankTitleWidget(title: "صور يجب الاطلاع عليها قبل حل الاختبار"),
+                GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: SpacingResources.sidePadding),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: widget.bank.information.images!.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: SizesResources.s2,
+                    crossAxisSpacing: SizesResources.s2,
+                    childAspectRatio: 4 / 2,
+                  ),
+                  itemBuilder: (context, index) {
+                    final image = widget.bank.information.images![index];
+                    return InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ExploreImage(image: image),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(10),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Image.network(
+                              image,
+                              fit: BoxFit.fill,
+                              width: 500,
+                            ),
+                            Container(
+                              color: Colors.black.withOpacity(0.3),
+                            ),
+                            const Icon(
+                              Icons.visibility,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
-              if (widget.bank.information.files != null) ...[
-                const SizedBox(height: SizesResources.s6),
-                //
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Row(
-                    children: [
-                      Text(
-                        "ملفات مرفقة يجب دراستها قبل بدء الاختبار :",
-                        style: TextStyle(fontSize: 12, color: Colors.white),
-                      ),
-                    ],
-                  ),
+              const SizedBox(
+                width: double.infinity,
+                height: SizesResources.s4,
+              ),
+              if (widget.bank.information.video?.isNotEmpty ?? false) ...[
+                const MiniBankTitleWidget(title: "مقاطع فيديو يجب الاطلاع عليها قبل حل الاختبار"),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: widget.bank.information.video!.length,
+                  itemBuilder: (context, index) {
+                    final video = widget.bank.information.video![index];
+                    return MediaTileWidget(
+                      file: video,
+                      type: "MP4",
+                      color: ColorsResources.blueText,
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => VideoPlayerView(link: video)));
+                      },
+                    );
+                  },
                 ),
-
-                //
-                const SizedBox(height: SizesResources.s2),
+              ],
+              const SizedBox(
+                width: double.infinity,
+                height: SizesResources.s4,
+              ),
+              if (widget.bank.information.files?.isNotEmpty ?? false) ...[
+                const MiniBankTitleWidget(title: "ملفات PDF يجب الاطلاع عليها قبل حل الاختبار"),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: widget.bank.information.files!.length,
                   itemBuilder: (context, index) {
                     final file = widget.bank.information.files![index];
-                    return TouchableTileWidget(
-                      title: file.split("/").last.replaceAll(".pdf", ""),
-                      icon: const Icon(
-                        Icons.arrow_forward_ios,
-                        size: 10,
-                      ),
-                      onTap: () {
+                    return MediaTileWidget(
+                      file: decodeFileName(file.split("/").last.split("?").first.replaceAll(".pdf", "")),
+                      type: "PDF",
+                      onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => PDFViewerFromUrl(url: file),
                           ),
                         );
                       },
+                      color: ColorsResources.orangeText,
                     );
                   },
                 ),
               ],
               const SizedBox(height: SizesResources.s2),
+              const MiniBankTitleWidget(title: "اعدادات البنك "),
               Container(
                 decoration: BoxDecoration(
                   boxShadow: ShadowsResources.mainBoxShadow,
@@ -167,9 +202,7 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
                                 title: Text(
                                   "اعدادات الوقت",
                                   style: TextStyle(
-                                    color: isExpanded
-                                        ? null
-                                        : ColorsResources.borders,
+                                    color: isExpanded ? null : ColorsResources.borders,
                                   ),
                                 ),
                               ),
@@ -180,10 +213,8 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 MyTextFormFieldWidget(
-                                  width:
-                                      SpacingResources.mainWidth(context) - 50,
-                                  hintText:
-                                      "الوقت ( ${perQuestions ? "بالثواني" : "بالدقائق"} )",
+                                  width: SpacingResources.mainWidth(context) - 50,
+                                  hintText: "الوقت ( ${perQuestions ? "بالثواني" : "بالدقائق"} )",
                                   keyboardType: TextInputType.number,
                                   validator: minutesValidator,
                                   maxLength: 3,
@@ -239,7 +270,7 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
                                         });
                                       },
                                       child: const Text(
-                                        "الغاء",
+                                        "إلغاء",
                                         style: TextStyle(color: Colors.red),
                                       ),
                                     ),
@@ -255,7 +286,7 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
               ),
               const SizedBox(height: SizesResources.s4),
               ElevatedButtonWidget(
-                text: "تصفح بنك الاسئلة",
+                text: "تصفح بنك الأسئلة",
                 onPressed: () {
                   //
                   if (isExpanded) {
@@ -323,6 +354,32 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class MiniBankTitleWidget extends StatelessWidget {
+  const MiniBankTitleWidget({
+    super.key,
+    required this.title,
+  });
+  final String title;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: SizesResources.s1),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: ColorsResources.whiteText1,
+            ),
+          ),
+        ],
       ),
     );
   }

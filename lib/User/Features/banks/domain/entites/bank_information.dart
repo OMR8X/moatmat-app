@@ -3,9 +3,9 @@ class BankInformation {
   final String classs; //
   final String material;
   final String teacher;
-  final String folder;
   final int price; //
-  final String? video;
+  final List<String>? images;
+  final List<String>? video;
   final List<String>? files;
 
   BankInformation({
@@ -13,7 +13,7 @@ class BankInformation {
     required this.classs,
     required this.material,
     required this.teacher,
-    required this.folder,
+    required this.images,
     required this.price,
     required this.video,
     required this.files,
@@ -26,8 +26,8 @@ class BankInformation {
     int? price,
     String? password,
     int? period,
-    String? video,
-    String? folder,
+    List<String>? video,
+    List<String>? images,
     List<String>? files,
   }) {
     return BankInformation(
@@ -37,7 +37,7 @@ class BankInformation {
       teacher: teacher ?? this.teacher,
       price: price ?? this.price,
       video: video ?? this.video,
-      folder: video ?? this.folder,
+      images: images ?? this.images,
       files: files ?? this.files,
     );
   }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
@@ -18,9 +19,9 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   late Test test;
   late List<(Question, int?)> questions;
   late List<int?> userAnswers;
-
   late int currentQuestion;
   late Duration period;
+  Completer<void>? sendResultCompleter;
   List<int?> wrongAnswers = [];
   Timer? _timer;
   bool didSubmit = false;
@@ -87,7 +88,24 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     });
   }
 
-  void finish() async {
+  void finish({bool force = false}) async {
+    //
+    sendResultCompleter = Completer<void>();
+    //
+    if (test.properties.scrollable == true && !force) {
+      //
+      bool leftQuestion = false;
+      //
+      for (var q in questions) {
+        if (q.$2 == null) {
+          leftQuestion = true;
+        }
+      }
+      if (leftQuestion) {
+        Fluttertoast.showToast(msg: "يجب الاجابة على جميع الأسئلة");
+        return;
+      }
+    }
     List<(Question, int)> correct = [];
     List<(Question, int)> wrong = [];
     for (var q in questions) {
@@ -111,14 +129,14 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
         wrong.add((q.$1, correctIndex));
       }
     }
-    String result =
-        ((correct.length / questions.length) * 100).toStringAsFixed(2);
+    String result = ((correct.length / questions.length) * 100).toStringAsFixed(2);
     emit(NoTimeExploreResult(
       correct: correct,
       wrong: wrong,
       result: result,
     ));
-    submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
+    await submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
+    sendResultCompleter?.complete();
     if (_timer?.isActive ?? false) {
       _timer!.cancel();
     }
@@ -150,17 +168,25 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
         userId: userInfo.uuid,
         testId: test.id,
         bankId: null,
+        form: null,
+        outerTestId: null,
         userName: userInfo.name,
       ),
     );
   }
 
   emitState() {
-    emit(NoTimeExploreQuestion(
-      question: questions[currentQuestion],
-      currentQ: currentQuestion,
-      length: questions.length,
-    ));
+    if (test.properties.scrollable == true) {
+      emit(NoTimeExploreQuestionScrollable(
+        questions: questions,
+      ));
+    } else {
+      emit(NoTimeExploreQuestion(
+        question: questions[currentQuestion],
+        currentQ: currentQuestion,
+        length: questions.length,
+      ));
+    }
   }
 }
 // result

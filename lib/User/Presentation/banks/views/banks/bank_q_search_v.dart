@@ -6,6 +6,7 @@ import '../../../../Core/resources/fonts_r.dart';
 import '../../../../Core/resources/shadows_r.dart';
 import '../../../../Core/resources/sizes_resources.dart';
 import '../../../../Core/resources/spacing_resources.dart';
+import '../../../../Core/widgets/ui/empty_list_text.dart';
 import '../../../../Features/tests/domain/entities/question.dart';
 
 class BankQuestionSearchView extends StatefulWidget {
@@ -73,18 +74,20 @@ class _BankQuestionSearchViewState extends State<BankQuestionSearchView> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-                itemCount: result.length,
-                itemBuilder: (context, index) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      QuestionItemWidget(
-                        question: result[index],
-                      ),
-                    ],
-                  );
-                }),
+            child: result.isEmpty
+                ? const EmptyListTextWidget()
+                : ListView.builder(
+                    itemCount: result.length,
+                    itemBuilder: (context, index) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          QuestionItemWidget(
+                            question: result[index],
+                          ),
+                        ],
+                      );
+                    }),
           ),
         ],
       )),

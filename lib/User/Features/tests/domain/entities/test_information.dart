@@ -1,4 +1,3 @@
-
 import 'package:moatmat_app/User/Features/tests/domain/entities/mini_test.dart';
 
 class TestInformation {
@@ -6,11 +5,11 @@ class TestInformation {
   final String classs;
   final String material;
   final String teacher;
-  final String folder;
   final int? price;
   final String? password;
   final int? period;
-  final String? video;
+  final List<String>? images;
+  final List<String>? video;
   final List<String>? files;
   final MiniTest? previous;
 
@@ -19,10 +18,10 @@ class TestInformation {
     required this.classs,
     required this.material,
     required this.teacher,
-    required this.folder,
     required this.price,
     required this.password,
     required this.period,
+    required this.images,
     required this.video,
     required this.files,
     required this.previous,
@@ -32,11 +31,11 @@ class TestInformation {
     String? classs,
     String? material,
     String? teacher,
-    String? folder,
     int? price,
     String? password,
     int? period,
-    String? video,
+    List<String>? video,
+    List<String>? images,
     List<String>? files,
     MiniTest? previous,
   }) {
@@ -49,7 +48,7 @@ class TestInformation {
       password: password ?? this.password,
       period: period ?? this.period,
       video: video ?? this.video,
-      folder: folder ?? this.folder,
+      images: images ?? this.images,
       files: files ?? this.files,
       previous: previous ?? this.previous,
     );

@@ -1,45 +1,51 @@
 {
   "project_info": {
-    "project_number": "814213526279",
-    "project_id": "notifications-46c03",
-    "storage_bucket": "notifications-46c03.appspot.com"
+    "project_number": "359748080763",
+    "project_id": "moatmat-project",
+    "storage_bucket": "moatmat-project.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:814213526279:android:d04b97029a6dd812350ba2",
-        "android_client_info": {
-          "package_name": "com.example.test_answers_app"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDH93fI_O-7tD7dziTUpaKbXCYVlQAKVR0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:814213526279:android:4f2a6328e019d27e350ba2",
+        "mobilesdk_app_id": "1:359748080763:android:415c21cbf0e3b3516dbede",
         "android_client_info": {
           "package_name": "com.moatmat.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "359748080763-7vl5ubi4o48g5t625c1dkaul80e9q130.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.moatmat.app",
+            "certificate_hash": "2313e50dc439d93ce80f839aa3978259dd14f068"
+          }
+        },
+        {
+          "client_id": "359748080763-nbkeod4kohlntuul48bvfhk620tg1sup.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDH93fI_O-7tD7dziTUpaKbXCYVlQAKVR0"
+          "current_key": "AIzaSyA5LMbJetPa9b4p9nTaGAPkrEz0U73z0oE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359748080763-nbkeod4kohlntuul48bvfhk620tg1sup.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "359748080763-81e9q7f7e49a9lqsi157jed7f38rht0h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.moatmat.app"
+              }
+            }
+          ]
         }
       }
     }

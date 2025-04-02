@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../Core/constant/classes_list.dart';
 import '../../../Core/constant/governorates_list.dart';
+import '../../../Core/errors/exceptions.dart';
 import '../../../Core/injection/app_inj.dart';
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
@@ -63,6 +64,7 @@ class _SignUpViewState extends State<SignUpView> {
         likes: [],
         tests: [],
         notifications: []);
+    //
     var query = locator<SignUpUC>().call(
       userData: userData,
       password: password,
@@ -75,15 +77,11 @@ class _SignUpViewState extends State<SignUpView> {
               content: Text(l.text),
             ),
           );
+          if (l is UserAlreadyExcitedFailure) {
+            context.read<AuthCubit>().startSignIn();
+          }
         },
         (r) {
-          //
-          if (!GetIt.instance.isRegistered<UserData>()) {
-            locator.registerFactory<UserData>(() => r);
-          } else {
-            GetIt.instance.unregister<UserData>();
-            locator.registerFactory<UserData>(() => r);
-          }
           //
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -125,7 +123,7 @@ class _SignUpViewState extends State<SignUpView> {
                   validator: (p0) {
                     return notEmptyValidator(text: p0);
                   },
-                  hintText: "الاسم الثلاثي",
+                  hintText: "الاسم الثلاثي باللغة العربية",
                   textInputAction: TextInputAction.next,
                   maxLength: 30,
                   inputFormatters: [

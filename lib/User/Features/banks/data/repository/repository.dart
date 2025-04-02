@@ -62,4 +62,15 @@ class BanksRepositoryImpl implements BanksRepository {
       return left(const AnonFailure());
     }
   }
+
+    @override
+  Future<Either<Exception, List<Bank>>> getBanksByIds(
+      {required List<int> ids}) async {
+    try {
+      var res = await dataSource.getBanksByIds(ids: ids);
+      return right(res);
+    } on Exception catch (e) {
+      return left(e);
+    }
+  }
 }

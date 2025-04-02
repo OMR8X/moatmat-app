@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/functions/coders/decode.dart';
 
@@ -47,41 +48,45 @@ class TouchableTileWidget extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          (title),
-                          textAlign: TextAlign.start,
-                          style: FontsResources.styleLight().copyWith(
-                            color: ColorsResources.blackText1,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
-                        ),
-                        if (subTitle != null) ...[
-                          const SizedBox(height: SizesResources.s2),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            subTitle!,
+                            (title),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.start,
-                            style: FontsResources.styleRegular().copyWith(
-                              color: ColorsResources.blackText2,
-                              fontSize: 12,
+                            style: FontsResources.styleLight().copyWith(
+                              color: ColorsResources.blackText1,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
                             ),
                           ),
+                          if (subTitle != null) ...[
+                            const SizedBox(height: SizesResources.s2),
+                            Text(
+                              subTitle!,
+                              textAlign: TextAlign.start,
+                              style: FontsResources.styleRegular().copyWith(
+                                color: ColorsResources.blackText2,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                          if (subTitle2 != null) ...[
+                            const SizedBox(height: SizesResources.s2),
+                            Text(
+                              subTitle2!,
+                              textAlign: TextAlign.start,
+                              style: FontsResources.styleRegular().copyWith(
+                                color: ColorsResources.blackText2,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ]
                         ],
-                        if (subTitle2 != null) ...[
-                          const SizedBox(height: SizesResources.s2),
-                          Text(
-                            subTitle2!,
-                            textAlign: TextAlign.start,
-                            style: FontsResources.styleRegular().copyWith(
-                              color: ColorsResources.blackText2,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ]
-                      ],
+                      ),
                     ),
                     Icon(
                       iconData,
