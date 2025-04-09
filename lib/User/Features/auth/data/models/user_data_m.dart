@@ -23,7 +23,7 @@ class UserDataModel extends UserData {
   });
   factory UserDataModel.fromJson(Map json) {
     return UserDataModel(
-      id: json["id"] ?? "",
+      id: json["id"].runtimeType == String ? int.parse(json["id"]) : json["id"],
       uuid: json["uuid"] ?? "",
       balance: json["balance"],
       name: json["name"],
@@ -35,9 +35,9 @@ class UserDataModel extends UserData {
       governorate: json["governorate"],
       phoneNumber: json["phone_number"],
       whatsappNumber: json["whatsapp_number"],
-      deviceId: json["device_id"],
+      deviceId: json["device_id"] ?? "",
       likes: List.generate(
-        (json["likes"] as List).length,
+        (json["likes"] as List?)?.length ?? 0,
         (index) => UserLikeModel.fromJson(json["likes"][index]),
       ),
       tests: List.generate((json["tests"] as List).length, (index) {

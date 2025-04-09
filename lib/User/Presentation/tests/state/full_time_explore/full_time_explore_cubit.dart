@@ -131,7 +131,7 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   emitState() {
     if (test.properties.scrollable == true) {
       emit(FullTimeExploreQuestionScrollable(
-        questions: questions,
+        questions: List.from(questions),
         time: time,
       ));
     } else {

@@ -192,7 +192,7 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   emitState() {
     if (bank.properties.scrollable == true) {
       emit(NoTimeExploreQuestionScrollable(
-        questions: questions,
+        questions: List.from(questions),
       ));
     } else {
       emit(NoTimeExploreQuestion(
@@ -203,4 +203,4 @@ class NoTimeExploreCubit extends Cubit<NoTimeExploreState> {
     }
   }
 }
-// result
+

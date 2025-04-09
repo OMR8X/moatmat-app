@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
 
 import '../state/cubit/folders_manager_cubit.dart';
 import 'sub_folders_v.dart';
@@ -14,7 +15,7 @@ class FoldersViewManager extends StatefulWidget {
     required this.title,
     required this.openContent,
     required this.directories,
-    this.onPop,
+    this.onPop, required this.teacher,
   });
 
   final String title, material;
@@ -22,6 +23,7 @@ class FoldersViewManager extends StatefulWidget {
   final bool isTest;
   final void Function(int id) openContent;
   final VoidCallback? onPop;
+  final TeacherData teacher;
   @override
   State<FoldersViewManager> createState() => _FoldersViewManagerState();
 }
@@ -29,7 +31,12 @@ class FoldersViewManager extends StatefulWidget {
 class _FoldersViewManagerState extends State<FoldersViewManager> {
   @override
   void initState() {
-    context.read<FoldersManagerCubit>().init(isTest: widget.isTest, directories: widget.directories, material: widget.material);
+    context.read<FoldersManagerCubit>().init(
+          isTest: widget.isTest,
+          directories: widget.directories,
+          material: widget.material,
+          teacher: widget.teacher,
+        );
     super.initState();
   }
 

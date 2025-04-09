@@ -17,12 +17,16 @@ class UserRepositoryImpl implements UserRepository {
 
   UserRepositoryImpl({required this.remoteDataSource, required this.localDataSource});
   @override
-  Future<Either<Failure, UserData>> getUserData({required String uuid, bool update = false}) async {
+  Future<Either<Failure, UserData>> getUserData({
+    required String uuid,
+    bool update = false,
+    bool force = false,
+  }) async {
     try {
       //
       if (update) throw Exception();
       //
-      final response = await localDataSource.getUserData(uuid: uuid);
+      final response = await localDataSource.getUserData(uuid: uuid, force: force);
       //
       return right(response);
       //
@@ -137,6 +141,7 @@ class UserRepositoryImpl implements UserRepository {
       var res = await remoteDataSource.insertUserData(userData: userData);
       return right(res);
     } on Exception catch (e) {
+   
       return left(const AnonFailure());
     }
   }

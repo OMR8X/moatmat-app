@@ -8,7 +8,11 @@ class GetUserDataUC {
   final UserRepository repository;
 
   GetUserDataUC({required this.repository});
-  Future<Either<Failure, UserData>> call({required String uuid, bool update = false}) async {
-    return await repository.getUserData(uuid: uuid, update: update);
+  Future<Either<Failure, UserData>> call({
+    required String uuid,
+    bool update = false,
+    bool force = false,
+  }) async {
+    return await repository.getUserData(uuid: uuid, update: update, force: force);
   }
 }

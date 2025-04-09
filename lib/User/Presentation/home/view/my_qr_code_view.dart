@@ -77,7 +77,6 @@ class _MyQrCodeViewState extends State<MyQrCodeView> {
   @override
   void initState() {
     screenshotController = ScreenshotController();
-
     super.initState();
   }
 

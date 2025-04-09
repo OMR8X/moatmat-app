@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -17,7 +18,6 @@ import 'package:moatmat_app/User/Features/update/domain/usecases/check_update_st
 import 'package:moatmat_app/main.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../../Core/injection/app_inj.dart';
 import '../../../../Features/auth/domain/entites/user_data.dart';
 import '../../../../Features/auth/domain/use_cases/get_user_data.dart';
@@ -32,6 +32,8 @@ class AuthCubit extends Cubit<AuthState> {
   //
   init() async {
     //
+    emit(AuthLoading());
+    //
     if (timer != null && (timer?.isActive ?? false)) {
       timer?.cancel();
     }
@@ -41,8 +43,7 @@ class AuthCubit extends Cubit<AuthState> {
         onCheck();
       },
     );
-    //
-    emit(AuthLoading());
+
     //
     var user = Supabase.instance.client.auth.currentUser;
     //
@@ -59,12 +60,21 @@ class AuthCubit extends Cubit<AuthState> {
       return;
     }
     //
+    // if (kDebugMode) {
+    //   emit(const AuthOfflineMode());
+    //   return;
+    // }
+    //
     final res = await locator<CheckUpdateStateUC>().call();
     //
     res.fold(
       (l) {
         debugPrint((l.toString().contains("Failed host lookup")).toString());
-        emit(const AuthError(error: "لا يوجد اتصال بالانترنت"));
+        if (l.toString().contains("Failed host lookup")) {
+          startOfflineMode();
+        } else {
+          emit(const AuthError(error: "لا يوجد اتصال بالانترنت"));
+        }
       },
       (r) {
         injectUpdateInfo(r);
@@ -95,9 +105,11 @@ class AuthCubit extends Cubit<AuthState> {
     //
     locator<GetUserDataUC>().call(uuid: user.id, update: true).then((value) {
       value.fold(
-        (l) {},
+        (l) {
+          debugPrint(l.toString());
+        },
         (userData) async {
-          if (userData.deviceId == DeviceService().deviceId) {
+          if (userData.deviceId == DeviceService().deviceId || userData.deviceId.isEmpty) {
             injectUserData(userData);
           } else {
             if (timer != null && (timer?.isActive ?? false)) {
@@ -293,5 +305,19 @@ class AuthCubit extends Cubit<AuthState> {
   //
   finishAuth() {
     init();
+  }
+
+  //
+  startOfflineMode() async {
+    final response = await locator<GetUserDataUC>().call(uuid: Supabase.instance.client.auth.currentUser!.id, force: true);
+    response.fold(
+      (l) {
+        emit(const AuthError(error: "لا يوجد اتصال بالانترنت"));
+      },
+      (r) {
+        injectUserData(r);
+        emit(const AuthOfflineMode());
+      },
+    );
   }
 }

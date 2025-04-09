@@ -9,7 +9,10 @@ import '../../domain/entites/user_data.dart';
 
 abstract class UserLocalDataSource {
   // get User Data
-  Future<UserData> getUserData({required String uuid});
+  Future<UserData> getUserData({
+    required String uuid,
+    bool force = false,
+  });
 }
 
 class UserLocalDataSourceImplement implements UserLocalDataSource {
@@ -17,13 +20,16 @@ class UserLocalDataSourceImplement implements UserLocalDataSource {
 
   UserLocalDataSourceImplement({required this.cacheManager});
   @override
-  Future<UserData> getUserData({required String uuid}) async {
+  Future<UserData> getUserData({
+    required String uuid,
+    bool force = false,
+  }) async {
     //
     final valid = await cacheManager.isValid(
       CacheConstant.userCreateKey(uuid),
       CacheConstant.userDataKey(uuid),
     );
-    if (!valid) {
+    if (!valid && !force) {
       throw CacheException();
     }
     //

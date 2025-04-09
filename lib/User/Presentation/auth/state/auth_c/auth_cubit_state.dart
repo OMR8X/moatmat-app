@@ -53,6 +53,10 @@ final class AuthError extends AuthState {
   List<Object?> get props => [error];
 }
 
+final class AuthOfflineMode extends AuthState {
+  const AuthOfflineMode();
+}
+
 final class AuthUpdate extends AuthState {
   final UpdateInfo updateInfo;
 

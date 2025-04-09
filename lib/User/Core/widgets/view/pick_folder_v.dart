@@ -93,6 +93,7 @@ class _PickFolderViewState extends State<PickFolderView> {
           Expanded(
             child: FoldersViewManager(
               title: "",
+              teacher: widget.teacher,
               material: widget.material,
               isTest: widget.isTest,
               openContent: (id) {},

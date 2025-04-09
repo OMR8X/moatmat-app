@@ -52,7 +52,6 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
         body: BlocBuilder<TestFullTimeExploreCubit, FullTimeExploreState>(
           builder: (context, state) {
             final cubit = context.read<TestFullTimeExploreCubit>();
-
             if (state is FullTimeExploreQuestion) {
               return TestQuestionView(
                 onExit: () {
@@ -70,6 +69,7 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
                 onPrevious: () => cubit.previousQuestion(index: state.currentQ - 1),
                 onPop: () => Navigator.of(context).pop(),
                 onAnswer: (question, selected) {
+                  print(selected);
                   context.read<TestFullTimeExploreCubit>().answerQuestion(
                     state.currentQ,
                     (question, selected),
@@ -92,6 +92,7 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
                 onPrevious: () {},
                 onPop: () => Navigator.of(context).pop(),
                 onAnswer: (index, question, selected) {
+                  
                   context.read<TestFullTimeExploreCubit>().answerQuestion(
                     index,
                     (question, selected),

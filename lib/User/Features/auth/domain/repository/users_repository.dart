@@ -33,6 +33,7 @@ abstract class UserRepository {
   Future<Either<Failure, UserData>> getUserData({
     required String uuid,
     bool update = false,
+    bool force = false,
   });
   //
 

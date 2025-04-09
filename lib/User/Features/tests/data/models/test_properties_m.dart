@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
+
 import '../../domain/entities/test_properties.dart';
+
 class TestPropertiesModel extends TestProperties {
   TestPropertiesModel({
     required super.exploreAnswers,
@@ -15,7 +18,7 @@ class TestPropertiesModel extends TestProperties {
       timePerQuestion: json["time_per_question"],
       repeatable: json["repeatable"],
       visible: json["visible"],
-      scrollable: json["scrollable"],
+      scrollable: kDebugMode ? true : json["scrollable"],
     );
   }
   factory TestPropertiesModel.fromClass(TestProperties properties) {

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../domain/entites/teacher_data.dart';
 import '../../domain/entites/teacher_options.dart';
+import 'group_m.dart';
 import 'teacher_options.dart';
 
 class TeacherDataModel extends TeacherData {
@@ -15,9 +16,10 @@ class TeacherDataModel extends TeacherData {
     required super.testsFolders,
     required super.price,
     required super.purchaseDescription,
+    required super.groups,
+    required super.courseSubscribersTests,
   });
   factory TeacherDataModel.fromJson(Map json) {
-    // check if ant time is null:
     return TeacherDataModel(
       name: json["name"],
       email: json["email"],
@@ -27,6 +29,12 @@ class TeacherDataModel extends TeacherData {
       purchaseDescription: json["purchase_description"],
       banksFolders: json["banks_folders"],
       testsFolders: json["tests_folders"],
+      courseSubscribersTests: json["course_subscribers_tests"].cast<int>() ?? <int>[],
+      //
+      groups: List.generate((json['groups'] as List).length, (i) {
+        return GroupModel.fromJson((json['groups'] as List)[i]);
+      }),
+      //
       options: json["teacher_options"] != null
           ? TeacherOptionsModel.fromJson(
               json["teacher_options"],
@@ -50,6 +58,8 @@ class TeacherDataModel extends TeacherData {
       options: teacherData.options,
       testsFolders: teacherData.testsFolders,
       banksFolders: teacherData.banksFolders,
+      groups: teacherData.groups,
+      courseSubscribersTests: teacherData.courseSubscribersTests,
     );
   }
 
@@ -63,6 +73,8 @@ class TeacherDataModel extends TeacherData {
       "purchase_description": purchaseDescription,
       "tests_folders": testsFolders,
       "banks_folders": banksFolders,
+      "course_subscribers_tests": courseSubscribersTests,
+      "groups": groups.map((e) => GroupModel.fromClass(e).toJson()).toList(),
       "teacher_options": TeacherOptionsModel.fromClass(options).toJson(),
     };
   }

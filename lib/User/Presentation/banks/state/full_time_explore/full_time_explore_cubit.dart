@@ -146,7 +146,7 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   emitState() {
     if (bank.properties.scrollable == true) {
       emit(FullTimeExploreQuestionScrollable(
-        questions: questions,
+        questions: List.from(questions),
         time: time,
       ));
     } else {

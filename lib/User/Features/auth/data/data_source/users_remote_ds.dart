@@ -69,7 +69,6 @@ class UsersRemoteDataSourceImpl implements UsersRemoteDataSource {
     //
     await addUpdateData();
     //
-    // client.from("users_data").select().eq("uuid", uuid);
     var query = client.from("users_data").select().eq("uuid", uuid);
     //
     List res = await query;

@@ -1,4 +1,5 @@
 import '../../../../Core/injection/app_inj.dart';
+import 'group.dart';
 import 'teacher_options.dart';
 
 class TeacherData {
@@ -13,6 +14,9 @@ class TeacherData {
   //
   Map<String, dynamic> banksFolders;
   Map<String, dynamic> testsFolders;
+  //
+  List<Group> groups;
+  List<int> courseSubscribersTests;
 
   TeacherData({
     required this.name,
@@ -24,6 +28,8 @@ class TeacherData {
     required this.price,
     required this.banksFolders,
     required this.testsFolders,
+    required this.groups,
+    required this.courseSubscribersTests,
   });
   updateBanksFolders(Map<String, dynamic> banksFolders) {}
 
@@ -39,6 +45,8 @@ class TeacherData {
     int? price,
     Map<String, dynamic>? banksFolders,
     Map<String, dynamic>? testsFolders,
+    List<Group>? groups,
+    List<int>? courseSubscribersTests,
   }) {
     return TeacherData(
       name: name ?? this.name,
@@ -50,6 +58,8 @@ class TeacherData {
       image: image ?? this.image,
       testsFolders: testsFolders ?? this.testsFolders,
       banksFolders: banksFolders ?? this.banksFolders,
+      groups: groups ?? this.groups,
+      courseSubscribersTests: courseSubscribersTests ?? this.courseSubscribersTests,
     );
   }
 }

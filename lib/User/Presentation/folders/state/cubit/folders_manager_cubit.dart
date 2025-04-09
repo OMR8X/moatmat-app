@@ -1,8 +1,13 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/group.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
+import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 
 import '../../../../Core/injection/app_inj.dart';
 import '../../../../Core/services/folders_system_s.dart';
@@ -15,15 +20,18 @@ part 'folders_manager_state.dart';
 
 class FoldersManagerCubit extends Cubit<FoldersManagerState> {
   FoldersManagerCubit() : super(FoldersManagerLoading());
+
   late bool isTest;
+  late TeacherData teacher;
 
   ///
   late FoldersSystemService foldersSystemService;
 
   ///
-  init({required Map<String, dynamic> directories, required bool isTest, required String material}) async {
+  init({required Map<String, dynamic> directories, required bool isTest, required String material, required TeacherData teacher}) async {
     //
     this.isTest = isTest;
+    this.teacher = teacher;
     //
     emit(FoldersManagerLoading());
     //
@@ -152,18 +160,33 @@ class FoldersManagerCubit extends Cubit<FoldersManagerState> {
   //
   Future<List<Test>> getTests(List<int> ids) async {
     //
-    //
     List<Test> tests = [];
+    List<int> courseSubscribersTests = teacher.courseSubscribersTests;
+    List<Group> groups = teacher.groups;
     //
+    Map<String, List<int>> holder = {};
+    //
+    for (var item in locator<List<PurchaseItem>>()) {
+      if (item.itemType == "teacher") {
+        if (holder[item.uuid] == null) holder[item.uuid] = [];
+        holder[item.uuid]!.addAll(courseSubscribersTests);
+      }
+    }
+    for (var group in groups) {
+      for (var item in group.items) {
+        if (holder[item.userData.uuid] == null) holder[item.userData.uuid] = [];
+        holder[item.userData.uuid]?.addAll(group.testsIds);
+      }
+    }
+    List<int>? availableTestsIds = holder[locator<UserData>().uuid];
+    //
+    if (availableTestsIds != null) {
+      ids = ids.toSet().intersection(availableTestsIds.toSet()).toList();
+    }
     var res = await locator<GetTestsByIdsUC>().call(ids: ids);
+    res.fold((l) {}, (r) => tests = r);
     //
-    res.fold(
-      (l) {},
-      (r) {
-        tests = r;
-      },
-    );
-    //
+
     return tests;
   }
 }

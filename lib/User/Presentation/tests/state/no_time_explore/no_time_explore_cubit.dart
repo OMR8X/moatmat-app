@@ -178,7 +178,7 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   emitState() {
     if (test.properties.scrollable == true) {
       emit(NoTimeExploreQuestionScrollable(
-        questions: questions,
+        questions: List.from(questions),
       ));
     } else {
       emit(NoTimeExploreQuestion(

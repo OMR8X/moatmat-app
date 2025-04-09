@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/enter_user_data_view.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/error_v.dart';
+import 'package:moatmat_app/User/Presentation/auth/view/offline_view.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/signed_out_v.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/update_view.dart';
 
@@ -50,6 +51,8 @@ class _AuthViewsManagerState extends State<AuthViewsManager> {
             return const SendResetCodeView();
           } else if (state is AuthError) {
             return ErrorView(error: state.error);
+          } else if (state is AuthOfflineMode) {
+            return OfflineView();
           } else if (state is EnterUserData) {
             return const EnterUserDataView();
           } else if (state is AuthSignedOut) {
