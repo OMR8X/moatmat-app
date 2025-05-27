@@ -4,8 +4,6 @@ import 'package:moatmat_app/User/Features/result/data/datasources/ds.dart';
 import 'package:moatmat_app/User/Features/result/domain/entities/result.dart';
 import 'package:moatmat_app/User/Features/result/domain/repository/repository.dart';
 
-import '../../../tests/domain/entities/test.dart';
-
 class ResultsRepositoryImpl implements ResultsRepository {
   final ResultsDataSource dataSource;
 

@@ -14,7 +14,7 @@ import '../../../../Core/services/folders_system_s.dart';
 import '../../../../Features/banks/domain/entites/bank.dart';
 import '../../../../Features/banks/domain/use_cases/get_banks_by_ids_uc.dart';
 import '../../../../Features/tests/domain/entities/test.dart';
-import '../../../../Features/tests/domain/repository/get_tests_by_ids_uc.dart';
+import '../../../../Features/tests/domain/usecases/get_tests_by_ids_uc.dart';
 
 part 'folders_manager_state.dart';
 
@@ -167,26 +167,34 @@ class FoldersManagerCubit extends Cubit<FoldersManagerState> {
     Map<String, List<int>> holder = {};
     //
     for (var item in locator<List<PurchaseItem>>()) {
-      if (item.itemType == "teacher") {
+      if (item.itemType == "teacher" && item.itemId == teacher.email) {
+        //
         if (holder[item.uuid] == null) holder[item.uuid] = [];
+        //
         holder[item.uuid]!.addAll(courseSubscribersTests);
       }
     }
     for (var group in groups) {
-      for (var item in group.items) {
-        if (holder[item.userData.uuid] == null) holder[item.userData.uuid] = [];
-        holder[item.userData.uuid]?.addAll(group.testsIds);
+      if (group.items.any((e) => e.userData.uuid == locator<UserData>().uuid)) {
+        for (var item in group.items) {
+          if (holder[item.userData.uuid] == null) holder[item.userData.uuid] = [];
+          if (group.testsIds.contains(2197)) {
+            print("debugging: yes! ${item.userData.uuid} has access to group tests with group name ${group.name}");
+          }
+          holder[item.userData.uuid]?.addAll(group.testsIds);
+        }
       }
     }
     List<int>? availableTestsIds = holder[locator<UserData>().uuid];
-    //
-    if (availableTestsIds != null) {
-      ids = ids.toSet().intersection(availableTestsIds.toSet()).toList();
-    }
-    var res = await locator<GetTestsByIdsUC>().call(ids: ids);
-    res.fold((l) {}, (r) => tests = r);
-    //
 
+    if (availableTestsIds?.isNotEmpty ?? false) {
+      ids = ids.toSet().intersection(availableTestsIds!.toSet()).toList();
+    }
+    availableTestsIds?.reversed;
+    // print("debugging: ${locator<UserData>().uuid}");
+    print("debugging: availableTestsIds $availableTestsIds ");
+    var res = await locator<GetTestsByIdsUC>().call(ids: ids, showHidden: availableTestsIds != null);
+    res.fold((l) {}, (r) => tests = r);
     return tests;
   }
 }

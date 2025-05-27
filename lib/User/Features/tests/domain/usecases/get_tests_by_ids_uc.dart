@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../Core/errors/exceptions.dart';
 import '../entities/test.dart';
-import 't_repository.dart';
+import '../repository/t_repository.dart';
 
 class GetTestsByIdsUC {
   final TestsRepository repository;
@@ -11,7 +11,8 @@ class GetTestsByIdsUC {
 
   Future<Either<Failure, List<Test>>> call({
     required List<int> ids,
+    required bool showHidden,
   }) async {
-    return await repository.getTestsByIds(ids: ids);
+    return await repository.getTestsByIds(ids: ids, showHidden: showHidden);
   }
 }

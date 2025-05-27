@@ -1,6 +1,4 @@
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/services/cache/cache_constant.dart';
 import 'package:moatmat_app/User/Features/result/data/models/result_m.dart';
@@ -29,9 +27,17 @@ class CacheManager {
     await _cacheClient.remove(CacheConstant.resultsKey);
     //
     for (var result in results) {
-      await locator<AddResultUC>().call(result: ResultModel.fromJson(result));
+      await locator<AddResultUC>().call(result: ResultModel.fromJson(result)).then((response) {
+        response.fold(
+          (l) {
+            debugPrint("uploading local results failed $l");
+          },
+          (r) {
+            debugPrint("uploading local results succeeded");
+          },
+        );
+      });
     }
-    //
   }
 
   /// return cache client instance
@@ -42,7 +48,7 @@ class CacheManager {
   /// check if cache is valid and exists
   Future<bool> isValid(String createdKey, String dataKey) async {
     //
-    if(kDebugMode){
+    if (kDebugMode) {
       return false;
     }
     //

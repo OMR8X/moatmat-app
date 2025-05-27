@@ -18,16 +18,22 @@ final class FullTimeExploreQuestion extends FullTimeExploreState {
   final Duration time;
   //
   final int currentQ, length;
-
+  //
+  final bool showWarning;
+  //
+  final List<int> unsolved;
+  //
   const FullTimeExploreQuestion({
     required this.question,
     required this.time,
     required this.currentQ,
     required this.length,
+    this.unsolved = const [],
+    this.showWarning = false,
   });
 
   @override
-  List<Object> get props => [question, currentQ, length, time];
+  List<Object> get props => [question, currentQ, length, time, unsolved, showWarning];
 }
 
 final class FullTimeExploreQuestionScrollable extends FullTimeExploreState {
@@ -35,14 +41,20 @@ final class FullTimeExploreQuestionScrollable extends FullTimeExploreState {
   final List<(Question, int?)> questions;
   //
   final Duration time;
-
+  //
+  final bool showWarning;
+  //
+  final List<int> unsolved;
+  //
   const FullTimeExploreQuestionScrollable({
     required this.questions,
     required this.time,
+    this.unsolved = const [],
+    this.showWarning = false,
   });
 
   @override
-  List<Object> get props => [questions.map((e) => e.$2), time];
+  List<Object> get props => [questions.map((e) => e.$2), time, unsolved, showWarning];
 }
 
 final class FullTimeExploreResult extends FullTimeExploreState {

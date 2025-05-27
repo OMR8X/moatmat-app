@@ -95,7 +95,6 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
       currentQuestion++;
       emitState();
     } else {
-      cancelTimer();
       finish();
     }
   }
@@ -127,12 +126,7 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
           finish();
           return;
         }
-        // did finish
-        if (bank.properties.scrollable != true) {
-          if (questions[questions.length - 1].$2 != null) {
-            return;
-          }
-        }
+
         time = Duration(milliseconds: time.inMilliseconds - milliseconds);
         //
         counter = Duration(milliseconds: counter.inMilliseconds + 500);
@@ -185,17 +179,30 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
 
   void finish({bool force = false}) {
     //
-    if (bank.properties.scrollable == true && !force) {
+    if ( !force) {
       //
       bool leftQuestion = false;
       //
-      for (var q in questions) {
-        if (q.$2 == null) {
-          leftQuestion = true;
-        }
-      }
+      leftQuestion = questions.any((e) => e.$2 == null);
+      //
       if (leftQuestion) {
-        Fluttertoast.showToast(msg: "يجب الاجابة على جميع الأسئلة");
+        if (bank.properties.scrollable == true) {
+          emit(FullTimeExploreQuestionScrollable(
+            questions: List.from(questions),
+            time: time,
+            unsolved: questions.where((e) => e.$2 == null).map((e) => e.$1.id - 1).toList(),
+            showWarning: true,
+          ));
+        } else {
+          emit(FullTimeExploreQuestion(
+            question: questions[currentQuestion],
+            currentQ: currentQuestion,
+            length: questions.length,
+            time: time,
+            unsolved: questions.where((e) => e.$2 == null).map((e) => e.$1.id - 1).toList(),
+            showWarning: true,
+          ));
+        }
         return;
       }
     }

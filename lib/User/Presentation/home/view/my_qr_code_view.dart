@@ -163,7 +163,7 @@ class _MyQrCodeViewState extends State<MyQrCodeView> {
                       ),
                       const SizedBox(height: SizesResources.s2),
                       Text(
-                        "رقم الطالب : ${locator<UserData>().id.toString()}",
+                        "رقم الطالب : ${locator<UserData>().id.toString().padLeft(6, '0')}",
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

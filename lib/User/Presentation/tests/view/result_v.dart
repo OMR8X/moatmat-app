@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/shadows_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Core/resources/texts_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/fields/elevated_button_widget.dart';
+import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 
 class TestResultView extends StatelessWidget {
   const TestResultView({
@@ -35,6 +37,7 @@ class TestResultView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppBarTitles.result),

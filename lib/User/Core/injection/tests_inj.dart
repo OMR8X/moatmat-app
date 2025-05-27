@@ -1,5 +1,5 @@
 import 'package:moatmat_app/User/Features/tests/data/datasources/tests_ds.dart';
-import 'package:moatmat_app/User/Features/tests/domain/repository/get_tests_by_ids_uc.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/get_tests_by_ids_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/repository/t_repository.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/can_do_test_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_outer_test_by_id_uc.dart';

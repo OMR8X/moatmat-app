@@ -33,9 +33,11 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     widget.flickManager.flickVideoManager?.videoPlayerController?.addListener(_checkForError);
   }
 
-  void _checkForError() {
+  Future<void> _checkForError() async {
     final error = widget.flickManager.flickVideoManager?.videoPlayerController?.value.errorDescription;
+
     if (error != null && error.isNotEmpty) {
+ 
       setState(() {
         _error = error;
         _isLoading = false;

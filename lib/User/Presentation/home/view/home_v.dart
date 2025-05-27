@@ -26,6 +26,7 @@ import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
 import '../../../Core/services/deep_links_s.dart';
 import '../../../Features/auth/domain/entites/user_data.dart';
+import '../../../Features/purchase/domain/entites/purchase_item.dart';
 import '../../code/views/code_views_manager.dart';
 import '../../code/views/codes_sellers_v.dart';
 import 'notifications_v.dart';

@@ -83,9 +83,9 @@ class TestsRepositoryImpl implements TestsRepository {
   }
 
   @override
-  Future<Either<Failure, List<Test>>> getTestsByIds({required List<int> ids}) async {
+  Future<Either<Failure, List<Test>>> getTestsByIds({required List<int> ids, required bool showHidden}) async {
     try {
-      final res = await dataSource.getTestsByIds(ids: ids);
+      final res = await dataSource.getTestsByIds(ids: ids, showHidden: showHidden);
       return right(res);
     } on Exception catch (e) {
       return left(const AnonFailure());

@@ -34,6 +34,7 @@ abstract class TestsDataSource {
   //
   Future<List<Test>> getTestsByIds({
     required List<int> ids,
+    bool showHidden = false,
   });
   //
   Future<bool> canDoTest({required MiniTest test});
@@ -137,13 +138,19 @@ class TestsDataSourceImpl implements TestsDataSource {
   @override
   Future<List<Test>> getTestsByIds({
     required List<int> ids,
+    bool showHidden = false,
   }) async {
+    print("debugging: ${ids.contains(2197)}");
     //
     final client = Supabase.instance.client;
     //
-    final res = await client.from("tests").select().inFilter("id", ids).or(
-          "properties->>visible.eq.true,properties->>visible.is.null,properties.is.null",
-        );
+    List<Map<String, dynamic>> res = [];
+    //
+    if (showHidden) {
+      res = await client.from("tests").select().inFilter("id", ids);
+    } else {
+      res = await client.from("tests").select().inFilter("id", ids).eq("properties->>visible", "true");
+    }
     //
     if (res.isNotEmpty) {
       final test = res.map((e) => TestModel.fromJson(e)).toList();

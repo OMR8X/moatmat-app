@@ -33,6 +33,7 @@ abstract class TestsRepository {
   //
   Future<Either<Failure, List<Test>>> getTestsByIds({
     required List<int> ids,
+    required bool showHidden,
   });
   //
   Future<Either<Failure, bool>> canDoTest(MiniTest test);

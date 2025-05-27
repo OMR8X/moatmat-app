@@ -18,7 +18,7 @@ class TestPropertiesModel extends TestProperties {
       timePerQuestion: json["time_per_question"],
       repeatable: json["repeatable"],
       visible: json["visible"],
-      scrollable: kDebugMode ? true : json["scrollable"],
+      scrollable: json["scrollable"],
     );
   }
   factory TestPropertiesModel.fromClass(TestProperties properties) {

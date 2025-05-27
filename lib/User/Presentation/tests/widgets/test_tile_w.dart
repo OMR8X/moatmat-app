@@ -54,7 +54,7 @@ class TestTileWidget extends StatelessWidget {
                       Image.asset(
                         ImagesResources.testIcon,
                         width: 26,
-                        color: ColorsResources.blueText,
+                        color: kDebugMode ? ((test.properties.visible ?? false) ? ColorsResources.blueText : ColorsResources.red) : ColorsResources.blueText,
                       ),
                       const SizedBox(
                         width: SizesResources.s2,
@@ -157,6 +157,17 @@ class TestTileWidget extends StatelessWidget {
   }
 
   Widget getSubTitle() {
+    if (kDebugMode) {
+      return Text(
+        test.id.toString(),
+        textAlign: TextAlign.start,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 10,
+          color: Colors.white54,
+        ),
+      );
+    }
     if (test.information.password != null && test.information.password!.isNotEmpty) {
       return const Text(
         "كلمة السر مطلوبة",

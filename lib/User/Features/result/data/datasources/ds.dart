@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
@@ -29,31 +30,28 @@ class ResultsDataSourceImpl implements ResultsDataSource {
   @override
   Future<Unit> addResult({required Result result}) async {
     //
-    try {
-      var res = await locator<GetUserDataUC>().call(
-        uuid: locator<UserData>().uuid,
-      );
-      //
-      Map data = ResultModel.fromClass(result).toJson();
-      //
-      res.fold(
-        (l) {
-          data = ResultModel.fromClass(result).toJson();
-        },
-        (r) {
-          result = result.copyWith(userNumber: r.id.toString());
-          data = ResultModel.fromClass(result).toJson();
-        },
-      );
-      //
-      await client.from("results").insert(data);
-      //
-      return unit;
-    } catch (e) {
-      debugPrint(e.toString());
-      addToOtherResults(result);
-      rethrow;
-    }
+    var res = await locator<GetUserDataUC>().call(
+      uuid: locator<UserData>().uuid,
+    );
+    //
+    await res.fold(
+      (l) async {
+        debugPrint("getting exception while getting user data");
+        await addToOtherResults(result);
+      },
+      (r) async {
+        result = result.copyWith(userNumber: r.id.toString());
+        Map resultJson = ResultModel.fromClass(result).toJson(); //
+        try {
+          await client.from("results").insert(resultJson);
+        } on Exception {
+          debugPrint("getting exception while uploading result");
+          await addToOtherResults(result);
+        }
+      },
+    );
+    //
+    return unit;
   }
 
   ///
@@ -64,6 +62,7 @@ class ResultsDataSourceImpl implements ResultsDataSource {
     }
     resultsJson.add(ResultModel.fromClass(result).toJson(addId: true));
     await cacheManager().write(CacheConstant.resultsKey, resultsJson);
+    debugPrint("done caching result");
   }
 
   @override

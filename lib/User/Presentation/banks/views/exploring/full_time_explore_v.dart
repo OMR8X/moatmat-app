@@ -8,6 +8,7 @@ import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/questions_v.dart';
 import 'package:moatmat_app/User/Presentation/banks/views/result_v.dart';
 
+import '../../../../Core/functions/show_alert.dart';
 import '../../../auth/state/auth_c/auth_cubit_cubit.dart';
 import '../../../auth/view/auth_views_manager.dart';
 
@@ -31,6 +32,19 @@ class _FullTimeExploreViewState extends State<FullTimeExploreView> {
     super.initState();
   }
 
+  showUnsolvedQuestionsAlert(List<int> unsolved) {
+    showAlert(
+      context: context,
+      title: "تاكيد تسليم الاختبار",
+      body: "هنالك بعض الاسئلة التي لم تقم بحلها \n(${unsolved.map((e) => e + 1).join(",")})\nهل تريد انهاء و تسليم الاختبار؟",
+      agreeBtn: "نعم تسليم الاختبار",
+      disagreeBtn: "عودة للاختبار",
+      onAgree: () {
+        context.read<FullTimeExploreCubit>().finish(force: true);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
@@ -44,12 +58,24 @@ class _FullTimeExploreViewState extends State<FullTimeExploreView> {
         }
       },
       child: Scaffold(
-        body: BlocBuilder<FullTimeExploreCubit, FullTimeExploreState>(
+        body: BlocConsumer<FullTimeExploreCubit, FullTimeExploreState>(
+          listener: (context, state) {
+            if (state is FullTimeExploreQuestionScrollable) {
+              if (state.showWarning) {
+                showUnsolvedQuestionsAlert(state.unsolved);
+              }
+            }
+            if (state is FullTimeExploreQuestion) {
+              if (state.showWarning) {
+                showUnsolvedQuestionsAlert(state.unsolved);
+              }
+            }
+          },
           builder: (context, state) {
             final cubit = context.read<FullTimeExploreCubit>();
             if (state is FullTimeExploreQuestion) {
               return BankQuestionView(
-                onExit: () { 
+                onExit: () {
                   context.read<FullTimeExploreCubit>().finish(force: true);
                 },
                 bank: widget.bank,

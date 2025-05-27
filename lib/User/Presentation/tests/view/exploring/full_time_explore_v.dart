@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/result_v.dart';
 
@@ -36,6 +37,19 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
     super.initState();
   }
 
+  showUnsolvedQuestionsAlert(List<int> unsolved) {
+    showAlert(
+      context: context,
+      title: "تاكيد تسليم الاختبار",
+      body: "هنالك بعض الاسئلة التي لم تقم بحلها \n(${unsolved.map((e) => e + 1).join(",")})\nهل تريد انهاء و تسليم الاختبار؟",
+      agreeBtn: "نعم تسليم الاختبار",
+      disagreeBtn: "عودة للاختبار",
+      onAgree: () {
+        context.read<TestFullTimeExploreCubit>().finish(force: true);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
@@ -49,7 +63,19 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
         }
       },
       child: Scaffold(
-        body: BlocBuilder<TestFullTimeExploreCubit, FullTimeExploreState>(
+        body: BlocConsumer<TestFullTimeExploreCubit, FullTimeExploreState>(
+          listener: (context, state) {
+            if (state is FullTimeExploreQuestionScrollable) {
+              if (state.showWarning) {
+                showUnsolvedQuestionsAlert(state.unsolved);
+              }
+            }
+            if (state is FullTimeExploreQuestion) {
+              if (state.showWarning) {
+                showUnsolvedQuestionsAlert(state.unsolved);
+              }
+            }
+          },
           builder: (context, state) {
             final cubit = context.read<TestFullTimeExploreCubit>();
             if (state is FullTimeExploreQuestion) {
@@ -92,7 +118,6 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
                 onPrevious: () {},
                 onPop: () => Navigator.of(context).pop(),
                 onAnswer: (index, question, selected) {
-                  
                   context.read<TestFullTimeExploreCubit>().answerQuestion(
                     index,
                     (question, selected),

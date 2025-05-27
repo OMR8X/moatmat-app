@@ -158,7 +158,7 @@ class AuthCubit extends Cubit<AuthState> {
                 //
                 injectPurchasedItems(r);
                 //
-                locator<CacheManager>().uploadResults();
+                await locator<CacheManager>().uploadResults();
                 //
                 emit(AuthDone());
               },

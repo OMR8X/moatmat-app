@@ -1,28 +1,34 @@
-import 'package:http/http.dart' as http;
-import 'dart:async';
+import 'dart:ui';
 
-void main() async {
-  await makeGetRequest();
-  await makeGetRequest();
-  await makeGetRequest();
-  await makeGetRequest();
-  await makeGetRequest();
-}
+///
+List<Offset> aboudList = [
+  Offset(0, 0),
+  Offset(0.2, 0.2),
+  Offset(1, 0),
+  Offset(1.2, 0.2),
+  Offset(0, 1),
+  Offset(0, 1.2),
+  Offset(1, 1),
+  Offset(1.2, 1.2),
+];
 
-// Function to make a single GET request
-Future<void> makeGetRequest() async {
-  try {
-    var response = await http.get(
-      Uri.parse('https://www.omr8x.com/notes/get'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-    if (response.statusCode == 200) {
-      print("done");
-    }
-    print("error");
-  } catch (e) {
-    print(e);
-  }
-}
+///
+Map<String, List<Offset>> laethMap = {
+  "00": [
+    Offset(0, 0),
+    Offset(0.2, 0.2),
+  ],
+  "10": [
+    Offset(1, 0),
+    Offset(1.2, 0.2),
+  ],
+  "01": [
+    Offset(0, 1),
+    Offset(0, 1.2),
+  ],
+  "11": [
+    Offset(1, 1),
+    Offset(1.2, 1.2),
+  ],
+};
+void main() async {}
