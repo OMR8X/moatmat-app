@@ -1,221 +1,94 @@
-import 'package:flick_video_player/flick_video_player.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:video_player/video_player.dart';
-import '../../../Core/resources/colors_r.dart';
-import '../../../Core/resources/shadows_r.dart';
-import '../../../Core/resources/spacing_resources.dart';
 
-class VideoPlayerWidget extends StatefulWidget {
-  const VideoPlayerWidget({
+class BetterVideoPlayerWidget extends StatefulWidget {
+  final String videoUrl;
+  final double? width;
+
+  const BetterVideoPlayerWidget({
     super.key,
-    required this.flickManager,
+    required this.videoUrl,
     this.width,
   });
 
-  final FlickManager flickManager;
-  final double? width;
-
   @override
-  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+  State<BetterVideoPlayerWidget> createState() => _BetterVideoPlayerWidgetState();
 }
 
-class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  bool _isLoading = false;
+class _BetterVideoPlayerWidgetState extends State<BetterVideoPlayerWidget> {
+  late VideoPlayerController _videoPlayerController;
+  ChewieController? _chewieController;
+  bool _isLoading = true;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    widget.flickManager.flickVideoManager?.videoPlayerController?.addListener(_checkForError);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializePlayer());
   }
 
-  Future<void> _checkForError() async {
-    final error = widget.flickManager.flickVideoManager?.videoPlayerController?.value.errorDescription;
+  Future<void> _initializePlayer() async {
+    try {
+      _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+      await _videoPlayerController.initialize();
 
-    if (error != null && error.isNotEmpty) {
- 
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        autoPlay: true,
+        aspectRatio: 16 / 9,
+      );
+
       setState(() {
-        _error = error;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'فشل تشغيل الفيديو';
         _isLoading = false;
       });
     }
   }
 
-  Future<void> _retryPlayback() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      final oldController = widget.flickManager.flickVideoManager?.videoPlayerController;
-      if (oldController == null) {
-        throw Exception('Video controller is null');
-      }
-
-      // Get the data source from the current controller
-      final dataSource = oldController.dataSource;
-      final dataSourceType = oldController.dataSourceType;
-
-      // Create a new controller with the same data source
-      final newController = VideoPlayerController.networkUrl(Uri.parse(dataSource));
-
-      // Initialize the new controller
-      await newController.initialize();
-
-      // Update the FlickManager with the new controller
-      await widget.flickManager.handleChangeVideo(newController);
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _error = null;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = 'Failed to reload video. Please try again.';
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Widget _buildErrorOverlay() {
-    return Container(
-      color: Colors.black.withOpacity(0.7),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              color: ColorsResources.onPrimary,
-              size: 48,
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'حدث خطأ اثناء محاولة تحميل الفيديو',
-                style: const TextStyle(
-                  color: ColorsResources.onPrimary,
-                  fontSize: 16,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 150,
-                  height: 40,
-                  child: _isLoading
-                      ? CupertinoActivityIndicator()
-                      : ElevatedButton(
-                          onPressed: _isLoading ? null : _retryPlayback,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorsResources.darkPrimary,
-                            foregroundColor: ColorsResources.onPrimary,
-                          ),
-                          child: Text('اعادة التحميل'),
-                        ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    _chewieController?.dispose();
+    _videoPlayerController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: ShadowsResources.mainBoxShadow,
-          color: ColorsResources.blackText1,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        width: widget.width ?? SpacingResources.mainWidth(context),
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: SafeArea(
-            child: Center(
-              child: Stack(
-                children: [
-                  FlickVideoPlayer(
-                    flickManager: widget.flickManager,
-                    flickVideoWithControls: FlickVideoWithControls(
-                      playerErrorFallback: SizedBox(),
-                      controls: IconTheme(
-                        data: const IconThemeData(color: ColorsResources.onPrimary),
-                        child: AspectRatio(
-                          aspectRatio: widget.flickManager.flickVideoManager?.videoPlayerController?.value.aspectRatio ?? 16 / 9,
-                          child: FlickPortraitControls(
-                            progressBarSettings: FlickProgressBarSettings(
-                              bufferedColor: ColorsResources.borders,
-                              playedColor: ColorsResources.darkPrimary,
-                              handleColor: ColorsResources.darkPrimary,
-                              backgroundColor: ColorsResources.borders,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    flickVideoWithControlsFullscreen: Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Container(
-                        color: Colors.black,
-                        child: SafeArea(
-                          child: Center(
-                            child: AspectRatio(
-                              aspectRatio: widget.flickManager.flickVideoManager?.videoPlayerController?.value.aspectRatio ?? 16 / 9,
-                              child: FlickVideoWithControls(
-                                controls: IconTheme(
-                                  data: const IconThemeData(color: ColorsResources.onPrimary),
-                                  child: FlickPortraitControls(
-                                    progressBarSettings: FlickProgressBarSettings(
-                                      bufferedColor: ColorsResources.borders,
-                                      playedColor: ColorsResources.darkPrimary,
-                                      handleColor: ColorsResources.darkPrimary,
-                                      backgroundColor: ColorsResources.borders,
-                                      padding: const EdgeInsets.all(10),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (_error != null || _isLoading)
-                    Positioned.fill(
-                      child: _buildErrorOverlay(),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+    if (_isLoading) {
+      return const Center(child: CupertinoActivityIndicator());
+    }
 
-  @override
-  void dispose() {
-    widget.flickManager.flickVideoManager?.videoPlayerController?.removeListener(_checkForError);
-    super.dispose();
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
+            Text(
+              _error!,
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _initializePlayer,
+              child: const Text('إعادة التحميل'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Chewie(controller: _chewieController!),
+    );
   }
 }

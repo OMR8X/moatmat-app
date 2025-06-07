@@ -164,36 +164,36 @@ class FoldersManagerCubit extends Cubit<FoldersManagerState> {
     List<int> courseSubscribersTests = teacher.courseSubscribersTests;
     List<Group> groups = teacher.groups;
     //
-    Map<String, List<int>> holder = {};
+    Map<String, List<int>> courseHolder = {};
+    Map<String, List<int>> groupsHolder = {};
     //
     for (var item in locator<List<PurchaseItem>>()) {
       if (item.itemType == "teacher" && item.itemId == teacher.email) {
         //
-        if (holder[item.uuid] == null) holder[item.uuid] = [];
+        if (courseHolder[item.uuid] == null) courseHolder[item.uuid] = [];
         //
-        holder[item.uuid]!.addAll(courseSubscribersTests);
+        courseHolder[item.uuid]!.addAll(courseSubscribersTests);
       }
     }
     for (var group in groups) {
       if (group.items.any((e) => e.userData.uuid == locator<UserData>().uuid)) {
         for (var item in group.items) {
-          if (holder[item.userData.uuid] == null) holder[item.userData.uuid] = [];
-          if (group.testsIds.contains(2197)) {
-            print("debugging: yes! ${item.userData.uuid} has access to group tests with group name ${group.name}");
-          }
-          holder[item.userData.uuid]?.addAll(group.testsIds);
+          if (groupsHolder[item.userData.uuid] == null) groupsHolder[item.userData.uuid] = [];
+          groupsHolder[item.userData.uuid]?.addAll(group.testsIds);
         }
       }
     }
-    List<int>? availableTestsIds = holder[locator<UserData>().uuid];
+    if (groupsHolder[locator<UserData>().uuid] == null) {}
+    List<int>? courseTestsIds = courseHolder[locator<UserData>().uuid];
+    List<int>? groupsTestsIds = groupsHolder[locator<UserData>().uuid];
 
-    if (availableTestsIds?.isNotEmpty ?? false) {
-      ids = ids.toSet().intersection(availableTestsIds!.toSet()).toList();
+    if (groupsTestsIds?.isNotEmpty ?? false) {
+      ids = ids.toSet().intersection(groupsTestsIds!.toSet()).toList();
+    } else if (courseTestsIds?.isNotEmpty ?? false) {
+      ids = ids.toSet().intersection(courseTestsIds!.toSet()).toList();
     }
-    availableTestsIds?.reversed;
-    // print("debugging: ${locator<UserData>().uuid}");
-    print("debugging: availableTestsIds $availableTestsIds ");
-    var res = await locator<GetTestsByIdsUC>().call(ids: ids, showHidden: availableTestsIds != null);
+
+    var res = await locator<GetTestsByIdsUC>().call(ids: ids, showHidden: courseTestsIds != null || groupsTestsIds != null);
     res.fold((l) {}, (r) => tests = r);
     return tests;
   }

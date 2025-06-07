@@ -59,7 +59,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              VideoPlayerWidget(flickManager: flickManager),
+              BetterVideoPlayerWidget(videoUrl: widget.link),
             ],
           ),
         ),

@@ -64,15 +64,16 @@ class Test {
     //
     bool purchased = false;
     //
-    var items = locator<List<PurchaseItem>>();
+    var items = locator<List<PurchaseItem>>().toSet().toList();
+    //
+    // print("debugging ${}");
     //
     for (var i in items) {
-      if (i.itemId == "$id" && i.itemType == "test") {
+      if (i.itemId.trim() == "$id" && i.itemType.trim() == "test") {
         purchased = true;
       }
-      if (i.itemId == information.teacher && i.itemType == "teacher") {
+      if ((i.itemId.trim() == information.teacher.trim()) && i.itemType.trim() == "teacher") {
         purchased = true;
-        print("yes is puchased");
       }
     }
     //

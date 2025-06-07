@@ -39,4 +39,12 @@ class PurchaseItem {
       dayAndMoth: dayAndMoth ?? this.dayAndMoth,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PurchaseItem && other.id == id && other.uuid == uuid && other.userName == userName && other.amount == amount && other.itemType == itemType && other.itemId == itemId && other.dayAndMoth == dayAndMoth;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, uuid, userName, amount, itemType, itemId, dayAndMoth);
 }
