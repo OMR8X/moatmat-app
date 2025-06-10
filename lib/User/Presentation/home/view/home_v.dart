@@ -14,6 +14,7 @@ import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cub
 import 'package:moatmat_app/User/Presentation/home/view/deep_link_view.dart';
 import 'package:moatmat_app/User/Presentation/home/view/likes_v.dart';
 import 'package:moatmat_app/User/Presentation/results/view/my_results_v.dart';
+import 'package:moatmat_app/User/Presentation/school/view/explore_schools_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/question_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/tests_view_manager.dart';
 import 'package:shimmer/shimmer.dart';
@@ -270,10 +271,10 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                 child: Row(
                   children: [
                     HomeViewItemWidget(
-                      color: ColorsResources.homeBanks,
+                      color: ColorsResources.homeSchool,
                       tColor: ColorsResources.blueText,
-                      image: "assets/images/home/banks.png",
-                      title: "بنوك الأسئلة",
+                      image: "assets/images/home/school.png",
+                      title: "المدارس",
                       onTap: () {
                         context.read<AuthCubit>().onCheck(
                           onSignedOut: () {
@@ -286,7 +287,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                         );
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const BanksViewManager(),
+                            builder: (context) => ExploreSchools(),
                           ),
                         );
                       },

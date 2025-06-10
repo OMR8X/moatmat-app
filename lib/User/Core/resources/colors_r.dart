@@ -20,8 +20,11 @@ class ColorsResources {
   static const Color red = Color(0xffD5425E);
   static const Color green = Color(0xff50BB8C);
   //
-  static const Color homeBanks = Color(0xffF8FDFF);
+  static const Color homeSchool = Color(0xffF8FDFF);
   static const Color homeTests = Color(0xffF8FDFF);
   static const Color homeCodes = Color(0xffF8FDFF);
   static const Color homeLocations = Color(0xffF8FDFF);
+
+  static const Color schoolIconBackground = Color(0xffEDE9FE);
+
 }

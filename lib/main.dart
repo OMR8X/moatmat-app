@@ -26,6 +26,7 @@ import 'User/Presentation/results/state/results/my_results_cubit.dart';
 import 'User/Presentation/tests/state/full_time_explore/full_time_explore_cubit.dart';
 import 'User/Presentation/tests/state/no_time_explore/no_time_explore_cubit.dart';
 import 'User/Presentation/tests/state/per_question_explore/per_question_explore_cubit.dart';
+import 'User/Presentation/school/state/cubit/school_cubit.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -77,6 +78,7 @@ void main() async {
         BlocProvider(create: (context) => NotificationsCubit()),
         BlocProvider(create: (context) => CodesCentersCubit()),
         BlocProvider(create: (context) => MyResultsCubit()),
+        BlocProvider(create: (context) => SchoolCubit()),
       ],
       child: const AppRoot(),
     ),

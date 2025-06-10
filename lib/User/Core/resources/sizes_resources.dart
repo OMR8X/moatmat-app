@@ -10,4 +10,6 @@ class SizesResources {
   static const double s8 = sizeUnit * 8;
   static const double s9 = sizeUnit * 9;
   static const double s10 = sizeUnit * 10;
+
+  static const double iconSchoolSize = 75.0;
 }
