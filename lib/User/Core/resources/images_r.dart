@@ -6,4 +6,5 @@ class ImagesResources {
 
   static const whatsappImage = "assets/images/apps/whatsapp.png";
   static const testIcon = "assets/images/tests/exam.png";
+  static const schoolIcon = "assets/images/home/school.png";
 }
