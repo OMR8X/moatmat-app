@@ -17,9 +17,18 @@ abstract class TestsDataSource {
     required String material,
   });
   // material teachers
+  Future<List<(String, int)>> getSchoolTestClasses({
+    required String schoolId,
+  });
+  // material teachers
   Future<List<(TeacherData, int)>> getMaterialTestsTeachers({
     required String clas,
     required String material,
+  });
+  // schools teachers
+  Future<List<(TeacherData, int)>> getSchoolTestsTeachers({
+    required String clas,
+    required String schoolId,
   });
   Future<List<(Test, int)>> getTeacherTests({
     required String teacherEmail,
@@ -44,6 +53,19 @@ class TestsDataSourceImpl implements TestsDataSource {
   final SupabaseClient client;
 
   TestsDataSourceImpl({required this.client});
+  @override
+  Future<List<(String, int)>> getSchoolTestClasses({
+    required String schoolId,
+  }) async {
+    List<String> classes = [];
+    var query = client.from("tests").select("information->>classs").eq("information->>school_id", schoolId).or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null"); //
+    var res = await query;
+
+    classes = res.map<String>((e) => e["classs"]).toList();
+
+    return listStrToListWithCount(classes);
+  }
+
   @override
   Future<List<(String, int)>> getMaterialTestClasses({
     required String material,
@@ -184,6 +206,35 @@ class TestsDataSourceImpl implements TestsDataSource {
       return tests.first;
     }
     throw NotFoundException();
+  }
+
+  @override
+  Future<List<(TeacherData, int)>> getSchoolTestsTeachers({
+    required String clas,
+    required String schoolId,
+  }) async {
+    List<String> teachersEmails = [];
+    List<TeacherData> teachers = [];
+
+    // Step-by-step build query1
+    var query1 = client.from("tests").select("teacher_email");
+
+    query1 = query1.eq("information->>school_id", schoolId);
+
+    query1 = query1.eq("information->>classs", clas).or("properties->>visible.eq.true,properties->>visible.is.null");
+
+    var res = await query1;
+
+    teachersEmails = res.map<String>((e) => e["teacher_email"]).toList();
+    teachersEmails.removeWhere((e) => e.isEmpty);
+
+    var query2 = client.from("teachers_data").select("").inFilter("email", teachersEmails.toSet().toList());
+
+    var res2 = await query2;
+
+    teachers = res2.map((e) => TeacherDataModel.fromJson(e)).toList();
+
+    return listTeacherToListWithCount(teachers, teachersEmails);
   }
 }
 

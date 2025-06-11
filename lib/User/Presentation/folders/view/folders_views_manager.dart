@@ -18,7 +18,8 @@ class FoldersViewManager extends StatefulWidget {
     this.onPop, required this.teacher,
   });
 
-  final String title, material;
+  final String title;
+  final String? material;
   final Map<String, dynamic> directories;
   final bool isTest;
   final void Function(int id) openContent;

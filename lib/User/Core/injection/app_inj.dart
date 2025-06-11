@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:moatmat_app/User/Core/injection/banks_inj.dart';
 import 'package:moatmat_app/User/Core/injection/cash_inj.dart';
+import 'package:moatmat_app/User/Core/injection/controllers_inj.dart';
 import 'package:moatmat_app/User/Core/injection/notifications_inf.dart';
 import 'package:moatmat_app/User/Core/injection/reports_inj.dart';
 import 'package:moatmat_app/User/Core/injection/results_inj.dart';
@@ -29,4 +30,5 @@ initGetIt() async {
   injectUpdate();
   injectCache();
   injectSchool();
+  injectControllers();
 }

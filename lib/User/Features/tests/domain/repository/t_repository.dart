@@ -12,9 +12,18 @@ abstract class TestsRepository {
     required String material,
   });
   // material teachers
+  Future<Either<Failure, List<(String, int)>>> getSchoolTestClasses({
+    required String schoolId,
+  });
+  // material teachers
   Future<Either<Failure, List<(TeacherData, int)>>> getMaterialTestsTeachers({
     required String clas,
     required String material,
+  });
+  // schools teachers
+  Future<Either<Failure, List<(TeacherData, int)>>> getSchoolTestsTeachers({
+    required String clas,
+    required String schoolId,
   });
   //
   // get outer test

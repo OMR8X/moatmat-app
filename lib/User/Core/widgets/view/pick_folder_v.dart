@@ -26,15 +26,15 @@ class PickFolderView extends StatefulWidget {
     this.onSearch,
     required this.afterPick,
     required this.teacher,
-    required this.onPop,
+     this.onPop,
     required this.isTest,
     required this.material,
   });
-  final String material;
+  final String? material;
   final VoidCallback? onSearch;
   final TeacherData teacher;
   final bool isTest;
-  final VoidCallback onPop;
+  final VoidCallback? onPop;
   final Function(String key) afterPick;
 
   @override
@@ -58,7 +58,10 @@ class _PickFolderViewState extends State<PickFolderView> {
         ),
         centerTitle: false,
         leading: IconButton(
-          onPressed: widget.onPop,
+          onPressed: widget.onPop ??
+              () {
+                Navigator.of(context).pop();
+              },
           icon: const Icon(Icons.close),
         ),
         actions: [
