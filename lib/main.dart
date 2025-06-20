@@ -12,6 +12,10 @@ import 'package:moatmat_app/User/Presentation/banks/state/no_time_explore/no_tim
 import 'package:moatmat_app/User/Presentation/banks/state/per_question_explore/per_question_explore_cubit.dart';
 import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cubit.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/get_test_c/get_test_cubit.dart';
+import 'package:moatmat_app/User/Presentation/videos/state/RepliesCubit/replies_cubit.dart';
+import 'package:moatmat_app/User/Presentation/videos/state/commentCubit/comment_cubit.dart';
+import 'package:moatmat_app/User/Presentation/videos/state/myRatingToVideoCubit/my_rating_to_video_cubit.dart';
+import 'package:moatmat_app/User/Presentation/videos/state/videoCubit/video_cubit.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 
 import 'User/Core/debug/bloc_observer.dart';
@@ -79,6 +83,10 @@ void main() async {
         BlocProvider(create: (context) => CodesCentersCubit()),
         BlocProvider(create: (context) => MyResultsCubit()),
         BlocProvider(create: (context) => SchoolCubit()),
+        BlocProvider(create: (context) => VideoCubit()),
+        BlocProvider(create: (context) => CommentCubit()),
+        BlocProvider(create: (context) => MyRatingToVideoCubit()),
+        BlocProvider(create: (context) => RepliesCubit()),
       ],
       child: const AppRoot(),
     ),
