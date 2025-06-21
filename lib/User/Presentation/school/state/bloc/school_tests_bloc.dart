@@ -20,11 +20,13 @@ class SchoolTestsBloc extends Bloc<SchoolTestsEvent, SchoolTestsState> {
     on<SetSchoolEvent>(_onSetSchool);
     on<InitializeSchoolsTestsEvent>(_onInitializeSchoolsTests);
     on<SetClassEvent>(_onSetClass);
+    on<SetMaterialEvent>(_onSetMaterial);
     on<SetTeacherEvent>(_onSetTeacher);
     on<BackEvent>(_onBack);
   }
   String selectedSchoolId = "";
   String selectedClass = "";
+  String selectedMaterial = "";
 
   void _onInitializeSchoolsTests(InitializeSchoolsTestsEvent event, Emitter<SchoolTestsState> emit) async {
     emit(SchoolTestsLoading());
@@ -40,13 +42,18 @@ class SchoolTestsBloc extends Bloc<SchoolTestsEvent, SchoolTestsState> {
 
   void _onSetSchool(SetSchoolEvent event, Emitter<SchoolTestsState> emit) async {
     emit(SchoolTestsLoading());
+    selectedSchoolId = (event.school?.id ?? selectedSchoolId).toString();
+    emit(SchoolTestsPickMaterialState());
+  }
 
-    await _getSchoolTestClassesUC.call(schoolId: (event.school?.id ?? selectedSchoolId).toString()).then((value) async {
+  void _onSetMaterial(SetMaterialEvent event, Emitter<SchoolTestsState> emit) async {
+    selectedMaterial = event.materialName;
+    emit(SchoolTestsLoading());
+    await _getSchoolTestClassesUC.call(schoolId: (selectedSchoolId).toString(), material: selectedMaterial).then((value) async {
       value.fold((l) async {
         await Fluttertoast.showToast(msg: l.text);
         emit(SchoolTestsLoading());
       }, (r) {
-        selectedSchoolId = (event.school?.id ?? selectedSchoolId).toString();
         emit(PickClassState(classes: r));
       });
     });
@@ -54,7 +61,7 @@ class SchoolTestsBloc extends Bloc<SchoolTestsEvent, SchoolTestsState> {
 
   void _onSetClass(SetClassEvent event, Emitter<SchoolTestsState> emit) async {
     emit(SchoolTestsLoading());
-    await _getSchoolTestsTeacherUC.call(schoolId: selectedSchoolId, clas: event.className).then((value) async {
+    await _getSchoolTestsTeacherUC.call(schoolId: selectedSchoolId, clas: event.className, material: selectedMaterial).then((value) async {
       value.fold((l) async {
         await Fluttertoast.showToast(msg: l.text);
         emit(SchoolTestsLoading());

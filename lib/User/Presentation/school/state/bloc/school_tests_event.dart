@@ -25,6 +25,17 @@ class SetSchoolEvent extends SchoolTestsEvent {
   List<Object?> get props => [school];
 }
 
+class SetMaterialEvent extends SchoolTestsEvent {
+  final String materialName;
+
+  const SetMaterialEvent({
+    required this.materialName,
+  });
+
+  @override
+  List<Object?> get props => [materialName];
+}
+
 class SetClassEvent extends SchoolTestsEvent {
   final String className;
 

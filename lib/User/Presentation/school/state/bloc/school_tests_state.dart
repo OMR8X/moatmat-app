@@ -15,6 +15,12 @@ class SchoolTestsInitial extends SchoolTestsState {
   List<Object?> get props => [schools];
 }
 
+class SchoolTestsPickMaterialState extends SchoolTestsState {
+  const SchoolTestsPickMaterialState();
+  @override
+  List<Object?> get props => [];
+}
+
 class SchoolTestsLoading extends SchoolTestsState {}
 
 class PickSchoolState extends SchoolTestsState {
@@ -54,6 +60,7 @@ class PickTeacherState extends SchoolTestsState {
         teachers,
       ];
 }
+
 class ExploreTeacherState extends SchoolTestsState {
   final TeacherData teacher;
 

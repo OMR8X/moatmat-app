@@ -92,9 +92,12 @@ class TestsRepositoryImpl implements TestsRepository {
   }
 
   @override
-  Future<Either<Failure, List<(String, int)>>> getSchoolTestClasses({required String schoolId}) async {
+  Future<Either<Failure, List<(String, int)>>> getSchoolTestClasses({
+    required String schoolId,
+    required String material ,
+  }) async {
     try {
-      var res = await dataSource.getSchoolTestClasses(schoolId: schoolId);
+      var res = await dataSource.getSchoolTestClasses(schoolId: schoolId,material:material);
       return right(res);
     } on Exception catch (e) {
       return left(const AnonFailure());
@@ -102,11 +105,16 @@ class TestsRepositoryImpl implements TestsRepository {
   }
 
   @override
-  Future<Either<Failure, List<(TeacherData, int)>>> getSchoolTestsTeachers({required String clas, required String schoolId}) async {
+  Future<Either<Failure, List<(TeacherData, int)>>> getSchoolTestsTeachers({
+    required String clas,
+    required String schoolId,
+    required String material,
+  }) async {
     try {
       var res = await dataSource.getSchoolTestsTeachers(
         clas: clas,
         schoolId: schoolId,
+        material: material,
       );
       return right(res);
     } on Exception catch (e) {

@@ -12,7 +12,8 @@ class GetSchoolTestsTeacherUC {
   Future<Either<Failure, List<(TeacherData, int)>>> call({
     required String clas,
     required String schoolId,
+    required String material,
   }) async {
-    return await repository.getSchoolTestsTeachers(clas: clas, schoolId: schoolId);
+    return await repository.getSchoolTestsTeachers(clas: clas, schoolId: schoolId, material: material);
   }
 }

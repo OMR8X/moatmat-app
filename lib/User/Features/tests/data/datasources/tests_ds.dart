@@ -19,6 +19,7 @@ abstract class TestsDataSource {
   // material teachers
   Future<List<(String, int)>> getSchoolTestClasses({
     required String schoolId,
+    required String material,
   });
   // material teachers
   Future<List<(TeacherData, int)>> getMaterialTestsTeachers({
@@ -29,6 +30,7 @@ abstract class TestsDataSource {
   Future<List<(TeacherData, int)>> getSchoolTestsTeachers({
     required String clas,
     required String schoolId,
+    required String material,
   });
   Future<List<(Test, int)>> getTeacherTests({
     required String teacherEmail,
@@ -56,9 +58,10 @@ class TestsDataSourceImpl implements TestsDataSource {
   @override
   Future<List<(String, int)>> getSchoolTestClasses({
     required String schoolId,
+    required String material,
   }) async {
     List<String> classes = [];
-    var query = client.from("tests").select("information->>classs").eq("information->>school_id", schoolId).or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null"); //
+    var query = client.from("tests").select("information->>classs").eq("information->>material", material).eq("information->>school_id", schoolId).or("properties->>visible.eq.true,properties->>visible.is.null,properties.is.null"); //
     var res = await query;
 
     classes = res.map<String>((e) => e["classs"]).toList();
@@ -212,6 +215,7 @@ class TestsDataSourceImpl implements TestsDataSource {
   Future<List<(TeacherData, int)>> getSchoolTestsTeachers({
     required String clas,
     required String schoolId,
+    required String material,
   }) async {
     List<String> teachersEmails = [];
     List<TeacherData> teachers = [];
@@ -219,9 +223,9 @@ class TestsDataSourceImpl implements TestsDataSource {
     // Step-by-step build query1
     var query1 = client.from("tests").select("teacher_email");
 
-    query1 = query1.eq("information->>school_id", schoolId);
+    query1 = query1.eq("information->>material", material);
 
-    query1 = query1.eq("information->>classs", clas).or("properties->>visible.eq.true,properties->>visible.is.null");
+    query1 = query1.eq("information->>school_id", schoolId).eq("information->>classs", clas).or("properties->>visible.eq.true,properties->>visible.is.null");
 
     var res = await query1;
 

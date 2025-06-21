@@ -14,6 +14,7 @@ abstract class TestsRepository {
   // material teachers
   Future<Either<Failure, List<(String, int)>>> getSchoolTestClasses({
     required String schoolId,
+      required String material,
   });
   // material teachers
   Future<Either<Failure, List<(TeacherData, int)>>> getMaterialTestsTeachers({
@@ -24,6 +25,7 @@ abstract class TestsRepository {
   Future<Either<Failure, List<(TeacherData, int)>>> getSchoolTestsTeachers({
     required String clas,
     required String schoolId,
+    required String material,
   });
   //
   // get outer test

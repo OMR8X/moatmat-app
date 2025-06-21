@@ -8,7 +8,10 @@ class GetSchoolTestClassesUC {
   final TestsRepository repository;
 
   GetSchoolTestClassesUC({required this.repository});
-  Future<Either<Failure, List<(String, int)>>>  call({required String schoolId}) async {
-    return await repository.getSchoolTestClasses(schoolId: schoolId);
+  Future<Either<Failure, List<(String, int)>>> call({
+    required String schoolId,
+    required String material,
+  }) async {
+    return await repository.getSchoolTestClasses(schoolId: schoolId, material: material);
   }
 }
