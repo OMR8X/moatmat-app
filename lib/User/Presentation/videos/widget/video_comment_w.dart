@@ -44,23 +44,17 @@ class VideoCommentWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            InkWell(
-              onTap: onTapOnReplies,
-              child: Text(
-                "الردود ($repliesNum) ",
-                style: FontsResources.styleMedium(
-                  color: ColorsResources.darkPrimary,
-                  size: 16,
-                ),
+            TextButton.icon(
+              icon: Icon(
+                Icons.arrow_forward,
+                color: ColorsResources.primary,
               ),
-            ),
-            Icon(
-              Icons.arrow_forward,
-              color: ColorsResources.primary,
+              iconAlignment: IconAlignment.end,
+              onPressed: onTapOnReplies,
+              label: Text("الردود ($repliesNum)"),
             ),
           ],
         ),
-        Text(''),
         Divider(),
       ],
     );

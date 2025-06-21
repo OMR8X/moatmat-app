@@ -14,7 +14,7 @@ class VideoIconsWidget extends StatelessWidget {
 
   final String text1;
   final String text2;
-  final Icon icon;
+  final Widget icon;
 
   @override
   Widget build(BuildContext context) {

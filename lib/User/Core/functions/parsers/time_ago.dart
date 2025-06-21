@@ -1,5 +1,5 @@
 String timeAgo(String timestamp) {
-  final dateTime = DateTime.parse(timestamp);
+  final dateTime = DateTime.parse('${timestamp}Z').toLocal();
   final now = DateTime.now();
   final difference = now.difference(dateTime);
 
