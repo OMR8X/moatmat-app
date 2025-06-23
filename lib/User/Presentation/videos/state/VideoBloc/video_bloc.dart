@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
+import 'package:moatmat_app/User/Features/auth/domain/use_cases/get_user_data.dart';
 import 'package:moatmat_app/User/Features/video/domain/entites/comment.dart';
 import 'package:moatmat_app/User/Features/video/domain/entites/rating.dart';
 import 'package:moatmat_app/User/Features/video/domain/entites/reply_comment.dart';
@@ -129,15 +131,20 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
     //
     var user = Supabase.instance.client.auth.currentUser;
     //
+    UserData? u = await locator<GetUserDataUC>().call(uuid: user!.id).then((val) {
+      val.fold((l) {}, (r) => r);
+      return null;
+    });
+    //
     final Comment comment = Comment(
       id: -1,
       comment: event.commentText,
-      username: '',
-      userId: user!.id,
+      username: u?.name ?? "",
+      userId: user.id,
       likes: 0,
       videoId: state.video!.id,
       repliesNum: 0,
-      createdAt: '',
+      createdAt: DateTime.now().toString(),
     );
     //
     await locator<AddCommentUc>().call(comment: comment);
@@ -147,23 +154,39 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
 
   //
   Future<void> _onAddReply(AddReply event, Emitter<VideoState> emit) async {
+    emit(state.copyWith(
+      loadingRepliesForComments: {...state.loadingRepliesForComments, event.commentId},
+      addReplies: true,
+    ));
     //
     var user = Supabase.instance.client.auth.currentUser;
+    //
+    final uRes = await locator<GetUserDataUC>().call(uuid: user!.id);
+    //
+    UserData? u;
+    //
+    uRes.fold((l) => null, (r) => u = r);
     //
     final ReplyComment reply = ReplyComment(
       id: -1,
       comment: event.replyText,
       commentId: event.commentId,
-      userId: user!.id,
-      username: '',
+      username: u?.name ?? "",
+      userId: user.id,
       likes: 0,
-      createdAt: '',
+      createdAt: DateTime.now().toString(),
     );
     //
     final replyRes = await locator<AddReplyCommentUc>().call(replyComment: reply);
     //
     replyRes.fold(
-      (l) => emit(state.copyWith(errorMsg: l.text)),
+      (l) {
+        emit(state.copyWith(
+          errorMsg: l.text,
+          loadingRepliesForComments: state.loadingRepliesForComments..remove(event.commentId),
+          addReplies: false,
+        ));
+      },
       (r) {
         final updatedMap = Map<int, List<ReplyComment>>.from(state.repliesMap);
         //
@@ -172,7 +195,20 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
           reply,
         ];
         //
-        emit(state.copyWith(repliesMap: updatedMap));
+        final updatedComments = [...state.comments!];
+        final index = updatedComments.indexWhere((e) => e.id == event.commentId);
+        if (index != -1) {
+          updatedComments[index] = updatedComments[index].copyWith(
+            repliesNum: (state.repliesMap[event.commentId]?.length ?? 0) + 1,
+          );
+        }
+        //
+        emit(state.copyWith(
+          repliesMap: updatedMap,
+          comments: updatedComments,
+          loadingRepliesForComments: state.loadingRepliesForComments..remove(event.commentId),
+          addReplies: false,
+        ));
       },
     );
   }
@@ -183,7 +219,10 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
     //
     updatedLoadingMap[Loading.replies] = true;
     //
-    emit(state.copyWith(isLoading: updatedLoadingMap));
+    emit(state.copyWith(
+      isLoading: updatedLoadingMap,
+      loadingRepliesForComments: {...state.loadingRepliesForComments, event.commentId},
+    ));
     //
     final replyRes = await locator<GetRepliesUc>().call(commentId: event.commentId);
     //
@@ -193,25 +232,45 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
         //
         updatedLoadingMap[Loading.replies] = false;
         //
-        emit(state.copyWith(errorMsg: l.text, isLoading: updatedLoadingMap));
+        emit(state.copyWith(
+          errorMsg: l.text,
+          isLoading: updatedLoadingMap,
+          loadingRepliesForComments: state.loadingRepliesForComments..remove(event.commentId),
+        ));
       },
       (r) {
         final updatedMap = Map<int, List<ReplyComment>>.from(state.repliesMap);
         //
         updatedMap[event.commentId] = r;
         //
+        //
+        final updatedComments = [...state.comments!];
+        //
+        final index = updatedComments.indexWhere((e) => e.id == event.commentId);
+        //
+        if (index != -1) {
+          updatedComments[index] = updatedComments[index].copyWith(
+            repliesNum: (state.repliesMap[event.commentId]?.length ?? 0) + 1,
+          );
+        }
+        //
         updatedLoadingMap = Map<Loading, bool>.from(state.isLoading);
         //
         updatedLoadingMap[Loading.replies] = false;
         //
-        emit(state.copyWith(repliesMap: updatedMap, isLoading: updatedLoadingMap));
+        emit(state.copyWith(
+          repliesMap: updatedMap,
+          isLoading: updatedLoadingMap,
+          loadingRepliesForComments: state.loadingRepliesForComments..remove(event.commentId),
+          comments: updatedComments,
+        ));
       },
     );
   }
 
   FutureOr<void> _onAddRating(AddRating event, Emitter<VideoState> emit) async {
     var user = Supabase.instance.client.auth.currentUser;
-
+    //
     final rating = Rating(
       videoId: event.videoId,
       userId: user!.id,
@@ -221,9 +280,9 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
       id: -1,
       username: '',
     );
-
+    //
     final res = await locator<AddRatingUc>().call(rating: rating);
-
+    //
     res.fold(
       (l) => emit(state.copyWith(errorMsg: l.text)),
       (r) {
@@ -231,13 +290,11 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
           rating: _calculateNewAverage(state.video!.rating, state.video!.ratingNum, event.rating),
           ratingNum: state.video!.ratingNum + 1,
         );
-        emit(state.copyWith(
-          myRating: rating,
-          video: updatedVideo
-        ));
+        emit(state.copyWith(myRating: rating, video: updatedVideo));
       },
     );
   }
+
   double _calculateNewAverage(double currentAvg, int currentNum, int newRating) {
     return ((currentAvg * currentNum) + newRating) / (currentNum + 1);
   }

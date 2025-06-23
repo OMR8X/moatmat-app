@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/fonts_r.dart';
 
 class VideoCommentWidget extends StatelessWidget {
@@ -8,20 +7,18 @@ class VideoCommentWidget extends StatelessWidget {
     required this.username,
     required this.commentText,
     required this.fromTime,
-    required this.repliesNum,
-    this.onTapOnReplies,
+    required this.buttonWidget,
   });
   final String username;
   final String commentText;
   final String fromTime;
-  final int repliesNum;
-  final void Function()? onTapOnReplies;
+  final Widget buttonWidget;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-        children: [
+      children: [
         ListTile(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,20 +38,7 @@ class VideoCommentWidget extends StatelessWidget {
             style: FontsResources.styleMedium(),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            TextButton.icon(
-              icon: Icon(
-                Icons.arrow_forward,
-                color: ColorsResources.primary,
-              ),
-              iconAlignment: IconAlignment.end,
-              onPressed: onTapOnReplies,
-              label: Text("الردود ($repliesNum)"),
-            ),
-          ],
-        ),
+        buttonWidget,
         Divider(),
       ],
     );

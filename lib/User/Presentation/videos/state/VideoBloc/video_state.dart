@@ -9,6 +9,8 @@ class VideoState extends Equatable {
   final Map<int, List<ReplyComment>> repliesMap; // commentId -> replies
   final String? errorMsg;
   final Map<Loading, bool> isLoading;
+  final Set<int> loadingRepliesForComments;
+  final bool? addReplies;
 
   VideoState({
     this.video,
@@ -17,6 +19,8 @@ class VideoState extends Equatable {
     this.repliesMap = const {},
     Map<Loading, bool>? isLoading,
     this.errorMsg,
+    this.loadingRepliesForComments = const {},
+    this.addReplies = false,
   }) : isLoading = isLoading ??
             {
               Loading.video: false,
@@ -32,6 +36,8 @@ class VideoState extends Equatable {
     Map<int, List<ReplyComment>>? repliesMap,
     String? errorMsg,
     final Map<Loading, bool>? isLoading,
+    Set<int>? loadingRepliesForComments,
+    bool? addReplies,
   }) {
     return VideoState(
       video: video ?? this.video,
@@ -40,9 +46,20 @@ class VideoState extends Equatable {
       repliesMap: repliesMap ?? this.repliesMap,
       errorMsg: errorMsg,
       isLoading: isLoading ?? this.isLoading,
+      loadingRepliesForComments: loadingRepliesForComments ?? this.loadingRepliesForComments,
+      addReplies: addReplies ?? this.addReplies,
     );
   }
 
   @override
-  List<Object?> get props => [video, comments, myRating, repliesMap, errorMsg, isLoading];
+  List<Object?> get props => [
+        video,
+        comments,
+        myRating,
+        repliesMap,
+        errorMsg,
+        isLoading,
+        loadingRepliesForComments,
+        addReplies,
+      ];
 }

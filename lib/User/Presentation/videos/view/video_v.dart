@@ -9,6 +9,7 @@ import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/error_v.dart';
 import 'package:moatmat_app/User/Presentation/videos/state/VideoBloc/video_bloc.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/add_comment_bottom_sheet_w.dart';
+import 'package:moatmat_app/User/Presentation/videos/widget/add_reply_bottom_sheet_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/under_video_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/video_comment_w.dart';
 
@@ -133,14 +134,43 @@ class _VideoViewState extends State<VideoView> {
                                   child: ListView.builder(
                                     itemCount: state.comments?.length,
                                     itemBuilder: (context, commentIndex) {
-                                      return VideoCommentWidget(
-                                        username: state.comments![commentIndex].username,
-                                        commentText: state.comments![commentIndex].comment,
-                                        fromTime: timeAgo(state.comments![commentIndex].createdAt),
-                                        repliesNum: state.comments![commentIndex].repliesNum,
-                                        onTapOnReplies: () {
-                                          // TODO: another page to add reply
-                                        },
+                                      final videoBloc = context.read<VideoBloc>();
+                                      return BlocProvider.value(
+                                        value: videoBloc,
+                                        child: VideoCommentWidget(
+                                          username: state.comments![commentIndex].username,
+                                          commentText: state.comments![commentIndex].comment,
+                                          fromTime: timeAgo(state.comments![commentIndex].createdAt),
+                                          buttonWidget: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              TextButton.icon(
+                                                icon: Icon(
+                                                  Icons.arrow_forward,
+                                                  color: ColorsResources.primary,
+                                                ),
+                                                iconAlignment: IconAlignment.end,
+                                                onPressed: () async {
+                                                  context.read<VideoBloc>().add(LoadReplies(commentId: state.comments![commentIndex].id));
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    isScrollControlled: true,
+                                                    useSafeArea: true,
+                                                    builder: (ctx) {
+                                                      return BlocProvider.value(
+                                                        value: videoBloc,
+                                                        child: AddReplyBottomSheetWidget(
+                                                          comment: state.comments![commentIndex],
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                label: Text("الردود (${state.comments![commentIndex].repliesNum})"),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       );
                                     },
                                   ),

@@ -108,7 +108,7 @@ class VideoRemoteDataSourceImpl extends VideoRemoteDataSource {
     //
     //setAsViewedVideo(videoId: videoId, userId: user!.id);
     //
-    var res = await client.from('video').select().eq("id", videoId).limit(1);
+    var res = await client.from('videos').select().eq("id", videoId).limit(1);
     //
     Video video = res
         .map(
