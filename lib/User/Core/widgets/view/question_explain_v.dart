@@ -85,7 +85,7 @@ class _QuestionExplainViewState extends State<QuestionExplainView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    BetterVideoPlayerWidget(videoUrl: widget.question.video!),
+                    ChewiePlayerWidget(videoUrl: widget.question.video!),
                   ],
                 ),
               if (widget.question.explainImage != null) ...[
@@ -193,7 +193,7 @@ class _QuestionExplainMiniViewState extends State<QuestionExplainMiniView> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: BetterVideoPlayerWidget(videoUrl: widget.question.video!),
+                    child: ChewiePlayerWidget(videoUrl: widget.question.video!),
                   ),
                 ),
               ],
