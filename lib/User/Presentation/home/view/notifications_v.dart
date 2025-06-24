@@ -7,7 +7,7 @@ import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/shadows_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
-import 'package:moatmat_app/User/Features/notifications/domain/usecases/read_notifications_uc.dart';
+import 'package:moatmat_app/User/Features/notifications2/domain/usecases/read_notifications_uc.dart';
 import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cubit.dart';
 
 import '../../../Core/resources/texts_resources.dart';
@@ -44,7 +44,8 @@ class _NotificationsViewState extends State<NotificationsView> {
                     itemCount: state.notifications.length,
                     itemBuilder: (context, index) {
                       var format = DateFormat("yyyy / MM / dd");
-                      var dateString = format.format(state.notifications[index].date);
+                      var dateString =
+                          format.format(state.notifications[index].date);
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

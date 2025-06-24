@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:moatmat_app/User/Features/notifications/domain/repository/repository.dart';
+import 'package:moatmat_app/User/Features/notifications2/domain/repository/repository.dart';
 
 import '../../../../Core/errors/exceptions.dart';
 import '../entities/notifications_data.dart';

@@ -1,9 +1,9 @@
-import 'package:moatmat_app/User/Features/notifications/data/datasources/ds.dart';
-import 'package:moatmat_app/User/Features/notifications/data/repository/repository.dart';
-import 'package:moatmat_app/User/Features/notifications/domain/repository/repository.dart';
-import 'package:moatmat_app/User/Features/notifications/domain/usecases/get_notifications_uc.dart';
-import 'package:moatmat_app/User/Features/notifications/domain/usecases/is_there_new_notifications_uc.dart';
-import 'package:moatmat_app/User/Features/notifications/domain/usecases/read_notifications_uc.dart';
+import 'package:moatmat_app/User/Features/notifications2/data/datasources/ds.dart';
+import 'package:moatmat_app/User/Features/notifications2/data/repository/repository.dart';
+import 'package:moatmat_app/User/Features/notifications2/domain/repository/repository.dart';
+import 'package:moatmat_app/User/Features/notifications2/domain/usecases/get_notifications_uc.dart';
+import 'package:moatmat_app/User/Features/notifications2/domain/usecases/is_there_new_notifications_uc.dart';
+import 'package:moatmat_app/User/Features/notifications2/domain/usecases/read_notifications_uc.dart';
 import 'app_inj.dart';
 
 injectNotifications() {
