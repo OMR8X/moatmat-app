@@ -45,6 +45,5 @@ final class NoTimeExploreResult extends NoTimeExploreState {
     required this.result,
   });
   @override
-  // TODO: implement props
   List<Object> get props => [correct, wrong, result];
 }
