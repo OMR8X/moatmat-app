@@ -6,7 +6,7 @@ import 'package:moatmat_app/User/Features/notifications2/domain/usecases/is_ther
 import 'package:moatmat_app/User/Features/notifications2/domain/usecases/read_notifications_uc.dart';
 import 'app_inj.dart';
 
-injectNotifications() {
+injectNotifications2() {
   injectDS();
   injectRepo();
   injectUC();

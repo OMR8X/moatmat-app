@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,9 @@ import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
 import 'package:moatmat_app/User/Features/auth/domain/use_cases/sign_in_with_google_uc.dart';
 import 'package:moatmat_app/User/Features/auth/domain/use_cases/sign_out_uc.dart';
 import 'package:moatmat_app/User/Features/auth/domain/use_cases/update_user_data_uc.dart';
+import 'package:moatmat_app/User/Features/notifications/domain/requests/register_device_token_request.dart';
+import 'package:moatmat_app/User/Features/notifications/domain/usecases/get_device_token_usecase.dart';
+import 'package:moatmat_app/User/Features/notifications/domain/usecases/register_device_token_usecase.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/get_user_purchased_uc.dart';
 import 'package:moatmat_app/User/Features/update/domain/entites/update_info.dart';
@@ -78,7 +82,8 @@ class AuthCubit extends Cubit<AuthState> {
       },
       (r) {
         injectUpdateInfo(r);
-        if (r.appVersion < r.currentVersion || r.appVersion < r.minimumVersion) {
+        if (r.appVersion < r.currentVersion ||
+            r.appVersion < r.minimumVersion) {
           emit(AuthUpdate(updateInfo: r));
         } else {
           //
@@ -109,7 +114,8 @@ class AuthCubit extends Cubit<AuthState> {
           debugPrint(l.toString());
         },
         (userData) async {
-          if (userData.deviceId == DeviceService().deviceId || userData.deviceId.isEmpty) {
+          if (userData.deviceId == DeviceService().deviceId ||
+              userData.deviceId.isEmpty) {
             injectUserData(userData);
           } else {
             if (timer != null && (timer?.isActive ?? false)) {
@@ -147,7 +153,8 @@ class AuthCubit extends Cubit<AuthState> {
           }
         },
         (userData) async {
-          if (userData.deviceId == DeviceService().deviceId || userData.deviceId.isEmpty) {
+          if (userData.deviceId == DeviceService().deviceId ||
+              userData.deviceId.isEmpty) {
             injectUserData(userData);
             var res = await locator<GetUserPurchasedItemsUC>().call();
             res.fold(
@@ -159,6 +166,8 @@ class AuthCubit extends Cubit<AuthState> {
                 injectPurchasedItems(r);
                 //
                 await locator<CacheManager>().uploadResults();
+                //
+                await registerDeviceToken();
                 //
                 emit(AuthDone());
               },
@@ -303,13 +312,15 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   //
-  finishAuth() {
-    init();
+  finishAuth() async {
+    await registerDeviceToken();
+    await init();
   }
 
   //
   startOfflineMode() async {
-    final response = await locator<GetUserDataUC>().call(uuid: Supabase.instance.client.auth.currentUser!.id, force: true);
+    final response = await locator<GetUserDataUC>()
+        .call(uuid: Supabase.instance.client.auth.currentUser!.id, force: true);
     response.fold(
       (l) {
         emit(const AuthError(error: "لا يوجد اتصال بالانترنت"));
@@ -317,6 +328,22 @@ class AuthCubit extends Cubit<AuthState> {
       (r) {
         injectUserData(r);
         emit(const AuthOfflineMode());
+      },
+    );
+  }
+
+  registerDeviceToken() async {
+    final platform = Platform.isAndroid ? 'android' : 'ios';
+    final deviceTokenResult = await locator<GetDeviceTokenUsecase>().call();
+    await deviceTokenResult.fold(
+      (l) async => debugPrint('Failed to get device token: $l'),
+      (deviceToken) async {
+        await locator<RegisterDeviceTokenUseCase>().call(
+          RegisterDeviceTokenRequest(
+            deviceToken: deviceToken,
+            platform: platform,
+          ),
+        );
       },
     );
   }
