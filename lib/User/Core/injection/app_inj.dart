@@ -8,6 +8,7 @@ import 'package:moatmat_app/User/Core/injection/results_inj.dart';
 import 'package:moatmat_app/User/Core/injection/school_inj.dart';
 import 'package:moatmat_app/User/Core/injection/tests_inj.dart';
 import 'package:moatmat_app/User/Core/injection/update_inj.dart';
+import 'package:moatmat_app/User/Core/injection/video_inj.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_inj.dart';
 import 'codes_inj.dart';
@@ -31,4 +32,5 @@ initGetIt() async {
   injectCache();
   injectSchool();
   injectControllers();
+  injectVideo();
 }

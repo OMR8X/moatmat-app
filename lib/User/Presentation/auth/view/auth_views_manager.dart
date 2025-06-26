@@ -6,6 +6,7 @@ import 'package:moatmat_app/User/Presentation/auth/view/error_v.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/offline_view.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/signed_out_v.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/update_view.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/video_v.dart';
 
 import '../../../Core/resources/colors_r.dart';
 import '../../home/view/home_v.dart';
@@ -46,7 +47,7 @@ class _AuthViewsManagerState extends State<AuthViewsManager> {
           } else if (state is AuthSignUP) {
             return const SignUpView();
           } else if (state is AuthDone) {
-            return const HomeView();
+            return const VideoView(videoId: 1); // TODO : for testing
           } else if (state is AuthResetPassword) {
             return const SendResetCodeView();
           } else if (state is AuthError) {

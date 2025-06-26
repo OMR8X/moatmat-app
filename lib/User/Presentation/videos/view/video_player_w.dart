@@ -3,21 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:video_player/video_player.dart';
 
-class BetterVideoPlayerWidget extends StatefulWidget {
+class ChewiePlayerWidget extends StatefulWidget {
   final String videoUrl;
-  final double? width;
 
-  const BetterVideoPlayerWidget({
+  const ChewiePlayerWidget({
     super.key,
     required this.videoUrl,
-    this.width,
   });
 
   @override
-  State<BetterVideoPlayerWidget> createState() => _BetterVideoPlayerWidgetState();
+  State<ChewiePlayerWidget> createState() => _ChewiePlayerWidgetState();
 }
 
-class _BetterVideoPlayerWidgetState extends State<BetterVideoPlayerWidget> {
+class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
   late VideoPlayerController _videoPlayerController;
   ChewieController? _chewieController;
   bool _isLoading = true;
@@ -33,16 +31,12 @@ class _BetterVideoPlayerWidgetState extends State<BetterVideoPlayerWidget> {
     try {
       _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
       await _videoPlayerController.initialize();
-
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
         autoPlay: true,
         aspectRatio: 16 / 9,
       );
-
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     } catch (e) {
       setState(() {
         _error = 'فشل تشغيل الفيديو';
@@ -61,34 +55,68 @@ class _BetterVideoPlayerWidgetState extends State<BetterVideoPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CupertinoActivityIndicator());
-    }
-
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, color: Colors.red, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              _error!,
-              style: const TextStyle(color: Colors.red, fontSize: 16),
-              textAlign: TextAlign.center,
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              color: Colors.black,
+              child: const Center(
+                child: CupertinoActivityIndicator(color: Colors.white),
+              ),
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _initializePlayer,
-              child: const Text('إعادة التحميل'),
-            ),
-          ],
+          ),
         ),
       );
     }
 
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: Chewie(controller: _chewieController!),
+    if (_error != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              color: const Color(0xFF000D24),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                    const SizedBox(height: 16),
+                    Text(
+                      _error ?? "حصل خطأ أثناء تحميل الفيديو",
+                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _initializePlayer,
+                      child: const Text(
+                        'إعادة التحميل',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Chewie(controller: _chewieController!),
+        ),
+      ),
     );
   }
 }
