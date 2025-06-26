@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/functions/show_alert.dart';
 import 'package:moatmat_app/User/Features/banks/domain/use_cases/get_bank_by_id.dart';
+import 'package:moatmat_app/User/Features/reports/domain/usecases/report_on_bank_uc.dart';
+import 'package:moatmat_app/User/Features/reports/domain/usecases/report_on_test_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/auth_views_manager.dart';
@@ -556,8 +558,6 @@ class HomeAppBarWidget extends StatelessWidget {
                 ),
               ),
             ),
-            // TODO: Aboud TEMP
-
             const Spacer(),
             GestureDetector(
               onTap: () {
