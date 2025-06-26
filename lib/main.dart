@@ -43,7 +43,7 @@ void main() async {
   //
   await DeviceService().init();
   //
-  /// init app cache
+  /// init app cachegit
   await locator<CacheManager>().init();
   //
   SystemChrome.setPreferredOrientations([

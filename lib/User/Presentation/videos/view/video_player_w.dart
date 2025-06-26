@@ -1,6 +1,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class ChewiePlayerWidget extends StatefulWidget {
@@ -34,8 +35,19 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
         autoPlay: true,
+        allowFullScreen: true,
         aspectRatio: 16 / 9,
+        deviceOrientationsOnEnterFullScreen: [
+          DeviceOrientation.landscapeRight,
+          DeviceOrientation.landscapeLeft,
+        ],
+        deviceOrientationsAfterFullScreen: [
+          DeviceOrientation.portraitUp,
+        ],
+        systemOverlaysOnEnterFullScreen: [],
+        systemOverlaysAfterFullScreen: SystemUiOverlay.values,
       );
+
       setState(() => _isLoading = false);
     } catch (e) {
       setState(() {
@@ -55,17 +67,14 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              color: Colors.black,
-              child: const Center(
-                child: CupertinoActivityIndicator(color: Colors.white),
-              ),
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Container(
+            color: Colors.black,
+            child: const Center(
+              child: CupertinoActivityIndicator(color: Colors.white),
             ),
           ),
         ),
@@ -73,34 +82,31 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
     }
 
     if (_error != null) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              color: const Color(0xFF000D24),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.error_outline, color: Colors.red, size: 48),
-                    const SizedBox(height: 16),
-                    Text(
-                      _error ?? "حصل خطأ أثناء تحميل الفيديو",
-                      style: const TextStyle(color: Colors.red, fontSize: 16),
-                      textAlign: TextAlign.center,
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Container(
+            color: const Color(0xFF000D24),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    _error ?? "حصل خطأ أثناء تحميل الفيديو",
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _initializePlayer,
+                    child: const Text(
+                      'إعادة التحميل',
                     ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _initializePlayer,
-                      child: const Text(
-                        'إعادة التحميل',
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -108,14 +114,11 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Chewie(controller: _chewieController!),
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Chewie(controller: _chewieController!),
       ),
     );
   }

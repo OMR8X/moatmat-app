@@ -8,6 +8,7 @@ import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/error_v.dart';
 import 'package:moatmat_app/User/Presentation/videos/state/VideoBloc/video_bloc.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/video_player_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/add_comment_bottom_sheet_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/add_reply_bottom_sheet_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/under_video_w.dart';
@@ -80,23 +81,8 @@ class _VideoViewState extends State<VideoView> {
                     Column(
                       children: [
                         // video player
-                        Container(
-                          height: SpacingResources.mainWidth(context) * (9.0 / 16.0),
-                          width: SpacingResources.mainWidth(context),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 0, 13, 36),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: Center(
-                              child: Icon(
-                                Icons.play_circle,
-                                color: ColorsResources.onPrimary,
-                              ),
-                            ),
-                          ),
+                        ChewiePlayerWidget(
+                          videoUrl: state.video!.url,
                         ),
                         //
                         Padding(padding: EdgeInsets.only(top: SizesResources.s3)),

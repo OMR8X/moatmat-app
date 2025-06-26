@@ -48,6 +48,7 @@ class _AuthViewsManagerState extends State<AuthViewsManager> {
             return const SignUpView();
           } else if (state is AuthDone) {
             return const VideoView(videoId: 1); // TODO : for testing
+            // return const HomeView();
           } else if (state is AuthResetPassword) {
             return const SendResetCodeView();
           } else if (state is AuthError) {
