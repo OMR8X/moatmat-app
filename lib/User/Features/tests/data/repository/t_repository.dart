@@ -19,7 +19,6 @@ class TestsRepositoryImpl implements TestsRepository {
       var res = await dataSource.getMaterialTestClasses(material: material);
       return right(res);
     } on Exception catch (e) {
-      print(e);
       return left(const AnonFailure());
     }
   }
@@ -86,6 +85,37 @@ class TestsRepositoryImpl implements TestsRepository {
   Future<Either<Failure, List<Test>>> getTestsByIds({required List<int> ids, required bool showHidden}) async {
     try {
       final res = await dataSource.getTestsByIds(ids: ids, showHidden: showHidden);
+      return right(res);
+    } on Exception catch (e) {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<(String, int)>>> getSchoolTestClasses({
+    required String schoolId,
+    required String material ,
+  }) async {
+    try {
+      var res = await dataSource.getSchoolTestClasses(schoolId: schoolId,material:material);
+      return right(res);
+    } on Exception catch (e) {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<(TeacherData, int)>>> getSchoolTestsTeachers({
+    required String clas,
+    required String schoolId,
+    required String material,
+  }) async {
+    try {
+      var res = await dataSource.getSchoolTestsTeachers(
+        clas: clas,
+        schoolId: schoolId,
+        material: material,
+      );
       return right(res);
     } on Exception catch (e) {
       return left(const AnonFailure());
