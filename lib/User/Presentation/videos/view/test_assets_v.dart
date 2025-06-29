@@ -104,14 +104,14 @@ class _TestAssetsViewState extends State<TestAssetsView> {
             width: double.infinity,
             height: SizesResources.s4,
           ),
-          if (widget.test.information.video?.isNotEmpty ?? false) ...[
+          if (widget.test.information.videos?.isNotEmpty ?? false) ...[
             const MiniTestTitleWidget(title: "مقاطع فيديو"),
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: widget.test.information.video!.length,
+              itemCount: widget.test.information.videos!.length,
               itemBuilder: (context, index) {
-                final video = widget.test.information.video![index];
+                final video = widget.test.information.videos![index];
                 return MediaTileWidget(
                   file: video.url,
                   type: "MP4",

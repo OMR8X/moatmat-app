@@ -167,7 +167,7 @@ class _LikesViewState extends State<LikesView> {
                                         price: null,
                                         password: null,
                                         period: 0,
-                                        video: [],
+                                        videos: [],
                                         files: [],
                                         images: [],
                                         previous: null,

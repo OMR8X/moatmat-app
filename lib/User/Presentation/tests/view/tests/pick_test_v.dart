@@ -505,7 +505,7 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
 
             ///
             Text(
-              "مقاطع فيديو : ${widget.test.information.video?.length ?? 0}",
+              "مقاطع فيديو : ${widget.test.information.videos?.length ?? 0}",
               style: const TextStyle(
                 color: ColorsResources.blackText1,
                 fontWeight: FontWeight.w400,
