@@ -21,7 +21,7 @@ class _AddRatingBottomSheetWidgetState extends State<AddRatingBottomSheetWidget>
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
-        height: 250,
+        height: 280,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: ColorsResources.onPrimary,
@@ -30,7 +30,7 @@ class _AddRatingBottomSheetWidgetState extends State<AddRatingBottomSheetWidget>
             topRight: Radius.circular(SizesResources.s4),
           ),
         ),
-        padding: EdgeInsets.all(SizesResources.s2) + EdgeInsets.only(top: SizesResources.s2),
+        padding: EdgeInsets.all(SizesResources.s2) + EdgeInsets.symmetric(vertical: SizesResources.s2),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

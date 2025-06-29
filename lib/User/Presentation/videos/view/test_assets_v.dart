@@ -113,11 +113,11 @@ class _TestAssetsViewState extends State<TestAssetsView> {
               itemBuilder: (context, index) {
                 final video = widget.test.information.video![index];
                 return MediaTileWidget(
-                  file: video,
+                  file: video.url,
                   type: "MP4",
                   color: ColorsResources.blueText,
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => VideoPlayerView(link: video)));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => VideoPlayerView(link: video.url)));
                   },
                 );
               },

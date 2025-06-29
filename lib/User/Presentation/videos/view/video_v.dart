@@ -48,7 +48,12 @@ class _VideoViewState extends State<VideoView> {
             return Scaffold(
               backgroundColor: ColorsResources.onPrimary,
               appBar: AppBar(
-                title: Text("عنوان الفيديو"),
+                leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: Icon(Icons.close_sharp),
+                ),
                 backgroundColor: ColorsResources.onPrimary,
               ),
               floatingActionButton: FloatingActionButton(
