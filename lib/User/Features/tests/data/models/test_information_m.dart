@@ -74,7 +74,7 @@ class TestInformationModel extends TestInformation {
       "teacher": teacher,
       "price": price,
       "password": password,
-      "video": (video?.isNotEmpty ?? false) ? video?.map((e) => VideoModel.fromClass(e).toJson(tests: true)).toList() : [],
+      "videos": (videos?.isNotEmpty ?? false) ? video?.map((e) => VideoModel.fromClass(e).toJson(tests: true)).toList() : [],
       "images": images,
       "period": period,
       "files": files ?? <String>[],
