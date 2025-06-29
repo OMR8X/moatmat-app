@@ -16,10 +16,15 @@ class NotificationsView extends StatefulWidget {
 }
 
 class _NotificationsViewState extends State<NotificationsView> {
+  bool _isInitialized = false;
+
   @override
-  void initState() {
-    super.initState();
-    BlocProvider.of<NotificationsBloc>(context).add(GetNotifications());
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      BlocProvider.of<NotificationsBloc>(context).add(GetNotifications());
+      _isInitialized = true;
+    }
   }
 
   @override
