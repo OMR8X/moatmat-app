@@ -1,3 +1,5 @@
+import 'package:moatmat_app/User/Features/video/data/models/video_m.dart';
+
 import '../../domain/entites/bank_information.dart';
 
 class BankInformationModel extends BankInformation {
@@ -7,13 +9,12 @@ class BankInformationModel extends BankInformation {
     required super.material,
     required super.teacher,
     required super.price,
-    required super.video,
+    required super.videos,
     required super.images,
     required super.files,
   });
 
   factory BankInformationModel.fromJson(Map json) {
-    print(json["video"]);
     return BankInformationModel(
       title: json["title"],
       classs: json["classs"],
@@ -21,7 +22,7 @@ class BankInformationModel extends BankInformation {
       teacher: json["teacher"],
       price: json["price"],
       images: (json["images"] ?? []).cast<String>(),
-      video: stringToList(json["video"]),
+      videos: (json["videos"] as List).map((e) => VideoModel.fromJson(e,tests: true)).toList(),
       files: List.generate(
         (json["files"] as List? ?? []).length,
         (i) => json["files"][i],
@@ -48,7 +49,7 @@ class BankInformationModel extends BankInformation {
       material: information.material,
       teacher: information.teacher,
       price: information.price,
-      video: information.video,
+      videos: information.videos,
       images: information.images,
       files: information.files,
     );
@@ -61,7 +62,7 @@ class BankInformationModel extends BankInformation {
       "material": material,
       "teacher": teacher,
       "price": price,
-      "video": (video?.isNotEmpty ?? false) ? video!.join(",") : null,
+      "video": (videos?.isNotEmpty ?? false) ? videos?.map((e) => VideoModel.fromClass(e).toJson(tests: true)).toList() : [],
       "images": images,
       "files": files,
     };
