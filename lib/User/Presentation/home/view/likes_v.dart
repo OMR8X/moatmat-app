@@ -256,7 +256,7 @@ class _LikesViewState extends State<LikesView> {
                                         teacher: "",
                                         price: 0,
                                         images: [],
-                                        video: [],
+                                        videos: [],
                                         files: [],
                                       ),
                                       properties: BankProperties(
