@@ -8,6 +8,7 @@ import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/fields/elevated_button_widget.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Presentation/videos/view/video_play_view.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/video_v.dart';
 import '../../tests/view/exploring/explore_no_time_v.dart';
 import '../../tests/view/exploring/full_time_explore_v.dart';
 import '../../tests/view/exploring/per_question_explore_v.dart';
@@ -117,7 +118,7 @@ class _TestAssetsViewState extends State<TestAssetsView> {
                   type: "MP4",
                   color: ColorsResources.blueText,
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => VideoPlayerView(link: video.url)));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => VideoView(videoId: video.id)));
                   },
                 );
               },
