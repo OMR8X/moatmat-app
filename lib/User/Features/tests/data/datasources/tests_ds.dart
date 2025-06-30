@@ -53,7 +53,7 @@ class TestsDataSourceImpl implements TestsDataSource {
     //
     var query = client
 //
-        .from("tests_duplicate") // .from("tests")
+        .from("tests")
 //
         .select("information->>classs")
 //
@@ -79,7 +79,7 @@ class TestsDataSourceImpl implements TestsDataSource {
     //
     List<TeacherData> teachers = [];
     //
-    var query1 = client.from("tests_duplicate") // .from("tests")
+    var query1 = client.from("tests")
     .select("teacher_email").eq("information->>material", material).eq("information->>classs", clas).or(
           "properties->>visible.eq.true,properties->>visible.is.null",
         );
@@ -109,7 +109,7 @@ class TestsDataSourceImpl implements TestsDataSource {
     List<Test> tests = [];
     //
     var query = client
-        .from("tests_duplicate") // .from("tests")
+        .from("tests")
         //
         .select()
         //
@@ -130,7 +130,7 @@ class TestsDataSourceImpl implements TestsDataSource {
   @override
   Future<Test> getTestById({required int id}) async {
     List<Test> tests = [];
-    var res = await client.from("tests_duplicate") // .from("tests")
+    var res = await client.from("tests")
     .select().eq("id", id);
     tests = res.map<Test>((e) => TestModel.fromJson(e)).toList();
     if (tests.isEmpty) throw Exception();
@@ -149,10 +149,10 @@ class TestsDataSourceImpl implements TestsDataSource {
     List<Map<String, dynamic>> res = [];
     //
     if (showHidden) {
-      res = await client.from("tests_duplicate") // .from("tests")
+      res = await client.from("tests")
       .select().inFilter("id", ids);
     } else {
-      res = await client.from("tests_duplicate") // .from("tests")
+      res = await client.from("tests")
       .select().inFilter("id", ids).eq("properties->>visible", "true");
     }
     //
