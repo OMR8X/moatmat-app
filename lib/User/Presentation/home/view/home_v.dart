@@ -107,10 +107,8 @@ class _HomeViewState extends State<HomeView> {
                 MaterialPageRoute(
                   builder: (context) => const NotificationsView(),
                 ),
-              )
-                  .then((value) {
-                context.read<NotificationsCubit>().init();
-              });
+              );
+                  
             },
             onOpenLikes: () {
               Navigator.of(context).push(
