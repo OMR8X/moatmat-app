@@ -125,14 +125,14 @@ class _SettingUpBankViewState extends State<SettingUpBankView> {
                 width: double.infinity,
                 height: SizesResources.s4,
               ),
-              if (widget.bank.information.video?.isNotEmpty ?? false) ...[
+              if (widget.bank.information.videos?.isNotEmpty ?? false) ...[
                 const MiniBankTitleWidget(title: "مقاطع فيديو يجب الاطلاع عليها قبل حل الاختبار"),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: widget.bank.information.video!.length,
+                  itemCount: widget.bank.information.videos!.length,
                   itemBuilder: (context, index) {
-                    final video = widget.bank.information.video![index];
+                    final video = widget.bank.information.videos![index].url;
                     return MediaTileWidget(
                       file: video,
                       type: "MP4",

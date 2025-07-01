@@ -43,6 +43,11 @@ abstract class VideoRemoteDataSource {
   Future<Unit> addRaing({
     required Rating rating,
   });
+  //
+  Future<Unit> addVideo({
+    required Video video,
+  });
+  //
   Future<Unit> setAsViewedVideo({
     required int videoId,
     required String userId,
@@ -104,9 +109,9 @@ class VideoRemoteDataSourceImpl extends VideoRemoteDataSource {
     required int videoId,
   }) async {
     //
-    //var user = Supabase.instance.client.auth.currentUser;
+    var user = Supabase.instance.client.auth.currentUser;
     //
-    //setAsViewedVideo(videoId: videoId, userId: user!.id);
+    setAsViewedVideo(videoId: videoId, userId: user!.id);
     //
     var res = await client.from('videos').select().eq("id", videoId).limit(1);
     //
@@ -210,6 +215,21 @@ class VideoRemoteDataSourceImpl extends VideoRemoteDataSource {
     //
     try {
       await client.from('viewed_videos').insert(viewsJson);
+    } on Exception {
+      debugPrint("getting exception while uploading rating");
+    }
+    //
+    return unit;
+  }
+
+  @override
+  Future<Unit> addVideo({
+    required Video video,
+  }) async {
+    Map videoJson = VideoModel.fromClass(video).toJson();
+    //
+    try {
+      await client.from("videos").insert(videoJson);
     } on Exception {
       debugPrint("getting exception while uploading rating");
     }

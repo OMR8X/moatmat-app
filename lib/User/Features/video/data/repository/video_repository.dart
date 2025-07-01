@@ -122,4 +122,16 @@ class VideoRepositoryImpl extends VideoRepository {
       return left(handleException(e));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> addVideo({
+    required Video video,
+  }) async {
+    try {
+      var res = await dataSource.addVideo(video: video);
+      return right(res);
+    } on Exception catch (e) {
+      return left(handleException(e));
+    }
+  }
 }
