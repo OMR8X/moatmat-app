@@ -91,7 +91,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   }
 
   onOpen() {
-    bool con1 = widget.test.information.video?.isNotEmpty ?? false;
+    bool con1 = widget.test.information.videos?.isNotEmpty ?? false;
     bool con2 = widget.test.information.files?.isNotEmpty ?? false;
     bool con3 = widget.test.information.images?.isNotEmpty ?? false;
     if (con1 || con2 || con3) {

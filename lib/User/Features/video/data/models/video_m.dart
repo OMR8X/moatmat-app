@@ -13,19 +13,19 @@ class VideoModel extends Video {
     super.comments,
   });
 
-  factory VideoModel.fromJson(Map json,{bool comments = false}) {
+  factory VideoModel.fromJson(Map json,{bool comments = false,bool tests = false,}) {
     return VideoModel(
       id: json["id"],
-      rating: json["rating"],
-      ratingNum: json["rating_num"],
+      rating: tests ? 0.0 :json["rating"],
+      ratingNum: tests ? 0 : json["rating_num"],
       url: json["url"],
-      views: json["views"],
+      views: tests ? 0 : json["views"],
       ratingComments: comments ? (json["ratingComments"] as List<dynamic>?)
         ?.map((e) => RatingModel.fromJson(e as Map<String, dynamic>))
-        .toList() : [],
+        .toList() : tests ? [] : [],
       comments: comments ? (json["comment"] as List<dynamic>?)
         ?.map((e) => CommentModel.fromJson(e as Map<String,dynamic>))
-        .toList() : [],
+        .toList() : tests ? [] : [],
     );
   }
   factory VideoModel.fromClass(Video video) {
@@ -37,17 +37,17 @@ class VideoModel extends Video {
       views: video.views,
     );
   }
-  toJson({bool addId = false}) {
+  toJson({bool addId = false,bool tests = false,}) {
     return {
       if (addId) "id": id,
-      "rating" : rating,
-      "rating_num" : ratingNum,
+      if(!tests) "rating" : rating,
+      if(!tests) "rating_num" : ratingNum,
       "url" : url,
-      "views" : views,
-      "replies" :  ratingComments
+      if(!tests) "views" : views,
+      if(!tests) "replies" :  ratingComments
         ?.map((e) => RatingModel.fromClass(e).toJson())
         .toList(),
-      "comment" : comments
+      if(!tests) "comment" : comments
         ?.map((e)=> CommentModel.fromClass(e).toJson())
         .toList(),
     };

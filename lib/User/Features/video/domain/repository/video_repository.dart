@@ -25,6 +25,8 @@ abstract class VideoRepository {
   //
   Future<Either<Failure, Unit>> setAsViewedVideo({required int videoId,required String userId});
   //
+  Future<Either<Failure, Unit>> addVideo({required Video video});
+  //
 
   // not working right now
   // Future<Either<Failure, Unit>> addLikeOnComment(int commentId);

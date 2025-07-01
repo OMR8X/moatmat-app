@@ -123,7 +123,7 @@ class _AddReplyBottomSheetWidgetState extends State<AddReplyBottomSheetWidget> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(SizesResources.s2),
+              padding: EdgeInsets.all(SizesResources.s2) + EdgeInsets.only(bottom: SizesResources.s2),
               child: Form(
                 key: _formKey,
                 child: Row(

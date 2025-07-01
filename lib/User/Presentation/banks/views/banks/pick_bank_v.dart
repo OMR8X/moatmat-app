@@ -374,7 +374,7 @@ class _BuyBankWidgetState extends State<BuyBankWidget> {
 
             ///
             Text(
-              "مقاطع فيديو : ${widget.bank.information.video?.length ?? 0}",
+              "مقاطع فيديو : ${widget.bank.information.videos?.length ?? 0}",
               style: const TextStyle(
                 color: ColorsResources.blackText1,
                 fontWeight: FontWeight.w400,
