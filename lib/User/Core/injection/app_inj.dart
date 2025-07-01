@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moatmat_app/User/Core/injection/banks_inj.dart';
 import 'package:moatmat_app/User/Core/injection/cash_inj.dart';
 import 'package:moatmat_app/User/Core/injection/notifications_inf.dart';
+import 'package:moatmat_app/User/Core/injection/notifications_inj.dart';
 import 'package:moatmat_app/User/Core/injection/reports_inj.dart';
 import 'package:moatmat_app/User/Core/injection/results_inj.dart';
 import 'package:moatmat_app/User/Core/injection/school_inj.dart';
@@ -20,12 +21,13 @@ initGetIt() async {
   locator.registerSingleton(sp);
   //
   injectAuth();
+  injectNotifications();
   codesInjector();
   injectBanks();
   injectTests();
   purchasesInjector();
   injectReports();
-  injectNotifications();
+  injectNotifications2();
   injectResults();
   injectUpdate();
   injectCache();

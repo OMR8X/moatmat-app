@@ -28,4 +28,10 @@ class ColorsResources {
 
   static const Color schoolIconBackground = Color(0xffEDE9FE);
 
+  static const Color primaryLight = Color(0xFFE0E0FF);
+  static const Color danger = Color(0xFFD32F2F); // Colors.red[700]
+  static const Color dangerLight = Color(0xFFFFE0E0);
+  static const Color textPrimary = Colors.black87;
+  static const Color textSecondary = Color(0xFF616161);
+  static const Color cardBackground = Colors.white;
 }

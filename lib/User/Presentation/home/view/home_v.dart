@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/functions/show_alert.dart';
 import 'package:moatmat_app/User/Features/banks/domain/use_cases/get_bank_by_id.dart';
+import 'package:moatmat_app/User/Features/reports/domain/usecases/report_on_bank_uc.dart';
+import 'package:moatmat_app/User/Features/reports/domain/usecases/report_on_test_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/auth_views_manager.dart';
@@ -13,6 +15,7 @@ import 'package:moatmat_app/User/Presentation/code/views/add_code_v.dart';
 import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cubit.dart';
 import 'package:moatmat_app/User/Presentation/home/view/deep_link_view.dart';
 import 'package:moatmat_app/User/Presentation/home/view/likes_v.dart';
+import 'package:moatmat_app/User/Presentation/notifications/views/notifications_view.dart';
 import 'package:moatmat_app/User/Presentation/results/view/my_results_v.dart';
 import 'package:moatmat_app/User/Presentation/school/view/explore_schools_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/question_v.dart';
@@ -233,7 +236,8 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                                 errorBuilder: (context, error, stackTrace) {
                                   return const SizedBox(
                                     child: Center(
-                                      child: Text("حدث خطا ما اثناء تحميل الصورة"),
+                                      child:
+                                          Text("حدث خطا ما اثناء تحميل الصورة"),
                                     ),
                                   );
                                 },
@@ -242,7 +246,9 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                                     return child;
                                   } else {
                                     return SizedBox(
-                                      width: SpacingResources.mainWidth(context) - 50,
+                                      width:
+                                          SpacingResources.mainWidth(context) -
+                                              50,
                                       height: 200,
                                       child: Shimmer.fromColors(
                                         baseColor: Colors.grey[400]!,
@@ -489,7 +495,9 @@ class HomeAppBarWidget extends StatelessWidget {
                               return Positioned(
                                 child: Icon(
                                   Icons.brightness_1,
-                                  color: state.newNotifications ? Colors.red : Colors.transparent,
+                                  color: state.newNotifications
+                                      ? Colors.red
+                                      : Colors.transparent,
                                   size: 9,
                                 ),
                               );

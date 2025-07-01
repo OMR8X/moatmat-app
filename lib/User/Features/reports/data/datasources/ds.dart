@@ -5,7 +5,6 @@ import 'package:moatmat_app/User/Features/reports/data/models/report_d_m.dart';
 import 'package:moatmat_app/User/Features/reports/domain/entities/reposrt_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
 abstract class ReportsDataSource {
   Future<Unit> reportOnTest({
     required String message,
@@ -47,7 +46,18 @@ class ReportsDataSourceImple implements ReportsDataSource {
       name: name,
       teacher: teacher,
     );
-    var data = ReportDataModel.fromClass(report).toJson();
+    //
+    var teacherId = await client
+        .from("teachers_data")
+        .select("auth_user_id")
+        .eq("email", teacher)
+        .single();
+    //
+
+    print("this is teacherId[id] :  ${teacherId["auth_user_id"]} ");
+    //
+    var data =
+        ReportDataModel.fromClass(report).toJson(teacherId["auth_user_id"] as String);
     //
     await client.from("reports").insert(data);
     //
@@ -62,23 +72,37 @@ class ReportsDataSourceImple implements ReportsDataSource {
     required int testID,
     required int questionID,
   }) async {
-    ReportData report = ReportData(
-      id: 0,
-      message: message,
-      userName: locator<UserData>().name,
-      questionID: questionID,
-      testId: testID,
-      bankId: null,
-      name: name,
-      teacher: teacher,
-    );
-    //
-    var data = ReportDataModel.fromClass(report).toJson();
-    //
-    await client.from("reports").insert(data);
-    //
+    try {
+      ReportData report = ReportData(
+        id: 0,
+        message: message,
+        userName: locator<UserData>().name,
+        questionID: questionID,
+        testId: testID,
+        bankId: null,
+        name: name,
+        teacher: teacher,
+      );
 
-    return unit;
+      var teacherId = await client
+          .from("teachers_data")
+          .select("auth_user_id")
+          .eq("email", teacher)
+          .single();
+
+      //
+      
+      var data =
+          ReportDataModel.fromClass(report).toJson(teacherId["auth_user_id"] as String);
+      //
+      await client.from("reports").insert(data);
+      //
+
+      return unit;
+    } catch (e) {
+      print("Errrrrrrrorrrrr : ${e.toString()}");
+      return throw Exception(e);
+    }
   }
 
   @override
