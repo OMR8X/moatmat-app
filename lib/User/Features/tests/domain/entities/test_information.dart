@@ -1,4 +1,5 @@
 import 'package:moatmat_app/User/Features/tests/domain/entities/mini_test.dart';
+import 'package:moatmat_app/User/Features/video/domain/entites/video.dart';
 
 class TestInformation {
   final String title;
@@ -9,7 +10,7 @@ class TestInformation {
   final String? password;
   final int? period;
   final List<String>? images;
-  final List<String>? video;
+  final List<Video>? videos;
   final List<String>? files;
   final MiniTest? previous;
 
@@ -22,7 +23,7 @@ class TestInformation {
     required this.password,
     required this.period,
     required this.images,
-    required this.video,
+    required this.videos,
     required this.files,
     required this.previous,
   });
@@ -34,7 +35,7 @@ class TestInformation {
     int? price,
     String? password,
     int? period,
-    List<String>? video,
+    List<Video>? videos,
     List<String>? images,
     List<String>? files,
     MiniTest? previous,
@@ -47,7 +48,7 @@ class TestInformation {
       price: price ?? this.price,
       password: password ?? this.password,
       period: period ?? this.period,
-      video: video ?? this.video,
+      videos: videos ?? this.videos,
       images: images ?? this.images,
       files: files ?? this.files,
       previous: previous ?? this.previous,

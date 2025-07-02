@@ -16,11 +16,10 @@ class ReportOnBankUseCase {
     required int questionID,
   }) async {
     return repository.reportOnBank(
-      message: message,
-      bankID: bankID,
-      questionID: questionID,
-      name: name,
-      teacher: teacher
-    );
+        message: message,
+        bankID: bankID,
+        questionID: questionID,
+        name: name,
+        teacher: teacher);
   }
 }

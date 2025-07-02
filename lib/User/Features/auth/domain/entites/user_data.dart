@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:moatmat_app/User/Core/services/encryption_s.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_like.dart';
-import 'package:moatmat_app/User/Features/notifications/domain/entities/notifications_data.dart';
+import 'package:moatmat_app/User/Features/notifications2/domain/entities/notifications_data.dart';
 
 class UserData {
   //

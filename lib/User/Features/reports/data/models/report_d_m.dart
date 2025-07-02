@@ -33,10 +33,12 @@ class ReportDataModel extends ReportData {
       bankId: report.bankId,
       teacher: report.teacher,
       name: report.name,
+      
     );
   }
-  toJson() {
+  toJson(String teacherId) {
     return {
+      "teacher_id": teacherId,
       "message": message,
       "user_name": userName,
       "question_id": questionID,

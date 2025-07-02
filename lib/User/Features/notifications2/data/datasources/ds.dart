@@ -1,7 +1,7 @@
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/auth/domain/use_cases/get_user_data.dart';
-import 'package:moatmat_app/User/Features/notifications/data/models/notification_data_m.dart';
+import 'package:moatmat_app/User/Features/notifications2/data/models/notification_data_m.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/entities/notifications_data.dart';
@@ -26,7 +26,8 @@ class NotificationsDataSourceImpl implements NotificationsDataSource {
     List<NotificationData> notifications = [];
     notifications = res.map((e) => NotificationDataModel.fromJson(e)).toList();
     //
-    final response = await locator<GetUserDataUC>().call(uuid: locator<UserData>().uuid, update: true);
+    final response = await locator<GetUserDataUC>()
+        .call(uuid: locator<UserData>().uuid, update: true);
     //
     response.fold(
       (l) {

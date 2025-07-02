@@ -1,5 +1,5 @@
 import 'package:moatmat_app/User/Features/auth/data/models/user_like_m.dart';
-import 'package:moatmat_app/User/Features/notifications/data/models/notification_data_m.dart';
+import 'package:moatmat_app/User/Features/notifications2/data/models/notification_data_m.dart';
 import '../../domain/entites/user_data.dart';
 
 class UserDataModel extends UserData {
@@ -49,7 +49,8 @@ class UserDataModel extends UserData {
       notifications: json["notifications"] == null
           ? []
           : List.generate((json["notifications"] as List).length, (index) {
-              return NotificationDataModel.fromJson(json["notifications"][index]);
+              return NotificationDataModel.fromJson(
+                  json["notifications"][index]);
             }),
     );
   }

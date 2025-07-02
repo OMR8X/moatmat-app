@@ -1,4 +1,5 @@
 import 'package:moatmat_app/User/Features/tests/domain/entities/test_information.dart';
+import 'package:moatmat_app/User/Features/video/data/models/video_m.dart';
 
 import 'mini_test_m.dart';
 
@@ -11,7 +12,7 @@ class TestInformationModel extends TestInformation {
     required super.price,
     required super.password,
     required super.period,
-    required super.video,
+    required super.videos,
     required super.images,
     required super.files,
     required super.previous,
@@ -28,7 +29,7 @@ class TestInformationModel extends TestInformation {
       password: json["password"],
       period: json["period"],
       images: (json["images"] ?? []).cast<String>(),
-      video: stringToList(json["video"]),
+      videos: (json["videos"] as List).map((e) => VideoModel.fromJson(e,tests: true)).toList(),
       files: List.generate(
         (json["files"] as List? ?? []).length,
         (i) => json["files"][i],
@@ -59,7 +60,7 @@ class TestInformationModel extends TestInformation {
       password: information.password,
       period: information.period,
       images: information.images,
-      video: information.video,
+      videos: information.videos,
       files: information.files,
       previous: information.previous,
     );
@@ -73,7 +74,7 @@ class TestInformationModel extends TestInformation {
       "teacher": teacher,
       "price": price,
       "password": password,
-      "video": (video?.isNotEmpty ?? false) ? video!.join(",") : null,
+      "videos": (videos?.isNotEmpty ?? false) ? videos?.map((e) => VideoModel.fromClass(e).toJson(tests: true)).toList() : [],
       "images": images,
       "period": period,
       "files": files ?? <String>[],

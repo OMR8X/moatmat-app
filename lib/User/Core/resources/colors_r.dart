@@ -19,6 +19,7 @@ class ColorsResources {
   static const Color borders = Color(0xffBEBEBE);
   static const Color red = Color(0xffD5425E);
   static const Color green = Color(0xff50BB8C);
+  static const Color grey = Color(0xffD3D3D3);
   //
   static const Color homeSchool = Color(0xffF8FDFF);
   static const Color homeTests = Color(0xffF8FDFF);
@@ -27,4 +28,10 @@ class ColorsResources {
 
   static const Color schoolIconBackground = Color(0xffEDE9FE);
 
+  static const Color primaryLight = Color(0xFFE0E0FF);
+  static const Color danger = Color(0xFFD32F2F); // Colors.red[700]
+  static const Color dangerLight = Color(0xFFFFE0E0);
+  static const Color textPrimary = Colors.black87;
+  static const Color textSecondary = Color(0xFF616161);
+  static const Color cardBackground = Colors.white;
 }

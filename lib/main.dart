@@ -11,6 +11,7 @@ import 'package:moatmat_app/User/Presentation/banks/state/get_bank_c/get_bank_cu
 import 'package:moatmat_app/User/Presentation/banks/state/no_time_explore/no_time_explore_cubit.dart';
 import 'package:moatmat_app/User/Presentation/banks/state/per_question_explore/per_question_explore_cubit.dart';
 import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cubit.dart';
+import 'package:moatmat_app/User/Presentation/notifications/state/notifications_bloc/notifications_bloc.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/get_test_c/get_test_cubit.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 
@@ -79,6 +80,7 @@ void main() async {
         BlocProvider(create: (context) => CodesCentersCubit()),
         BlocProvider(create: (context) => MyResultsCubit()),
         BlocProvider(create: (context) => SchoolCubit()),
+        BlocProvider(create: (context) => locator<NotificationsBloc>()),
       ],
       child: const AppRoot(),
     ),

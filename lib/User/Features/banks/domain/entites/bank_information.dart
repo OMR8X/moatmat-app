@@ -1,3 +1,5 @@
+import 'package:moatmat_app/User/Features/video/domain/entites/video.dart';
+
 class BankInformation {
   final String title; //
   final String classs; //
@@ -5,7 +7,7 @@ class BankInformation {
   final String teacher;
   final int price; //
   final List<String>? images;
-  final List<String>? video;
+  final List<Video>? videos;
   final List<String>? files;
 
   BankInformation({
@@ -15,7 +17,7 @@ class BankInformation {
     required this.teacher,
     required this.images,
     required this.price,
-    required this.video,
+    required this.videos,
     required this.files,
   });
   BankInformation copyWith({
@@ -26,7 +28,7 @@ class BankInformation {
     int? price,
     String? password,
     int? period,
-    List<String>? video,
+    List<Video>? videos,
     List<String>? images,
     List<String>? files,
   }) {
@@ -36,7 +38,7 @@ class BankInformation {
       material: material ?? this.material,
       teacher: teacher ?? this.teacher,
       price: price ?? this.price,
-      video: video ?? this.video,
+      videos: videos ?? this.videos,
       images: images ?? this.images,
       files: files ?? this.files,
     );

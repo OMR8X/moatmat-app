@@ -52,7 +52,8 @@ class BankQuestionView extends StatefulWidget {
   State<BankQuestionView> createState() => _BankQuestionViewState();
 }
 
-class _BankQuestionViewState extends State<BankQuestionView> with WidgetsBindingObserver {
+class _BankQuestionViewState extends State<BankQuestionView>
+    with WidgetsBindingObserver {
   bool submit = true;
   bool didWarn = false;
   //
@@ -87,7 +88,8 @@ class _BankQuestionViewState extends State<BankQuestionView> with WidgetsBinding
         title: "تحذير",
         agreeBtn: "انهاء الاختبار",
         disagreeBtn: "اكمال الاختبار",
-        body: "تكرار محاولة الغش مرة اخرى سيؤدي إلى انهاء الاختبار ، هل انت متأكد من انك تريد انهاء الاختبار؟",
+        body:
+            "تكرار محاولة الغش مرة اخرى سيؤدي إلى انهاء الاختبار ، هل انت متأكد من انك تريد انهاء الاختبار؟",
         onAgree: () {
           setState(() {
             submit = false;
