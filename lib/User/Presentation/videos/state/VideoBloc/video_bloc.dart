@@ -201,7 +201,7 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
         final index = updatedComments.indexWhere((e) => e.id == event.commentId);
         if (index != -1) {
           updatedComments[index] = updatedComments[index].copyWith(
-            repliesNum: (state.repliesMap[event.commentId]?.length ?? 0) + 1,
+            repliesNum: updatedMap[event.commentId]!.length,
           );
         }
         //
@@ -252,7 +252,7 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
         //
         if (index != -1) {
           updatedComments[index] = updatedComments[index].copyWith(
-            repliesNum: (state.repliesMap[event.commentId]?.length ?? 0) + 1,
+            repliesNum: r.length,
           );
         }
         //
