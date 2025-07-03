@@ -113,10 +113,9 @@ class VideoRepositoryImpl extends VideoRepository {
   @override
   Future<Either<Failure, Unit>> setAsViewedVideo({
     required int videoId,
-    required String userId,
   }) async {
     try {
-      var res = await dataSource.setAsViewedVideo(videoId: videoId, userId: userId);
+      var res = await dataSource.setAsViewedVideo(videoId: videoId);
       return right(res);
     } on Exception catch (e) {
       return left(handleException(e));
@@ -124,7 +123,7 @@ class VideoRepositoryImpl extends VideoRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> addVideo({
+  Future<Either<Failure, int>> addVideo({
     required Video video,
   }) async {
     try {

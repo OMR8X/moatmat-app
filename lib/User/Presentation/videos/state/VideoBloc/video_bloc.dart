@@ -48,7 +48,9 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
         userId: user!.id,
       );
       //
-      final videoRes = await locator<GetVideoUc>().call(videoId: event.videoId);
+      final videoRes = await locator<GetVideoUc>().call(
+        videoId: event.videoId,
+      );
       //
       if (videoRes.isLeft() || myRatingRes.isLeft()) {
         //

@@ -44,13 +44,12 @@ abstract class VideoRemoteDataSource {
     required Rating rating,
   });
   //
-  Future<Unit> addVideo({
+  Future<int> addVideo({
     required Video video,
   });
   //
   Future<Unit> setAsViewedVideo({
     required int videoId,
-    required String userId,
   });
 }
 
@@ -109,9 +108,12 @@ class VideoRemoteDataSourceImpl extends VideoRemoteDataSource {
     required int videoId,
   }) async {
     //
-    var user = Supabase.instance.client.auth.currentUser;
-    //
-    setAsViewedVideo(videoId: videoId, userId: user!.id);
+    try {
+      var res = await setAsViewedVideo(videoId: videoId);
+      debugPrint('res : $res');
+    } catch (e) {
+      debugPrint('error msg : ${e.toString()}');
+    }
     //
     var res = await client.from('videos').select().eq("id", videoId).limit(1);
     //
@@ -206,34 +208,40 @@ class VideoRemoteDataSourceImpl extends VideoRemoteDataSource {
   @override
   Future<Unit> setAsViewedVideo({
     required int videoId,
-    required String userId,
   }) async {
-    Map viewsJson = {
-      "video_id": videoId,
-      "user_id": userId,
-    };
     //
     try {
-      await client.from('viewed_videos').insert(viewsJson);
+      var res = await client.from('videos').select('views').eq('id', videoId).limit(1);
+      //
+      print("res : $res");
+      //
+      int lastViews = res.first['views'] ?? 0;
+      //
+      print("views : $lastViews");
+      //
+      await client.from('videos').update({'views': lastViews + 1}).eq('id', videoId);
     } on Exception {
-      debugPrint("getting exception while uploading rating");
+      debugPrint("getting exception while uploading set as viewed video");
     }
     //
     return unit;
   }
 
   @override
-  Future<Unit> addVideo({
+  Future<int> addVideo({
     required Video video,
   }) async {
+    int id = -1;
     Map videoJson = VideoModel.fromClass(video).toJson();
     //
     try {
       await client.from("videos").insert(videoJson);
+      var res = await client.from("videos").select().eq("url", video.url).limit(1);
+      id = VideoModel.fromJson(res.first).id;
     } on Exception {
-      debugPrint("getting exception while uploading rating");
+      debugPrint("getting exception while uploading video");
     }
     //
-    return unit;
+    return id;
   }
 }
