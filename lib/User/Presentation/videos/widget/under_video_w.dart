@@ -33,7 +33,7 @@ class _UnderVideoWidgetState extends State<UnderVideoWidget> {
         children: [
           //
           VideoIconsWidget(
-            text1: '${widget.rating}/5 (${widget.ratingNum})',
+            text1: '${widget.rating}', // /5 (${widget.ratingNum})
             text2: 'التقييم',
             icon: Icon(
               Icons.star,
@@ -55,24 +55,24 @@ class _UnderVideoWidgetState extends State<UnderVideoWidget> {
                     Icons.star,
                     color: Colors.amber,
                   )
-                : IconButton(
-                    icon: Icon(
-                      Icons.star_border,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (ctx) {
-                          return BlocProvider.value(
-                            value: context.read<VideoBloc>(),
-                            child: AddRatingBottomSheetWidget(),
-                          );
-                        },
-                      );
-                    },
+                : Icon(
+                    Icons.star_border,
+                    color: Colors.grey,
                   ),
+            onPressed: widget.myRate != -1
+                ? null
+                : () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (ctx) {
+                        return BlocProvider.value(
+                          value: context.read<VideoBloc>(),
+                          child: AddRatingBottomSheetWidget(),
+                        );
+                      },
+                    );
+                  },
           ),
           //
           VerticalDivider(
