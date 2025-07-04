@@ -100,7 +100,7 @@ class NotificationsRemoteDatasourceImpl
     if (!notification.isValid()) return unit;
 
     await _localNotificationsPlugin.show(
-      notification.id,
+       DateTime.now().millisecond,
       notification.title,
       notification.body,
       details ?? AppLocalNotificationsSettings.defaultNotificationsDetails(),
