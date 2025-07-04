@@ -2,23 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moatmat_app/User/Core/functions/show_alert.dart';
+import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Features/banks/domain/use_cases/get_bank_by_id.dart';
-import 'package:moatmat_app/User/Features/reports/domain/usecases/report_on_bank_uc.dart';
-import 'package:moatmat_app/User/Features/reports/domain/usecases/report_on_test_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
+
 import 'package:moatmat_app/User/Presentation/auth/state/auth_c/auth_cubit_cubit.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/auth_views_manager.dart';
-import 'package:moatmat_app/User/Presentation/banks/views/banks/banks_view_manager.dart';
-import 'package:moatmat_app/User/Presentation/banks/views/question_v.dart';
-import 'package:moatmat_app/User/Presentation/code/views/add_code_v.dart';
-import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cubit.dart';
+import 'package:moatmat_app/User/Presentation/code/views/code_views_manager.dart';
+import 'package:moatmat_app/User/Presentation/code/views/codes_sellers_v.dart';
 import 'package:moatmat_app/User/Presentation/home/view/deep_link_view.dart';
 import 'package:moatmat_app/User/Presentation/home/view/likes_v.dart';
+import 'package:moatmat_app/User/Presentation/notifications/state/notifications_bloc/notifications_bloc.dart';
 import 'package:moatmat_app/User/Presentation/notifications/views/notifications_view.dart';
 import 'package:moatmat_app/User/Presentation/results/view/my_results_v.dart';
 import 'package:moatmat_app/User/Presentation/school/view/explore_schools_v.dart';
-import 'package:moatmat_app/User/Presentation/tests/view/question_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/tests/tests_view_manager.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -29,11 +26,6 @@ import '../../../Core/resources/shadows_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
 import '../../../Core/services/deep_links_s.dart';
-import '../../../Features/auth/domain/entites/user_data.dart';
-import '../../../Features/purchase/domain/entites/purchase_item.dart';
-import '../../code/views/code_views_manager.dart';
-import '../../code/views/codes_sellers_v.dart';
-import 'notifications_v.dart';
 import 'settings_v.dart';
 
 class HomeView extends StatefulWidget {
@@ -47,8 +39,8 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     //
-    context.read<NotificationsCubit>().init();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<NotificationsBloc>().add(GetNotifications());
       DeepLinkService.initDeepLinks(
         onGetLink: ({bankId, testId, questionId}) {
           if (bankId != null) {
@@ -101,14 +93,16 @@ class _HomeViewState extends State<HomeView> {
                 ),
               );
             },
-            onOpenNotifications: () async {
+            onOpenNotifications: () {
               Navigator.of(context)
                   .push(
                 MaterialPageRoute(
                   builder: (context) => const NotificationsView(),
                 ),
-              );
-                  
+              )
+                  .then((_) {
+                BlocProvider.of<NotificationsBloc>(context).add(GetNotifications());
+              });
             },
             onOpenLikes: () {
               Navigator.of(context).push(
@@ -487,21 +481,40 @@ class HomeAppBarWidget extends StatelessWidget {
                           size: 22,
                           color: ColorsResources.orangeText,
                         ),
-                        BlocBuilder<NotificationsCubit, NotificationsState>(
-                          builder: (context, state) {
-                            if (state is NotificationsInitial) {
-                              return Positioned(
-                                child: Icon(
-                                  Icons.brightness_1,
-                                  color: state.newNotifications
-                                      ? Colors.red
-                                      : Colors.transparent,
-                                  size: 9,
-                                ),
-                              );
-                            } else {
-                              return const SizedBox();
+                        BlocSelector<NotificationsBloc, NotificationsState, int>(
+                          selector: (state) {
+                            if (state is NotificationsLoaded) {
+                              return state.unreadCount;
                             }
+                            return 0;
+                          },
+                          builder: (context, unreadCount) {
+                            return Visibility(
+                              visible: unreadCount > 0,
+                              child: Positioned(
+                                right: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.all(1),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 16,
+                                    minHeight: 16,
+                                  ),
+                                  child: Text(
+                                    '$unreadCount',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            );
                           },
                         ),
                       ],

@@ -54,14 +54,15 @@ void onDidReceiveBackgroundNotificationResponse(
 /// [firebase messaging foreground handler]
 void onData(RemoteMessage message) async {
   // debugPrint('A foreground message was received in flutter_background_service plugin: ${message.messageId}');
+  locator<NotificationsBloc>().add(GetNotifications());
   await locator<DisplayFirebaseNotificationUsecase>().call(message: message);
   debugPrint('DisplayFirebaseNotificationUsecase called');
-  locator<NotificationsBloc>().add(GetNotifications());
 }
 
 ///
 void onTokenRefreshed(String newToken) async {
   final platform = Platform.isAndroid ? 'android' : 'ios';
+
 
   await locator<RegisterDeviceTokenUseCase>().call(
     RegisterDeviceTokenRequest(

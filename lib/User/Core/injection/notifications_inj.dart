@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Features/notifications/data/datasources/notification_local_data_source.dart';
 import 'package:moatmat_app/User/Features/notifications/data/datasources/notifications_remote_datasource.dart';
 import 'package:moatmat_app/User/Features/notifications/data/repositories/notifications_repository_implements.dart';
 import 'package:moatmat_app/User/Features/notifications/domain/repositories/notifications_repository.dart';
@@ -18,6 +19,7 @@ import 'package:moatmat_app/User/Features/notifications/domain/usecases/unsubscr
 import 'package:moatmat_app/User/Presentation/notifications/state/initialize_notifications_cubit/initialize_notifications_cubit.dart';
 import 'package:moatmat_app/User/Presentation/notifications/state/notification_settings_bloc/notification_settings_bloc.dart';
 import 'package:moatmat_app/User/Presentation/notifications/state/notifications_bloc/notifications_bloc.dart';
+import 'package:moatmat_app/User/Features/notifications/domain/usecases/mark_notification_seen.dart';
 
 Future<void> injectNotifications() async {
   await injectDS();
@@ -63,7 +65,9 @@ Future<void> injectUC() async {
   locator.registerFactory<RefreshDeviceTokenUsecase>(
     () => RefreshDeviceTokenUsecase(repository: locator()),
   );
-
+   locator.registerFactory<MarkNotificationSeen>(
+    () => MarkNotificationSeen(repository: locator()),
+  );
   locator.registerLazySingleton(
     () => DeleteDeviceTokenUsecase(repository: locator()),
   );
@@ -75,13 +79,17 @@ Future<void> injectUC() async {
 Future<void> injectRepo() async {
   locator.registerLazySingleton<NotificationsRepository>(
     () => NotificationsRepositoryImplements(
-        locator<NotificationsRemoteDatasource>()),
+        locator<NotificationsRemoteDatasource>(),
+        locator<NotificationLocalDataSource>()),
   );
 }
 
 Future<void> injectDS() async {
   locator.registerLazySingleton<NotificationsRemoteDatasource>(
     () => NotificationsRemoteDatasourceImpl(),
+  );
+  locator.registerLazySingleton<NotificationLocalDataSource>(
+    () => NotificationLocalDataSourceImpl(sharedPreferences: locator()),
   );
 }
 
@@ -96,8 +104,9 @@ Future<void> injectBlocs() async {
         unsubscribeFromTopic: locator(),
       ));
 
-  locator.registerFactory(() => NotificationsBloc(
+  locator.registerLazySingleton(() => NotificationsBloc(
         getNotificationsUsecase: locator(),
+        markNotificationSeen: locator(),
       ));
 }
 
