@@ -48,7 +48,9 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
         userId: user!.id,
       );
       //
-      final videoRes = await locator<GetVideoUc>().call(videoId: event.videoId);
+      final videoRes = await locator<GetVideoUc>().call(
+        videoId: event.videoId,
+      );
       //
       if (videoRes.isLeft() || myRatingRes.isLeft()) {
         //
@@ -199,7 +201,7 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
         final index = updatedComments.indexWhere((e) => e.id == event.commentId);
         if (index != -1) {
           updatedComments[index] = updatedComments[index].copyWith(
-            repliesNum: (state.repliesMap[event.commentId]?.length ?? 0) + 1,
+            repliesNum: updatedMap[event.commentId]!.length,
           );
         }
         //
@@ -250,7 +252,7 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
         //
         if (index != -1) {
           updatedComments[index] = updatedComments[index].copyWith(
-            repliesNum: (state.repliesMap[event.commentId]?.length ?? 0) + 1,
+            repliesNum: r.length,
           );
         }
         //

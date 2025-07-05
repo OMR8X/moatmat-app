@@ -8,7 +8,7 @@ class AddVideoUc {
 
   AddVideoUc({required this.repository});
 
-  Future<Either<Failure, Unit>> call({
+  Future<Either<Failure, int>> call({
     required Video video,
   }) async {
     return await repository.addVideo(

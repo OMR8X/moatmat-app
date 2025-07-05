@@ -23,9 +23,9 @@ abstract class VideoRepository {
   //
   Future<Either<Failure, Unit>> addRaing({required Rating rating});
   //
-  Future<Either<Failure, Unit>> setAsViewedVideo({required int videoId,required String userId});
+  Future<Either<Failure, Unit>> setAsViewedVideo({required int videoId});
   //
-  Future<Either<Failure, Unit>> addVideo({required Video video});
+  Future<Either<Failure, int>> addVideo({required Video video});
   //
 
   // not working right now

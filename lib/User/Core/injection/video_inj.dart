@@ -5,6 +5,7 @@ import 'package:moatmat_app/User/Features/video/domain/repository/video_reposito
 import 'package:moatmat_app/User/Features/video/domain/usecases/add_comment_uc.dart';
 import 'package:moatmat_app/User/Features/video/domain/usecases/add_rating_uc.dart';
 import 'package:moatmat_app/User/Features/video/domain/usecases/add_reply_comment_uc.dart';
+import 'package:moatmat_app/User/Features/video/domain/usecases/add_video_uc.dart';
 import 'package:moatmat_app/User/Features/video/domain/usecases/get_comments_uc.dart';
 import 'package:moatmat_app/User/Features/video/domain/usecases/get_my_rating_uc.dart';
 import 'package:moatmat_app/User/Features/video/domain/usecases/get_rating_uc.dart';
@@ -19,6 +20,11 @@ injectVideo() {
 }
 
 void injectUC() {
+  locator.registerFactory<AddVideoUc>(
+    () => AddVideoUc(
+      repository: locator(),
+    ),
+  );
   locator.registerFactory<AddCommentUc>(
     () => AddCommentUc(
       repository: locator(),

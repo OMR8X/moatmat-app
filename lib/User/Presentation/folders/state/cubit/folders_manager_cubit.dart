@@ -28,7 +28,7 @@ class FoldersManagerCubit extends Cubit<FoldersManagerState> {
   late FoldersSystemService foldersSystemService;
 
   ///
-  init({required Map<String, dynamic> directories, required bool isTest, required String material, required TeacherData teacher}) async {
+  init({required Map<String, dynamic> directories, required bool isTest, required String? material, required TeacherData teacher}) async {
     //
     this.isTest = isTest;
     this.teacher = teacher;

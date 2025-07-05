@@ -9,11 +9,9 @@ class SetAsViewedVideoUc {
 
   Future<Either<Failure, Unit>> call({
     required int videoId,
-    required String userId,
   }) async {
     return await repository.setAsViewedVideo(
       videoId: videoId,
-      userId: userId,
     );
   }
 }
