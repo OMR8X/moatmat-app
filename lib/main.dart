@@ -34,11 +34,11 @@ void main() async {
   //
   WidgetsFlutterBinding.ensureInitialized();
   //
-  await SupabaseServices.init();
-  //
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  //
+  await SupabaseServices.init();
   //
   await initGetIt();
   //

@@ -1,0 +1,55 @@
+---
+description: Must be read to see if flutter pacakge already added or need to be added 
+globs: 
+alwaysApply: false
+---
+# Dependencies
+
+This file lists all packages used in the Moatmat Teacher project.
+
+## Main Dependencies
+- cached_network_image
+- cupertino_icons
+- dartz
+- equatable
+- excel
+- file_picker
+- flick_video_player
+- flutter
+- flutter_bloc
+- flutter_colorpicker
+- flutter_localizations
+- flutter_math_fork
+- flutter_speed_dial
+- flutter_svg
+- fluttertoast
+- get_it
+- http
+- image_picker
+- open_file
+- path_provider
+- pdf
+- permission_handler
+- qr_flutter
+- rename
+- screenshot
+- share_plus
+- shared_preferences
+- shimmer
+- smooth_page_indicator
+- supabase_flutter
+- translator
+- url_launcher
+- video_player
+- webview_flutter_plus
+- camera
+- package_info_plus
+- firebase_core
+- intl
+- qr_code_scanner_plus
+- encrypt
+- hive_flutter
+
+## Dev Dependencies
+- flutter_lints
+- flutter_test

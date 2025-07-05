@@ -100,7 +100,7 @@ class NotificationsRemoteDatasourceImpl
     if (!notification.isValid()) return unit;
 
     await _localNotificationsPlugin.show(
-      notification.id,
+       DateTime.now().millisecond,
       notification.title,
       notification.body,
       details ?? AppLocalNotificationsSettings.defaultNotificationsDetails(),
@@ -199,25 +199,31 @@ class NotificationsRemoteDatasourceImpl
     }
   }
 
-  @override
-  Future<List<AppNotification>> getNotifications() async {
-    try {
-      final user = _supabase.auth.currentUser;
-      final userId = user?.id;
-      final subscribedTopics = AppRemoteNotificationsSettings.defaultTopicList;
+ @override
+Future<List<AppNotification>> getNotifications() async {
+  try {
+    final user = _supabase.auth.currentUser;
+    final userId = user?.id;
+    final subscribedTopics = AppRemoteNotificationsSettings.defaultTopicList;
 
-      if (userId == null) return [];
+    if (userId == null) return [];
 
-      final response = await _supabase.from('notifications2').select().or(
-            'and(type.eq.user,target_user_ids.cs.{$userId}),and(type.eq.topic,target_topics.cs.{${subscribedTopics.join(',')}})',
-          ) as List;
+    final response = await _supabase
+        .from('notifications2')
+        .select()
+        .or(
+          'and(type.eq.user,target_user_ids.cs.{$userId}),'
+          'and(type.eq.topic,target_topics.cs.{${subscribedTopics.join(',')}})',
+        )
+        .order('created_at', ascending: false) 
+        as List;
 
-      return response.map((e) {
-        return AppNotification.fromJson(e as Map<String, dynamic>);
-      }).toList();
-    } catch (e) {
-      debugPrint('Unexpected error while trying to get notifications: $e');
-      throw ServerException();
-    }
+    return response.map((e) {
+      return AppNotification.fromJson(e as Map<String, dynamic>);
+    }).toList();
+  } catch (e) {
+    debugPrint('Unexpected error while trying to get notifications: $e');
+    throw ServerException();
   }
+}
 }

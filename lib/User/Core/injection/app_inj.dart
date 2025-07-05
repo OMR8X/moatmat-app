@@ -19,10 +19,11 @@ var locator = GetIt.instance;
 initGetIt() async {
   //
   var sp = await SharedPreferences.getInstance();
-  locator.registerSingleton(sp);
-  //
+if (!locator.isRegistered<SharedPreferences>()) {
+  locator.registerSingleton<SharedPreferences>(sp);
+}  //
   injectAuth();
-  injectNotifications();
+  await injectNotifications();
   codesInjector();
   injectBanks();
   injectTests();

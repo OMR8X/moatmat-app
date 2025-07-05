@@ -33,41 +33,53 @@ class _NotificationsViewState extends State<NotificationsView> {
       appBar: AppBar(
         title: Text('الإشعارات'),
       ),
-      body: BlocBuilder<NotificationsBloc, NotificationsState>(
-        builder: (context, state) {
-          if (state is NotificationsLoading) {
-            return const Center(child: CupertinoActivityIndicator());
-          } else if (state is NotificationsFailure) {
-            return Center(
-              child: Text(
-                state.message,
-                style: FontsResources.styleRegular(color: ColorsResources.red),
-              ),
-            );
-          } else if (state is NotificationsLoaded) {
-            if (state.notifications.isEmpty) {
+      body: BlocListener<NotificationsBloc, NotificationsState>(
+        listenWhen: (previous, current) =>
+            previous is! NotificationsLoaded && current is NotificationsLoaded,
+        listener: (context, state) {
+          if (state is NotificationsLoaded) {
+            for (final notification in state.notifications) {
+              BlocProvider.of<NotificationsBloc>(context)
+                  .add(MarkNotificationAsSeen(notification.id));
+            }
+          }
+        },
+        child: BlocBuilder<NotificationsBloc, NotificationsState>(
+          builder: (context, state) {
+            if (state is NotificationsLoading) {
+              return const Center(child: CupertinoActivityIndicator());
+            } else if (state is NotificationsFailure) {
               return Center(
                 child: Text(
-                  'لا يوجد إشعارات',
-                  style: FontsResources.styleRegular(),
+                  state.message,
+                  style: FontsResources.styleRegular(color: ColorsResources.red),
+                ),
+              );
+            } else if (state is NotificationsLoaded) {
+              if (state.notifications.isEmpty) {
+                return Center(
+                  child: Text(
+                    'لا يوجد إشعارات',
+                    style: FontsResources.styleRegular(),
+                  ),
+                );
+              }
+              return Padding(
+                padding: const EdgeInsets.all(SpacingResources.sidePadding),
+                child: ListView.separated(
+                  itemCount: state.notifications.length,
+                  separatorBuilder: (_, __) =>
+                      const SizedBox(height: SizesResources.s1 / 2),
+                  itemBuilder: (context, index) {
+                    final notification = state.notifications[index];
+                    return NotificationCard(notification: notification);
+                  },
                 ),
               );
             }
-            return Padding(
-              padding: const EdgeInsets.all(SpacingResources.sidePadding),
-              child: ListView.separated(
-                itemCount: state.notifications.length,
-                separatorBuilder: (_, __) =>
-                    const SizedBox(height: SizesResources.s1 / 2),
-                itemBuilder: (context, index) {
-                  final notification = state.notifications[index];
-                  return NotificationCard(notification: notification);
-                },
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

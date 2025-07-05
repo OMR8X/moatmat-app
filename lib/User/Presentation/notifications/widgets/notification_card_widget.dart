@@ -62,10 +62,8 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Set Arabic locale
     timeago.setLocaleMessages('ar', timeago.ArMessages());
 
-    // Calculate minutes difference
     final now = DateTime.now();
     final difference = now.difference(notification.date);
     final minutes = difference.inMinutes;
@@ -74,19 +72,19 @@ class NotificationCard extends StatelessWidget {
     if (minutes < 1) {
       timeText = 'الآن';
     } else if (minutes < 60) {
-      timeText =
-          'منذ $minutes دقيقة${minutes > 10 ? '' : ''}'; // Arabic pluralization
+      timeText = 'منذ $minutes دقيقة';
     } else {
-      // Fall back to timeago for longer durations
-      timeText = 'منذ ${timeago.format(notification.date, locale: 'ar')}';
+      timeText = timeago.format(notification.date, locale: 'ar');
     }
+
+    final hasImage = notification.imageUrl?.isNotEmpty ?? false;
 
     return Container(
       width: SpacingResources.mainWidth(context),
       margin: const EdgeInsets.symmetric(vertical: SizesResources.s1),
       decoration: BoxDecoration(
         color: notification.seen
-            ? ColorsResources.onPrimary.withOpacity(0.95)
+            ? ColorsResources.onPrimary.withAlpha(245)
             : ColorsResources.onPrimary,
         boxShadow: ShadowsResources.mainBoxShadow,
         borderRadius: BorderRadius.circular(12),
@@ -102,17 +100,19 @@ class NotificationCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Notification icon with status indicator
+                // Notification Icon with Badge
                 Container(
                   margin: const EdgeInsets.only(right: SizesResources.s2),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       Icon(
-                        Icons.notifications_none,
+                        notification.seen
+                            ? Icons.notifications_active_outlined
+                            : Icons.notifications_none,
                         size: 22,
                         color: notification.seen
-                            ? ColorsResources.textSecondary.withOpacity(0.6)
+                            ? ColorsResources.textSecondary.withValues(alpha: 0.6)
                             : ColorsResources.primary,
                       ),
                       if (!notification.seen)
@@ -136,103 +136,111 @@ class NotificationCard extends StatelessWidget {
                   ),
                 ),
 
-                // Main content column
+                // Content Column
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title row
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              notification.title,
-                              style: FontsResources.styleMedium(
-                                size: 16,
-                                color: notification.seen
-                                    ? ColorsResources.textPrimary
-                                        .withOpacity(0.9)
-                                    : ColorsResources.textPrimary,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      // Title
+                      Text(
+                        notification.title,
+                        style: FontsResources.styleMedium(
+                          size: 16,
+                          color: notification.seen
+                              ? ColorsResources.textPrimary.withValues(alpha: 0.9)
+                              : ColorsResources.textPrimary,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
 
-                      // Body text
-                      if (notification.body != null &&
-                          notification.body!.isNotEmpty)
+                      // Body
+                      if (notification.body?.isNotEmpty ?? false)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             notification.body!,
                             style: FontsResources.styleRegular(
-                              color: notification.seen
-                                  ? ColorsResources.textSecondary
-                                      .withOpacity(0.7)
-                                  : ColorsResources.textSecondary,
                               size: 14,
+                              color: notification.seen
+                                  ? ColorsResources.textSecondary.withValues(alpha:0.7)
+                                  : ColorsResources.textSecondary,
                             ),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
 
-                      // Metadata row (time and type)
+                      // Teacher Name Tag
+                      if(notification.data != null && notification.data?["sent_by"] != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
-                        child: Row(
-                          children: [
-                            // Time ago
-                            Text(
-                              timeText,
-                              style: FontsResources.styleRegular(
-                                size: 12,
-                                color: ColorsResources.textSecondary
-                                    .withOpacity(0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Image thumbnail (if exists)
-                if (notification.imageUrl != null &&
-                    notification.imageUrl!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: GestureDetector(
-                      onTap: () =>
-                          _showFullImage(context, notification.imageUrl!),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
                         child: Container(
-                          width: 64,
-                          height: 64,
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
+                            color: ColorsResources.primary.withValues(alpha:0.1),
+                            borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: ColorsResources.borders.withOpacity(0.1),
+                              color: ColorsResources.primary.withValues(alpha:0.3),
                               width: 0.5,
                             ),
                           ),
-                          child: Image.network(
-                            notification.imageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: ColorsResources.background,
-                                child: const Icon(Icons.broken_image, size: 24),
-                              );
-                            },
+                          child: Text(
+                            '${notification.data!["sent_by"]}',
+                            style: FontsResources.styleMedium(
+                              size: 12,
+                              color: ColorsResources.primary,
+                            ),
                           ),
                         ),
                       ),
+                      
+                   
+                    ],
+                  ),
+                ),
+                // Optional Image Thumbnail
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Time positioned at top-right corner
+                        Text(
+                          timeText,
+                          style: FontsResources.styleRegular(
+                            size: 12,
+                            color: ColorsResources.textSecondary.withValues(alpha:0.6),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Image
+                if (hasImage)
+                        GestureDetector(
+                          onTap: () => _showFullImage(context, notification.imageUrl!),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              width: 64,
+                              height: 64,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: ColorsResources.borders.withValues(alpha:0.1),
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: Image.network(
+                                notification.imageUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: ColorsResources.background,
+                                  child: const Icon(Icons.broken_image, size: 24),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
               ],

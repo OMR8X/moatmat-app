@@ -9,6 +9,15 @@ abstract class NotificationsEvent extends Equatable {
 
 class GetNotifications extends NotificationsEvent {}
 
+class MarkNotificationAsSeen extends NotificationsEvent {
+  final String id;
+
+  const MarkNotificationAsSeen(this.id);
+
+  @override
+  List<Object> get props => [id]; 
+}
+
 class ClearNotifications extends NotificationsEvent {}
 
 class DeleteNotification extends NotificationsEvent {

@@ -1,6 +1,5 @@
 import 'package:moatmat_app/User/Features/notifications/data/models/app_notification_model.dart';
-
-import '../../domain/entities/app_notification.dart';
+import 'package:moatmat_app/User/Features/notifications/domain/entities/app_notification.dart';
 
 extension AppNotificationModelMapper on AppNotificationModel {
   AppNotification get toEntity {
@@ -12,6 +11,7 @@ extension AppNotificationModelMapper on AppNotificationModel {
       date: date,
       imageUrl: imageUrl,
       seen: seen,
+      data: data,
     );
   }
 }
@@ -26,6 +26,7 @@ extension AppNotificationMapper on AppNotification {
       date: date,
       imageUrl: imageUrl,
       seen: seen,
+      data: data,
     );
   }
 }

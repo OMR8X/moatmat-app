@@ -3,14 +3,16 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:moatmat_app/User/Core/errors/exceptions.dart';
+import 'package:moatmat_app/User/Features/notifications/data/datasources/notification_local_data_source.dart';
 import 'package:moatmat_app/User/Features/notifications/data/datasources/notifications_remote_datasource.dart';
 import 'package:moatmat_app/User/Features/notifications/domain/entities/app_notification.dart';
 import '../../domain/repositories/notifications_repository.dart';
 
 class NotificationsRepositoryImplements implements NotificationsRepository {
   final NotificationsRemoteDatasource _remoteDatasource;
+  final NotificationLocalDataSource _localDataSourse;
 
-  NotificationsRepositoryImplements(this._remoteDatasource);
+  NotificationsRepositoryImplements( this._remoteDatasource, this._localDataSourse);
   @override
   Future<Either<Failure, Unit>> initializeLocalNotification() async {
     try {
@@ -76,15 +78,26 @@ class NotificationsRepositoryImplements implements NotificationsRepository {
     }
   }
 
-  @override
-  Future<Either<Failure, List<AppNotification>>> getNotifications() async {
-    try {
-      final response = await _remoteDatasource.getNotifications();
-      return right(response);
-    } on Exception {
-      return left(AnonFailure());
-    }
+@override
+Future<Either<Failure, List<AppNotification>>> getNotifications() async {
+  try {
+    final List<AppNotification> remoteNotifications =
+        await _remoteDatasource.getNotifications();
+
+    final List<AppNotification> updatedNotifications =
+        await Future.wait(remoteNotifications.map((notification) async {
+      final bool isSeen = await _localDataSourse.isNotificationSeen(notification.id.toString());
+
+      return notification.copyWith(seen: isSeen);
+    }));
+
+    return Right(updatedNotifications);
+  } on CacheFailure {
+    return Left(CacheFailure());
+  } catch (e) {
+    return Left(AnonFailure());
   }
+}
 
   @override
   Future<Either<Failure, Unit>> subscribeToTopic(
@@ -150,6 +163,16 @@ class NotificationsRepositoryImplements implements NotificationsRepository {
       return left(ServerFailure());
     } on Exception {
       return left(AnonFailure());
+    }
+  }
+
+   @override
+  Future<Either<Failure, Unit>> markNotificationAsSeen(String notificationId) async {
+    try {
+      await _localDataSourse.addSeenNotification(notificationId);
+      return const Right(unit);
+    } catch (e) {
+      return Left(CacheFailure());
     }
   }
 }
