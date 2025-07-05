@@ -28,6 +28,8 @@ class NotificationsLoaded extends NotificationsState {
       unreadCount: unreadCount ?? this.unreadCount,
     );
   }
+  @override
+  List<Object> get props => [notifications, unreadCount];
 }
 
 class NotificationsFailure extends NotificationsState {
