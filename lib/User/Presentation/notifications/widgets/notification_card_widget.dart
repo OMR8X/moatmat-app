@@ -62,6 +62,7 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(notification.data);
     timeago.setLocaleMessages('ar', timeago.ArMessages());
 
     final now = DateTime.now();
@@ -83,9 +84,7 @@ class NotificationCard extends StatelessWidget {
       width: SpacingResources.mainWidth(context),
       margin: const EdgeInsets.symmetric(vertical: SizesResources.s1),
       decoration: BoxDecoration(
-        color: notification.seen
-            ? ColorsResources.onPrimary.withAlpha(245)
-            : ColorsResources.onPrimary,
+        color: notification.seen ? ColorsResources.onPrimary.withAlpha(245) : ColorsResources.onPrimary,
         boxShadow: ShadowsResources.mainBoxShadow,
         borderRadius: BorderRadius.circular(12),
       ),
@@ -107,13 +106,9 @@ class NotificationCard extends StatelessWidget {
                     alignment: Alignment.center,
                     children: [
                       Icon(
-                        notification.seen
-                            ? Icons.notifications_active_outlined
-                            : Icons.notifications_none,
+                        notification.seen ? Icons.notifications_active_outlined : Icons.notifications_none,
                         size: 22,
-                        color: notification.seen
-                            ? ColorsResources.textSecondary.withValues(alpha: 0.6)
-                            : ColorsResources.primary,
+                        color: notification.seen ? ColorsResources.textSecondary.withValues(alpha: 0.6) : ColorsResources.primary,
                       ),
                       if (!notification.seen)
                         Positioned(
@@ -146,9 +141,7 @@ class NotificationCard extends StatelessWidget {
                         notification.title,
                         style: FontsResources.styleMedium(
                           size: 16,
-                          color: notification.seen
-                              ? ColorsResources.textPrimary.withValues(alpha: 0.9)
-                              : ColorsResources.textPrimary,
+                          color: notification.seen ? ColorsResources.textPrimary.withValues(alpha: 0.9) : ColorsResources.textPrimary,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -162,9 +155,7 @@ class NotificationCard extends StatelessWidget {
                             notification.body!,
                             style: FontsResources.styleRegular(
                               size: 14,
-                              color: notification.seen
-                                  ? ColorsResources.textSecondary.withValues(alpha:0.7)
-                                  : ColorsResources.textSecondary,
+                              color: notification.seen ? ColorsResources.textSecondary.withValues(alpha: 0.7) : ColorsResources.textSecondary,
                             ),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
@@ -172,50 +163,48 @@ class NotificationCard extends StatelessWidget {
                         ),
 
                       // Teacher Name Tag
-                      if(notification.data != null && notification.data?["sent_by"] != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: ColorsResources.primary.withValues(alpha:0.1),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: ColorsResources.primary.withValues(alpha:0.3),
-                              width: 0.5,
+                      if (notification.data != null && notification.data?["sent_by"] != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: ColorsResources.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: ColorsResources.primary.withValues(alpha: 0.3),
+                                width: 0.5,
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            '${notification.data!["sent_by"]}',
-                            style: FontsResources.styleMedium(
-                              size: 12,
-                              color: ColorsResources.primary,
+                            child: Text(
+                              '${notification.data!["sent_by"]}',
+                              style: FontsResources.styleMedium(
+                                size: 12,
+                                color: ColorsResources.primary,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      
-                   
                     ],
                   ),
                 ),
                 // Optional Image Thumbnail
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        // Time positioned at top-right corner
-                        Text(
-                          timeText,
-                          style: FontsResources.styleRegular(
-                            size: 12,
-                            color: ColorsResources.textSecondary.withValues(alpha:0.6),
-                          ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // Time positioned at top-right corner
+                      Text(
+                        timeText,
+                        style: FontsResources.styleRegular(
+                          size: 12,
+                          color: ColorsResources.textSecondary.withValues(alpha: 0.6),
                         ),
-                        const SizedBox(height: 8),
-                        // Image
-                if (hasImage)
+                      ),
+                      const SizedBox(height: 8),
+                      // Image
+                      if (hasImage)
                         GestureDetector(
                           onTap: () => _showFullImage(context, notification.imageUrl!),
                           child: ClipRRect(
@@ -225,7 +214,7 @@ class NotificationCard extends StatelessWidget {
                               height: 64,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: ColorsResources.borders.withValues(alpha:0.1),
+                                  color: ColorsResources.borders.withValues(alpha: 0.1),
                                   width: 0.5,
                                 ),
                               ),
@@ -240,9 +229,9 @@ class NotificationCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
+                ),
               ],
             ),
           ),
