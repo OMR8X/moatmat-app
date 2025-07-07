@@ -34,6 +34,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (!locator.isRegistered<DisplayFirebaseNotificationUsecase>()) {
     await initGetIt();
   }
+      locator<NotificationsBloc>().add(GetNotifications());
 
   await locator<DisplayFirebaseNotificationUsecase>().call(message: message);
   debugPrint('DisplayFirebaseNotificationUsecase called');

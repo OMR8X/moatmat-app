@@ -11,6 +11,7 @@ import 'package:moatmat_app/User/Core/injection/tests_inj.dart';
 import 'package:moatmat_app/User/Core/injection/update_inj.dart';
 import 'package:moatmat_app/User/Core/injection/video_inj.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_inj.dart';
 import 'codes_inj.dart';
 import 'purchases_inj.dart';
@@ -22,6 +23,10 @@ initGetIt() async {
 if (!locator.isRegistered<SharedPreferences>()) {
   locator.registerSingleton<SharedPreferences>(sp);
 }  //
+ if (!locator.isRegistered<SupabaseClient>()) {
+    locator.registerSingleton<SupabaseClient>(Supabase.instance.client);
+  }
+
   injectAuth();
   await injectNotifications();
   codesInjector();
