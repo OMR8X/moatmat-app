@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:moatmat_app/User/Core/constant/navigation_key.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
+import 'package:moatmat_app/User/Presentation/notifications/views/notifications_view.dart';
 
 import 'auth/view/auth_views_manager.dart';
 
@@ -89,11 +91,11 @@ class _AppRootState extends State<AppRoot> {
       ],
       home: const AuthViewsManager(),
 
-      // navigatorKey: navigatorKey,
+      navigatorKey: navigatorKey,
 
-      // routes: {
-      // '/notifications': (context) => const NotificationsView(),
-      // },
+      routes: {
+      '/notifications': (context) => const NotificationsView(),
+      },
     );
   }
 }
