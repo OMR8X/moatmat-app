@@ -88,6 +88,12 @@ class _AppRootState extends State<AppRoot> {
         Locale("ar"),
       ],
       home: const AuthViewsManager(),
+
+      // navigatorKey: navigatorKey,
+
+      // routes: {
+      // '/notifications': (context) => const NotificationsView(),
+      // },
     );
   }
 }
