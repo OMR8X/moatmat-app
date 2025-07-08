@@ -34,13 +34,11 @@ class _NotificationsViewState extends State<NotificationsView> {
         title: Text('الإشعارات'),
       ),
       body: BlocListener<NotificationsBloc, NotificationsState>(
-        listenWhen: (previous, current) =>
-            previous is! NotificationsLoaded && current is NotificationsLoaded,
+        listenWhen: (previous, current) => previous is! NotificationsLoaded && current is NotificationsLoaded,
         listener: (context, state) {
           if (state is NotificationsLoaded) {
             for (final notification in state.notifications) {
-              BlocProvider.of<NotificationsBloc>(context)
-                  .add(MarkNotificationAsSeen(notification.id));
+              BlocProvider.of<NotificationsBloc>(context).add(MarkNotificationAsSeen(notification.id));
             }
           }
         },
@@ -68,8 +66,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                 padding: const EdgeInsets.all(SpacingResources.sidePadding),
                 child: ListView.separated(
                   itemCount: state.notifications.length,
-                  separatorBuilder: (_, __) =>
-                      const SizedBox(height: SizesResources.s1 / 2),
+                  separatorBuilder: (_, __) => const SizedBox(height: SizesResources.s1 / 2),
                   itemBuilder: (context, index) {
                     final notification = state.notifications[index];
                     return NotificationCard(notification: notification);

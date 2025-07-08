@@ -69,12 +69,13 @@ class FontsResources {
   }
 
   // extra bold
-  static TextStyle styleMedium({Color? color, double? size}) {
+  static TextStyle styleMedium({Color? color, double? size, TextDecoration? decoration}) {
     return TextStyle(
       fontFamily: "Tajawal",
       fontSize: size,
       fontWeight: FontWeight.w400,
       color: color ?? ColorsResources.blackText1,
+      decoration: decoration,
     );
   }
 
