@@ -19,13 +19,11 @@ import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.
 import 'package:moatmat_app/User/Features/purchase/domain/use_cases/get_user_purchased_uc.dart';
 import 'package:moatmat_app/User/Features/update/domain/entites/update_info.dart';
 import 'package:moatmat_app/User/Features/update/domain/usecases/check_update_state_uc.dart';
-import 'package:moatmat_app/main.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../Core/injection/app_inj.dart';
 import '../../../../Features/auth/domain/entites/user_data.dart';
 import '../../../../Features/auth/domain/use_cases/get_user_data.dart';
-
 part 'auth_cubit_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {

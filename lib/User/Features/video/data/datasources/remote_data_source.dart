@@ -62,13 +62,18 @@ class VideoRemoteDataSourceImpl extends VideoRemoteDataSource {
   Future<Unit> addComments({
     required Comment comment,
   }) async {
+    print("comment : ${comment.videoId}");
     Map commentJson = CommentModel.fromClass(comment).toJson();
     //
     try {
+      debugPrint("commentJson : $commentJson");
       await client.from("comment").insert(commentJson);
-    } on Exception {
-      debugPrint("getting exception while uploading comment");
+    } on PostgrestException catch (e) {
+      debugPrint("PostgrestException: ${e.message}, code: ${e.code}, details: ${e.details}");
+    } on Exception catch (e) {
+      debugPrint("getting exception while uploading comment : ${e.toString()}");
     }
+
     //
     return unit;
   }
