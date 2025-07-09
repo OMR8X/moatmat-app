@@ -18,7 +18,7 @@ class NotificationCard extends StatelessWidget {
 
   // Test image URL for debugging purposes
 
-  static const String _testImageUrl = 'https://images.unsplash.com/photo-1742505709415-76b15647ae64?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  // static const String _testImageUrl = 'https://images.unsplash.com/photo-1742505709415-76b15647ae64?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
   const NotificationCard({
     super.key,
@@ -154,41 +154,17 @@ class NotificationCard extends StatelessWidget {
 
   // Helper method to build notification icon
   Widget _buildNotificationIcon() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: notification.seen ? ColorsResources.background.withOpacity(0.3) : ColorsResources.primary.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: notification.seen ? ColorsResources.borders.withOpacity(0.4) : ColorsResources.primary.withOpacity(0.2),
-          width: 1.5,
-        ),
-      ),
+    return CircleAvatar(
+      radius: 20,
+      backgroundColor: notification.seen ? ColorsResources.primary.withAlpha(10) : ColorsResources.primary.withAlpha(20),
       child: Stack(
         alignment: Alignment.center,
         children: [
           Icon(
-            notification.seen ? Icons.notifications_outlined : Icons.notifications_active_rounded,
-            size: 24,
-            color: notification.seen ? ColorsResources.textSecondary.withOpacity(0.8) : ColorsResources.primary,
+            Icons.notifications_outlined,
+            size: 20,
+            color: ColorsResources.primary.withAlpha(150),
           ),
-          if (!notification.seen)
-            Positioned(
-              right: -1,
-              top: -1,
-              child: Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: ColorsResources.red,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: ColorsResources.cardBackground,
-                    width: 2.5,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -198,21 +174,18 @@ class NotificationCard extends StatelessWidget {
   Widget _buildTimeContainer(String timeText) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 6,
+        horizontal: 8,
+        vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: notification.seen ? ColorsResources.grey.withOpacity(0.2) : ColorsResources.grey.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: ColorsResources.grey.withAlpha(25),
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 4.0),
-        child: Text(
-          timeText,
-          style: FontsResources.styleRegular(
-            size: 11,
-            color: notification.seen ? ColorsResources.textSecondary : ColorsResources.textPrimary.withOpacity(0.7),
-          ),
+      child: Text(
+        timeText,
+        style: FontsResources.styleRegular(
+          size: 11,
+          color: ColorsResources.textSecondary,
         ),
       ),
     );
@@ -224,24 +197,17 @@ class NotificationCard extends StatelessWidget {
       onTap: () => _showFullImage(context, imageUrl),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: ColorsResources.primary.withOpacity(0.2),
-            width: 1.5,
+            width: 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: ColorsResources.primary.withOpacity(0.08),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.5),
+          borderRadius: BorderRadius.circular(7),
           child: SizedBox(
-            width: 72,
-            height: 72,
+            width: 60,
+            height: 60,
             child: Image.network(
               imageUrl,
               fit: BoxFit.cover,
@@ -249,7 +215,7 @@ class NotificationCard extends StatelessWidget {
                 color: ColorsResources.background.withOpacity(0.3),
                 child: Icon(
                   Icons.broken_image_outlined,
-                  size: 32,
+                  size: 24,
                   color: ColorsResources.textSecondary.withOpacity(0.6),
                 ),
               ),
@@ -262,39 +228,43 @@ class NotificationCard extends StatelessWidget {
 
   // Helper method to build sender tag
   Widget _buildSenderTag(String senderName) {
+    print(senderName);
+    Map trSenderName = {
+      "admin": "ادارة التطبيق",
+    };
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
+        horizontal: 12,
+        vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: ColorsResources.primary.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(24),
+        color: ColorsResources.grey.withAlpha(25),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              color: ColorsResources.primary,
+              color: ColorsResources.grey.withAlpha(200),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.person_rounded,
-              size: 14,
+              size: 11,
               color: ColorsResources.onPrimary,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 6),
           Flexible(
             child: Padding(
-              padding: const EdgeInsets.only(top: 4.0),
+              padding: const EdgeInsets.only(top: 3),
               child: Text(
-                'من: $senderName',
+                'من : ${trSenderName[senderName.toLowerCase()] ?? senderName}',
                 style: FontsResources.styleMedium(
-                  size: 13,
-                  color: ColorsResources.primary,
+                  size: 11,
+                  color: ColorsResources.textPrimary.withAlpha(150),
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -305,140 +275,138 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
-  // Helper method to build content section
-  Widget _buildContentSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Title
-        Padding(
-          padding: const EdgeInsets.only(top: 4.0),
-          child: Text(
-            notification.title,
-            style: FontsResources.styleMedium(
-              size: 16,
-              color: notification.seen ? ColorsResources.textPrimary.withOpacity(0.8) : ColorsResources.textPrimary,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-
-        // Body
-        if (notification.body?.isNotEmpty ?? false) ...[
-          const SizedBox(height: 6),
-          _buildClickableText(
-            context,
-            notification.body!,
-            textStyle: FontsResources.styleRegular(
-              size: 14,
-              color: notification.seen ? ColorsResources.textSecondary.withOpacity(0.7) : ColorsResources.textSecondary,
-            ),
-            linkStyle: FontsResources.styleMedium(
-              size: 14,
-              color: ColorsResources.primary,
-              decoration: TextDecoration.underline,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final timeText = _getFormattedTime();
-
-    // Determine which image URL to display for testing purposes
-    String? displayImageUrl = notification.imageUrl;
-    if ((displayImageUrl == null || displayImageUrl.isEmpty) && kDebugMode) {
-      displayImageUrl = _testImageUrl;
-    }
-
-    final hasImageToDisplay = displayImageUrl?.isNotEmpty ?? false; // Check if there's *any* image to display
+    final displayImageUrl = notification.imageUrl;
+    final hasImageToDisplay = displayImageUrl?.isNotEmpty ?? false;
     final hasSender = _getSenderDisplayName().isNotEmpty;
 
-    return Container(
-      width: SpacingResources.mainWidth(context),
-      margin: const EdgeInsets.symmetric(
-        vertical: SizesResources.s1,
-        horizontal: SizesResources.s2,
-      ),
-      decoration: BoxDecoration(
-        color: notification.seen ? ColorsResources.cardBackground : ColorsResources.onPrimary,
-        boxShadow: [
-          BoxShadow(
-            color: notification.seen ? ColorsResources.borders.withOpacity(0.15) : ColorsResources.primary.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-            spreadRadius: 0,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: SizesResources.s1, vertical: SizesResources.s1),
+          width: MediaQuery.sizeOf(context).width - SizesResources.s7,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: ColorsResources.borders,
+              width: 0.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: ColorsResources.primary.withOpacity(0.08),
+                spreadRadius: 0.2,
+                blurRadius: 10,
+              ),
+            ],
           ),
-        ],
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: notification.seen ? ColorsResources.borders.withOpacity(0.25) : ColorsResources.primary.withOpacity(0.15),
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: onTap,
-          onLongPress: onLongPress,
-          child: Padding(
-            padding: const EdgeInsets.all(SizesResources.s4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header Row with Icon, Content, Time and Image
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: onTap,
+              onLongPress: onLongPress,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: SizesResources.s3, vertical: SizesResources.s4),
+                child: Column(
                   children: [
-                    // Notification Icon
-                    _buildNotificationIcon(),
-
-                    const SizedBox(width: 14),
-
-                    // Content
-                    Expanded(child: _buildContentSection(context)),
-
-                    const SizedBox(width: 10),
-
-                    // Time and Image Column
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    // Main content row
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Time Display
-                        _buildTimeContainer(timeText),
+                        // Notification Icon
+                        Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: SizesResources.s2, right: SizesResources.s2),
+                              child: _buildNotificationIcon(),
+                            ),
+                          ],
+                        ),
 
-                        // Image Thumbnail
-                        if (hasImageToDisplay) ...[
-                          const SizedBox(height: 10),
-                          _buildImageThumbnail(context, displayImageUrl!),
-                        ],
+                        // Content section
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Title
+                                if (notification.title.isNotEmpty)
+                                  Text(
+                                    notification.title,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+
+                                // Spacing between title and body
+                                if (notification.title.isNotEmpty && (notification.body?.isNotEmpty ?? false)) SizedBox(height: SizesResources.s1),
+
+                                // Body
+                                if (notification.body?.isNotEmpty ?? false)
+                                  _buildClickableText(
+                                    context,
+                                    notification.body!,
+                                    textStyle: TextStyle(
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      fontFamily: "Tajawal",
+                                    ),
+                                    linkStyle: TextStyle(
+                                      color: ColorsResources.primary,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Time and Image column
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            // Time
+                            _buildTimeContainer(timeText),
+
+                            // Image
+                            if (hasImageToDisplay) ...[
+                              const SizedBox(height: 8),
+                              _buildImageThumbnail(context, displayImageUrl!),
+                            ],
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
 
-                // Sender Tag
-                if (hasSender) ...[
-                  const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      const SizedBox(width: 62), // Align with content after icon
-                      Expanded(
-                        child: _buildSenderTag(_getSenderDisplayName()),
+                    // Sender tag
+                    if (hasSender) ...[
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const SizedBox(width: 52), // Align with content after icon
+                          Expanded(
+                            child: _buildSenderTag(_getSenderDisplayName()),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
