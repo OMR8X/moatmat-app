@@ -233,16 +233,3 @@ class MyResultsCubit extends Cubit<MyResultsState> {
     return purchased;
   }
 }
-/*
-  git branch -D cache_repository_feature
-  git branch -D complete_school_feater
-  git branch -D edit-notification-branch
-  git branch -D main_backup
-  git branch -D main_backup_20250706_195518
-  git branch -D school-feature
-  git branch -D set-up-video-player-widget
-  git branch -D users_notification_branch
-  git branch -D video-player-feature_backup
-  git branch -D video-player-feature_backup_20250706_195525
-
-*/
