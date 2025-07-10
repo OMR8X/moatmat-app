@@ -228,8 +228,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                                 errorBuilder: (context, error, stackTrace) {
                                   return const SizedBox(
                                     child: Center(
-                                      child:
-                                          Text("حدث خطا ما اثناء تحميل الصورة"),
+                                      child: Text("حدث خطا ما اثناء تحميل الصورة"),
                                     ),
                                   );
                                 },
@@ -238,9 +237,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                                     return child;
                                   } else {
                                     return SizedBox(
-                                      width:
-                                          SpacingResources.mainWidth(context) -
-                                              50,
+                                      width: SpacingResources.mainWidth(context) - 50,
                                       height: 200,
                                       child: Shimmer.fromColors(
                                         baseColor: Colors.grey[400]!,
@@ -272,7 +269,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                       color: ColorsResources.homeSchool,
                       tColor: ColorsResources.blueText,
                       image: "assets/images/home/school.png",
-                      title: "المدارس",
+                      title: "المدارس و المعاهد",
                       onTap: () {
                         context.read<AuthCubit>().onCheck(
                           onSignedOut: () {
@@ -295,7 +292,7 @@ class _HomeBodyWidgetState extends State<HomeBodyWidget> {
                       color: ColorsResources.homeTests,
                       tColor: ColorsResources.orangeText,
                       image: "assets/images/home/tests.gif",
-                      title: "الاختبارات الالكترونية",
+                      title: "المدرسين",
                       onTap: () {
                         context.read<AuthCubit>().onCheck(
                           onSignedOut: () {

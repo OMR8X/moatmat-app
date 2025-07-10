@@ -66,8 +66,6 @@ class Test {
     //
     var items = locator<List<PurchaseItem>>().toSet().toList();
     //
-    // print("debugging ${}");
-    //
     for (var i in items) {
       if (i.itemId.trim() == "$id" && i.itemType.trim() == "test") {
         purchased = true;

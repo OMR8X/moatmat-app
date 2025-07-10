@@ -55,12 +55,4 @@ List<Map<String, String>> materialsLst = [
     "name": "الفلسفة",
     "image": "assets/images/materials/philosopher.png",
   },
-  {
-    "name": "فريق روح التعليمي",
-    "image": "assets/images/materials/roh-team.jpg",
-  },
-  {
-    "name": "معهد الهادي",
-    "image": "assets/images/materials/hadi-team.jpg",
-  },
 ];

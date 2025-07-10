@@ -34,7 +34,6 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
         autoPlay: true,
-        aspectRatio: 16 / 9,
       );
       setState(() => _isLoading = false);
     } catch (e) {
@@ -60,7 +59,7 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: AspectRatio(
-            aspectRatio: 16 / 9,
+            aspectRatio: _chewieController?.aspectRatio ?? 16 / 9,
             child: Container(
               color: Colors.black,
               child: const Center(
@@ -78,7 +77,7 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: AspectRatio(
-            aspectRatio: 16 / 9,
+            aspectRatio: _chewieController?.aspectRatio ?? 16 / 9,
             child: Container(
               color: const Color(0xFF000D24),
               child: Center(
@@ -113,7 +112,7 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: AspectRatio(
-          aspectRatio: 16 / 9,
+          aspectRatio: _chewieController?.aspectRatio ?? 16 / 9,
           child: Chewie(controller: _chewieController!),
         ),
       ),

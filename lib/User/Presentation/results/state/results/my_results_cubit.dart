@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -7,6 +8,7 @@ import 'package:moatmat_app/User/Core/functions/getters/get_wrong_answer.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/banks/domain/entites/bank.dart';
 import 'package:moatmat_app/User/Features/banks/domain/use_cases/get_bank_by_id.dart';
+import 'package:moatmat_app/User/Features/purchase/domain/entites/purchase_item.dart';
 import 'package:moatmat_app/User/Features/result/domain/usecases/get_my_results_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/outer_test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
@@ -86,6 +88,11 @@ class MyResultsCubit extends Cubit<MyResultsState> {
         },
         (r) {
           //
+          if (!isTestPurchased(r)) {
+            emit(MyResultsError(error: "الاختبار غير متاح للعرض."));
+            return;
+          }
+          //
           List<(Question, int?)> wrongAnswers = getWrongAnswers(
             result,
             r.questions,
@@ -151,6 +158,11 @@ class MyResultsCubit extends Cubit<MyResultsState> {
         },
         (r) {
           //
+          if (!isBankPurchased(r)) {
+            emit(MyResultsError(error: "البنك غير متاح للعرض."));
+            return;
+          }
+          //
           List<(Question, int?)> wrongAnswers = getWrongAnswers(
             result,
             r.questions,
@@ -176,4 +188,61 @@ class MyResultsCubit extends Cubit<MyResultsState> {
       ));
     }
   }
+
+  bool isTestPurchased(Test? test) {
+    //
+    if (test == null || kDebugMode) {
+      return false;
+    }
+    //
+    bool purchased = false;
+    //
+    var items = locator<List<PurchaseItem>>().toSet().toList();
+    //
+    for (var i in items) {
+      if (i.itemId.trim() == "$id" && i.itemType.trim() == "test") {
+        purchased = true;
+      }
+      if ((i.itemId.trim() == test.information.teacher.trim()) && i.itemType.trim() == "teacher") {
+        purchased = true;
+      }
+    }
+    //
+    return purchased;
+  }
+
+  bool isBankPurchased(Bank? bank) {
+    //
+    if (bank == null || kDebugMode) {
+      return false;
+    }
+    //
+    bool purchased = false;
+    //
+    var items = locator<List<PurchaseItem>>();
+    //
+    for (var i in items) {
+      if (i.itemId == "$id" && i.itemType == "bank") {
+        purchased = true;
+      }
+      if (i.itemId == bank.information.teacher && i.itemType == "teacher") {
+        purchased = true;
+      }
+    }
+    //
+    return purchased;
+  }
 }
+/*
+  git branch -D cache_repository_feature
+  git branch -D complete_school_feater
+  git branch -D edit-notification-branch
+  git branch -D main_backup
+  git branch -D main_backup_20250706_195518
+  git branch -D school-feature
+  git branch -D set-up-video-player-widget
+  git branch -D users_notification_branch
+  git branch -D video-player-feature_backup
+  git branch -D video-player-feature_backup_20250706_195525
+
+*/
