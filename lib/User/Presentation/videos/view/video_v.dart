@@ -8,7 +8,7 @@ import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/error_v.dart';
 import 'package:moatmat_app/User/Presentation/videos/state/VideoBloc/video_bloc.dart';
-import 'package:moatmat_app/User/Presentation/videos/view/video_player_w.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/chewie_player_widget.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/add_comment_bottom_sheet_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/add_reply_bottom_sheet_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/under_video_w.dart';

@@ -3,7 +3,7 @@ import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/question.dart';
-import 'package:moatmat_app/User/Presentation/videos/view/video_player_w.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/chewie_player_widget.dart';
 
 class MiniVideoCardWidget extends StatelessWidget {
   const MiniVideoCardWidget({

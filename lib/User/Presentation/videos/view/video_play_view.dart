@@ -1,7 +1,7 @@
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
-import 'package:moatmat_app/User/Presentation/videos/view/video_player_w.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/chewie_player_widget.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerView extends StatefulWidget {

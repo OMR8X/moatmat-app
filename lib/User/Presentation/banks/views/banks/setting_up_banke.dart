@@ -21,7 +21,7 @@ import '../../../../Core/widgets/toucheable_tile_widget.dart';
 import '../../../tests/widgets/test_q_box.dart';
 import '../../../videos/view/test_assets_v.dart';
 import '../../../videos/view/video_play_view.dart';
-import '../../../videos/view/video_player_w.dart';
+import '../../../videos/view/chewie_player_widget.dart';
 import '../exploring/explore_no_time_v.dart';
 
 class SettingUpBankView extends StatefulWidget {
