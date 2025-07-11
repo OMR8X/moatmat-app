@@ -53,13 +53,15 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // final aspectRatio = 9 / 16;
+    final aspectRatio = _isLoading ? 16 / 9 : _videoPlayerController.value.aspectRatio;
     if (_isLoading) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: AspectRatio(
-            aspectRatio: _chewieController?.aspectRatio ?? 16 / 9,
+            aspectRatio: aspectRatio,
             child: Container(
               color: Colors.black,
               child: const Center(
@@ -77,7 +79,7 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: AspectRatio(
-            aspectRatio: _chewieController?.aspectRatio ?? 16 / 9,
+            aspectRatio: aspectRatio,
             child: Container(
               color: const Color(0xFF000D24),
               child: Center(
@@ -112,7 +114,7 @@ class _ChewiePlayerWidgetState extends State<ChewiePlayerWidget> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: AspectRatio(
-          aspectRatio: _chewieController?.aspectRatio ?? 16 / 9,
+          aspectRatio: aspectRatio,
           child: Chewie(controller: _chewieController!),
         ),
       ),

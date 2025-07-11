@@ -10,7 +10,7 @@ class UpdateInfoModel extends UpdateInfo {
 
   factory UpdateInfoModel.fromJson(Map json) {
     return UpdateInfoModel(
-      appVersion: 100,
+      appVersion: 203,
       currentVersion: int.parse(
         (json["current_version"] as String).replaceAll(".", ""),
       ),

@@ -14,6 +14,8 @@ import 'package:moatmat_app/User/Presentation/videos/widget/add_reply_bottom_she
 import 'package:moatmat_app/User/Presentation/videos/widget/under_video_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/video_comment_w.dart';
 
+import '../../../Features/video/domain/entites/comment.dart';
+
 class VideoView extends StatefulWidget {
   const VideoView({super.key, required this.videoId});
   final int videoId;
@@ -87,7 +89,14 @@ class _VideoViewState extends State<VideoView> {
                       Column(
                         children: [
                           // video player
-                          ChewiePlayerWidget(videoUrl: state.video!.url),
+                          Container(
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height * 0.35, // Max 35% of screen height
+                              minWidth: MediaQuery.of(context).size.width * 0.9,
+                            ),
+                            padding: EdgeInsets.all(SizesResources.s2),
+                            child: ChewiePlayerWidget(videoUrl: state.video!.url),
+                          ),
                           //
                           Padding(padding: EdgeInsets.only(top: SizesResources.s3)),
                           // list of views ,your rating ,rating ,rating num
@@ -122,15 +131,27 @@ class _VideoViewState extends State<VideoView> {
                                   // commnet list,
                                   Expanded(
                                     child: ListView.builder(
-                                      itemCount: state.comments?.length,
+                                      itemCount: 4,
                                       itemBuilder: (context, commentIndex) {
+                                        // final comment = state.comments?[commentIndex];
+                                        final comment = Comment(
+                                          userId: "",
+                                          likes: 0,
+                                          videoId: 1,
+                                          id: commentIndex,
+                                          username: "test",
+                                          comment: "test",
+                                          createdAt: DateTime.now().toString(),
+                                          repliesNum: 0,
+                                        );
+
                                         final videoBloc = context.read<VideoBloc>();
                                         return BlocProvider.value(
                                           value: videoBloc,
                                           child: VideoCommentWidget(
-                                            username: state.comments![commentIndex].username,
-                                            commentText: state.comments![commentIndex].comment,
-                                            fromTime: timeAgo(state.comments![commentIndex].createdAt),
+                                            username: comment.username,
+                                            commentText: comment.comment,
+                                            fromTime: timeAgo(comment.createdAt),
                                             buttonWidget: Row(
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               children: [
@@ -141,7 +162,7 @@ class _VideoViewState extends State<VideoView> {
                                                   ),
                                                   iconAlignment: IconAlignment.end,
                                                   onPressed: () async {
-                                                    context.read<VideoBloc>().add(LoadReplies(commentId: state.comments![commentIndex].id));
+                                                    context.read<VideoBloc>().add(LoadReplies(commentId: comment.id));
                                                     showModalBottomSheet(
                                                       context: context,
                                                       isScrollControlled: true,
@@ -150,13 +171,13 @@ class _VideoViewState extends State<VideoView> {
                                                         return BlocProvider.value(
                                                           value: videoBloc,
                                                           child: AddReplyBottomSheetWidget(
-                                                            comment: state.comments![commentIndex],
+                                                            comment: comment,
                                                           ),
                                                         );
                                                       },
                                                     );
                                                   },
-                                                  label: Text("الردود (${state.comments![commentIndex].repliesNum})"),
+                                                  label: Text("الردود (${comment.repliesNum})"),
                                                 ),
                                               ],
                                             ),

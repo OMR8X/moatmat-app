@@ -1,7 +1,7 @@
 name: moatmat_app
 description: "A new Flutter project."
 publish_to: 'none'
-version: 2.0.2+108
+version: 2.0.3+109
 environment:
   sdk: '>=3.2.3 <4.0.0'
 dependencies:
