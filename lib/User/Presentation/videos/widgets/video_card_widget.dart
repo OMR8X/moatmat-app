@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Core/functions/coders/decode.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
@@ -101,7 +102,7 @@ class _VideoInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "فيديو رقم $videoNumber",
+          decodeFileName(video.url.split("/").last.split(".").first),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
