@@ -78,6 +78,8 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
     questions[index] = (question.$1, question.$2);
     emitState();
     stopTimer = true;
+
+    // If this is the last question an
   }
 
   void nextQuestion() {
@@ -104,8 +106,6 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
   //
   void startTimer() {
     //
-
-    //
     initTIme();
     const milliseconds = 500;
     _timer = Timer.periodic(
@@ -124,12 +124,15 @@ class TestPerQuestionExploreCubit extends Cubit<PerQuestionExploreState> {
           onTimeEnd();
           return;
         }
-        // did answer
+        // did answer current question
         if (questions[currentQuestion].$2 != null) {
           return;
         }
-        // did finish
+        // did finish - automatically proceed to results
         if (questions[questions.length - 1].$2 != null) {
+          stopTimer = true;
+          cancelTimer();
+          finish();
           return;
         }
         time = Duration(milliseconds: time.inMilliseconds - milliseconds);

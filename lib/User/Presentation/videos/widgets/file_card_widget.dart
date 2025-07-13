@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Core/functions/coders/decode.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
@@ -46,7 +47,7 @@ class FileCardWidget extends StatelessWidget {
                 _FileThumbnail(),
                 const SizedBox(width: SizesResources.s3),
                 Expanded(
-                  child: _FileInfo(fileNumber: fileNumber),
+                  child: _FileInfo(fileNumber: fileNumber, fileUrl: fileUrl),
                 ),
                 _OpenButton(),
               ],
@@ -101,9 +102,10 @@ class _FileThumbnail extends StatelessWidget {
 }
 
 class _FileInfo extends StatelessWidget {
-  const _FileInfo({super.key, required this.fileNumber});
+  const _FileInfo({super.key, required this.fileNumber, required this.fileUrl});
 
   final int fileNumber;
+  final String fileUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +113,7 @@ class _FileInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "مستند رقم $fileNumber",
+          decodeFileName(fileUrl.split("/").last.split(".").first),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
