@@ -92,6 +92,10 @@ class UsersRemoteDataSourceImpl implements UsersRemoteDataSource {
 
   addUpdateData() async {
     //
+    if (!locator.isRegistered<UpdateInfo>()) {
+      return;
+    }
+    //
     Map data = client.auth.currentUser?.userMetadata ?? {};
     //
     data["version"] = locator<UpdateInfo>().appVersion;

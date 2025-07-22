@@ -8,6 +8,7 @@ import 'package:moatmat_app/User/Core/widgets/view/pick_category_v.dart.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Presentation/home/view/material_picker_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/get_test_c/get_test_cubit.dart';
+import 'package:moatmat_app/User/Presentation/tests/view/downloading/download_test_view.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/exploring/explore_no_time_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/exploring/full_time_explore_v.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/exploring/per_question_explore_v.dart';
@@ -146,6 +147,13 @@ class _TestsViewManagerState extends State<TestsViewManager> {
                     builder: (context) => CheckIfTestDone(
                       test: b.$1,
                     ),
+                  ),
+                );
+              },
+              onDownload: (testId) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DownloadTestView(testId: testId),
                   ),
                 );
               },

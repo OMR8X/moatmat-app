@@ -218,7 +218,7 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
         }
         wrongAnswers[q.$1.id - 1] = null;
         wrong.add((q.$1, correctIndex));
-      }
+      }     
     }
     //
     for (var d in didNotAnswer) {

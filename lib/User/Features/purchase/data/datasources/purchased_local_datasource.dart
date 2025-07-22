@@ -19,8 +19,8 @@ class PurchasedLocalDatasourceImplement implements PurchasedLocalDatasource {
   Future<List<PurchaseItem>> getUserPurchased() async {
     //
     final valid = await cacheManager.isValid(
-      CacheConstant.purchasedItemsCreateKey,
-      CacheConstant.purchasedItemsDataKey,
+      createdKey: CacheConstant.purchasedItemsCreateKey,
+      dataKey: CacheConstant.purchasedItemsDataKey,
     );
 
     if (!valid) {

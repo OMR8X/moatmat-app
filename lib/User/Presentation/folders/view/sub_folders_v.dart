@@ -7,6 +7,7 @@ import 'package:moatmat_app/User/Presentation/banks/views/banks/setting_up_banke
 import 'package:moatmat_app/User/Presentation/tests/view/tests/tests_view_manager.dart';
 
 import '../../../Core/functions/show_alert.dart';
+import '../../../Core/injection/app_inj.dart';
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/fonts_r.dart';
 import '../../../Core/widgets/view/pick_folder_v.dart';
@@ -14,6 +15,8 @@ import '../../../Features/banks/domain/entites/bank.dart';
 import '../../../Features/tests/domain/entities/test.dart';
 import '../../banks/state/get_bank_c/get_bank_cubit.dart';
 import '../../banks/views/bank_tile_w.dart';
+import '../../tests/state/download_test/download_test_bloc.dart';
+import '../../tests/view/downloading/download_test_view.dart';
 import '../../tests/view/tests/check_if_test_done_v.dart';
 import '../../tests/view/tests/pick_test_v.dart';
 import '../../tests/widgets/test_tile_w.dart';
@@ -62,11 +65,11 @@ class SubFoldersView extends StatelessWidget {
       body: (getItemLength() <= 0)
           ? const EmptyListTextWidget()
           : ListView.builder(
-            itemCount: getItemLength(),
-            itemBuilder: (context, index) {
-              return getWidgetByIndex(context, index);
-            },
-          ),
+              itemCount: getItemLength(),
+              itemBuilder: (context, index) {
+                return getWidgetByIndex(context, index);
+              },
+            ),
     );
   }
 
@@ -105,6 +108,17 @@ class SubFoldersView extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => CheckIfTestDone(
                         test: tests[index - fLength],
+                      ),
+                    ),
+                  );
+                },
+                onDownload: (testId) {
+                  // wrap with bloc provider
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (context) => locator<DownloadTestBloc>(),
+                        child: DownloadTestView(testId: testId),
                       ),
                     ),
                   );

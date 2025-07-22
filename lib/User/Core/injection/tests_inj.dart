@@ -6,6 +6,10 @@ import 'package:moatmat_app/User/Features/tests/domain/repository/t_repository.d
 import 'package:moatmat_app/User/Features/tests/domain/usecases/can_do_test_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_outer_test_by_id_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/cache_test_uc.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/get_cached_tests_uc.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/clear_cached_tests_uc.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/delete_cached_test_uc.dart';
 
 import '../../Features/tests/data/repository/t_repository.dart';
 import '../../Features/tests/domain/usecases/get_material_test_classes_uc.dart';
@@ -65,6 +69,26 @@ void injectUC() {
       repository: locator(),
     ),
   );
+  locator.registerFactory<CacheTestUC>(
+    () => CacheTestUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetCachedTestsUC>(
+    () => GetCachedTestsUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<ClearCachedTestsUC>(
+    () => ClearCachedTestsUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<DeleteCachedTestUC>(
+    () => DeleteCachedTestUC(
+      repository: locator(),
+    ),
+  );
 }
 
 void injectRepo() {
@@ -77,6 +101,10 @@ void injectRepo() {
 
 void injectDS() {
   locator.registerFactory<TestsDataSource>(
-    () => TestsDataSourceImpl(client: locator()),
+    () => TestsDataSourceImpl(
+      client: locator(),
+      cacheManager: locator(),
+      localAssetDataSource: locator(),
+    ),
   );
 }

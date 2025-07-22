@@ -179,6 +179,7 @@ class _LikesViewState extends State<LikesView> {
                                         repeatable: null,
                                         visible: null,
                                         scrollable: null,
+                                        downloadable: null,
                                       ),
                                     ),
                                   ),

@@ -10,11 +10,12 @@ import 'cache_client.dart';
 /// callable class
 class CacheManager {
   late CacheClient _cacheClient;
+  CacheManager({CacheClient? cacheClient}) {
+    _cacheClient = cacheClient ?? HiveClient();
+  }
 
   /// initiate cache clients
   Future<void> init() async {
-    //
-    _cacheClient = HiveClient();
     //
     await _cacheClient.init(await getApplicationDocumentsDirectory());
     //
@@ -46,11 +47,11 @@ class CacheManager {
   }
 
   /// check if cache is valid and exists
-  Future<bool> isValid(String createdKey, String dataKey) async {
-    //
-    if (kDebugMode) {
-      return false;
-    }
+  Future<bool> isValid({
+    required String createdKey,
+    required String dataKey,
+    Duration? duration,
+  }) async {
     //
     bool createdDateExisted = _cacheClient.exist(createdKey);
     bool dataExisted = _cacheClient.exist(dataKey);
@@ -62,7 +63,7 @@ class CacheManager {
     DateTime now = DateTime.now();
     DateTime then = DateTime.parse(await _cacheClient.read(createdKey));
     //
-    if (now.difference(then).inSeconds > CacheConstant.cacheValidSeconds) {
+    if (now.difference(then).inSeconds > (duration?.inSeconds ?? CacheConstant.cacheValidSeconds)) {
       debugPrint("not valid");
       return false;
     }

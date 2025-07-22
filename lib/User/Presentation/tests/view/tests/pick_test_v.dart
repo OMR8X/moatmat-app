@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
@@ -22,10 +20,12 @@ class PickTestView extends StatefulWidget {
     required this.onPick,
     required this.onPop,
     required this.title,
+    required this.onDownload,
   });
   final List<(Test, int)> tests;
   final String title;
   final Function((Test, int)) onPick;
+  final Function(int) onDownload;
   final VoidCallback onPop;
 
   @override
@@ -59,9 +59,9 @@ class _PickTestViewState extends State<PickTestView> {
           }
         },
         child: Scaffold(
-          backgroundColor: ColorsResources.primary,
+          backgroundColor: ColorsResources.darkPrimary,
           appBar: AppBar(
-            backgroundColor: ColorsResources.primary,
+            backgroundColor: ColorsResources.darkPrimary,
             foregroundColor: ColorsResources.whiteText1,
             title: Text(
               widget.title,
@@ -151,6 +151,9 @@ class _PickTestViewState extends State<PickTestView> {
                                 onPick: () {
                                   widget.onPick(widget.tests[index]);
                                 },
+                                onDownload: (testId) {
+                                  widget.onDownload(testId);
+                                },
                               ),
                             );
                           },
@@ -232,7 +235,7 @@ class _EnterTestPasswordWidgetState extends State<EnterTestPasswordWidget> {
             const SizedBox(height: SizesResources.s4),
             FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: ColorsResources.primary,
+                backgroundColor: ColorsResources.darkPrimary,
               ),
               onPressed: () {
                 if (formKey.currentState?.validate() ?? false) {
@@ -270,7 +273,7 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
       title: const Text(
         "عملية شراء",
         style: TextStyle(
-          color: ColorsResources.primary,
+          color: ColorsResources.darkPrimary,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -375,9 +378,10 @@ class _BuyTestsWidgetState extends State<BuyTestsWidget> {
 }
 
 class BuyTestWidget extends StatefulWidget {
-  const BuyTestWidget({super.key, required this.test, this.onPick});
+  const BuyTestWidget({super.key, required this.test, this.onPick, this.onDownload});
   final Test test;
   final VoidCallback? onPick;
+  final Function(int)? onDownload;
   @override
   State<BuyTestWidget> createState() => _BuyTestWidgetState();
 }
@@ -439,97 +443,89 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
             const SizedBox(height: SizesResources.s3),
 
             ///
-            Text(
-              "المدة : ${getPeriodText()}",
-              style: const TextStyle(
-                color: ColorsResources.blackText1,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: ColorsResources.primary.withAlpha(20),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.access_time_filled,
+                    size: 18,
+                    color: ColorsResources.darkPrimary,
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      "المدة : ${getPeriodText()}",
+                      style: const TextStyle(
+                        color: ColorsResources.blackText1,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
 
             ///
-            const SizedBox(height: SizesResources.s1),
+            const SizedBox(height: SizesResources.s2),
 
             ///
-            Text(
-              parsOptionAvailabilityText("تصفح الأسئلة بعد الاختبار", widget.test.properties.exploreAnswers == true),
-              style: const TextStyle(
-                color: ColorsResources.blackText1,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: ColorsResources.primary.withAlpha(20),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ),
-
-            ///
-            const SizedBox(height: SizesResources.s1),
-
-            ///
-            Text(
-              parsOptionAvailabilityText("عرض الإجابات الصحيحة", widget.test.properties.showAnswers == true),
-              style: const TextStyle(
-                color: ColorsResources.blackText1,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-            ),
-
-            ///
-            const SizedBox(height: SizesResources.s1),
-
-            ///
-            Text(
-              parsOptionAbalebliltyText("قابل للاعادة", widget.test.properties.repeatable == true),
-              style: const TextStyle(
-                color: ColorsResources.blackText1,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-            ),
-
-            ///
-            const SizedBox(height: SizesResources.s1),
-
-            ///
-            Text(
-              parsOptionExcitabilityText("يوجد اختبار شرطي", widget.test.information.previous != null),
-              style: const TextStyle(
-                color: ColorsResources.blackText1,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-            ),
-
-            ///
-            const SizedBox(height: SizesResources.s1),
-
-            ///
-            Text(
-              "مقاطع فيديو : ${widget.test.information.videos?.length ?? 0}",
-              style: const TextStyle(
-                color: ColorsResources.blackText1,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-            ),
-
-            ///
-            Text(
-              "ملفات : ${widget.test.information.files?.length ?? 0}",
-              style: const TextStyle(
-                color: ColorsResources.blackText1,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-            ),
-
-            ///
-            Text(
-              "صور : ${widget.test.information.images?.length ?? 0}",
-              style: const TextStyle(
-                color: ColorsResources.blackText1,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
+              child: Column(
+                children: [
+                  _buildOptionRow(
+                    icon: widget.test.properties.exploreAnswers == true ? Icons.visibility : Icons.visibility_off,
+                    color: widget.test.properties.exploreAnswers == true ? ColorsResources.darkPrimary : ColorsResources.borders,
+                    text: parsOptionAvailabilityText("تصفح الأسئلة بعد الاختبار", widget.test.properties.exploreAnswers == true),
+                    isEnabled: widget.test.properties.exploreAnswers == true,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildOptionRow(
+                    icon: widget.test.properties.showAnswers == true ? Icons.quiz : Icons.quiz_outlined,
+                    color: widget.test.properties.showAnswers == true ? ColorsResources.darkPrimary : ColorsResources.borders,
+                    text: parsOptionAvailabilityText("عرض الإجابات الصحيحة", widget.test.properties.showAnswers == true),
+                    isEnabled: widget.test.properties.showAnswers == true,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildOptionRow(
+                    icon: widget.test.properties.repeatable == true ? Icons.refresh : Icons.block,
+                    color: widget.test.properties.repeatable == true ? ColorsResources.darkPrimary : ColorsResources.borders,
+                    text: parsOptionAbalebliltyText("قابل للاعادة", widget.test.properties.repeatable == true),
+                    isEnabled: widget.test.properties.repeatable == true,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildOptionRow(
+                    icon: widget.test.information.previous != null ? Icons.link : Icons.link_off,
+                    color: widget.test.information.previous != null ? ColorsResources.darkPrimary : ColorsResources.borders,
+                    text: parsOptionExcitabilityText("يوجد اختبار شرطي", widget.test.information.previous != null),
+                    isEnabled: widget.test.information.previous != null,
+                  ),
+                ],
               ),
             ),
 
@@ -537,82 +533,263 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
             const SizedBox(height: SizesResources.s3),
 
             ///
+            if (_hasAnyMedia())
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: ColorsResources.darkPrimary.withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    if (_hasVideos())
+                      _buildOptionRow(
+                        icon: Icons.video_library,
+                        color: ColorsResources.blueText,
+                        text: "مقاطع فيديو : ${widget.test.information.videos?.length ?? 0}",
+                        isEnabled: true,
+                      ),
+                    if (_hasVideos() && (_hasFiles() || _hasImages())) const SizedBox(height: SizesResources.s1),
+                    if (_hasFiles())
+                      _buildOptionRow(
+                        icon: Icons.attach_file,
+                        color: ColorsResources.orangeText,
+                        text: "ملفات : ${widget.test.information.files?.length ?? 0}",
+                        isEnabled: true,
+                      ),
+                    if (_hasFiles() && _hasImages()) const SizedBox(height: SizesResources.s1),
+                    if (_hasImages())
+                      _buildOptionRow(
+                        icon: Icons.image,
+                        color: ColorsResources.greenText,
+                        text: "صور : ${widget.test.information.images?.length ?? 0}",
+                        isEnabled: true,
+                      ),
+                  ],
+                ),
+              ),
+
+            ///
+            const SizedBox(height: SizesResources.s3),
+
+            ///
             if ((widget.onPick != null))
-              Row(
+              Column(
                 children: [
-                  FilledButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      widget.onPick!();
-                    },
-                    child: const Text(
-                      "فتح",
-                      style: TextStyle(fontWeight: FontWeight.bold, color: ColorsResources.whiteText1),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: ColorsResources.primary,
+                        foregroundColor: ColorsResources.whiteText1,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        widget.onPick!();
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.play_arrow_rounded,
+                            size: 18,
+                            color: ColorsResources.whiteText1,
+                          ),
+                          const SizedBox(width: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: const Text(
+                              "فتح الاختبار",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 18),
+                        ],
+                      ),
                     ),
                   ),
+                  if (_hasAnyMedia()) ...[
+                    const SizedBox(height: SizesResources.s1),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: ColorsResources.primary,
+                          backgroundColor: ColorsResources.primary.withAlpha(10),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: BorderSide(
+                            color: ColorsResources.primary.withAlpha(60),
+                            width: 1,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          widget.onDownload?.call(widget.test.id);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.download_rounded,
+                              size: 18,
+                              color: ColorsResources.primary.withAlpha(200),
+                            ),
+                            const SizedBox(width: 8),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text(
+                                "تنزيل الاختبار",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                  color: ColorsResources.primary.withAlpha(200),
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 18),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ]
                 ],
               )
 
             ///
             else
-              Row(
+              Column(
                 children: [
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: ColorsResources.red,
-                    ),
-                    onPressed: loading
-                        ? null
-                        : () {
-                            Navigator.of(context).pop();
-                          },
-                    child: const Text(
-                      "إلغاء",
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: ColorsResources.primary,
+                        foregroundColor: ColorsResources.whiteText1,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: loading
+                          ? null
+                          : () async {
+                              setState(() {
+                                loading = true;
+                              });
+
+                              //
+                              await locator<PurchaseListOfItemUC>().call(items: [widget.test.toPurchaseItem()]).then((value) {
+                                value.fold(
+                                  (l) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(l.text),
+                                      ),
+                                    );
+                                    Navigator.of(context).pop();
+                                  },
+                                  (r) async {
+                                    //
+                                    await context.read<AuthCubit>().refresh();
+                                    //
+                                    Navigator.of(context).pop();
+                                    //
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text("تمت عملية الشراء بنجاح"),
+                                      ),
+                                    );
+                                  },
+                                );
+                              });
+                            },
+                      child: loading
+                          ? const CupertinoActivityIndicator(color: ColorsResources.whiteText1)
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.shopping_cart_rounded,
+                                  size: 18,
+                                  color: ColorsResources.whiteText1,
+                                ),
+                                const SizedBox(width: 8),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    "شراء الاختبار - ${widget.test.information.price ?? 0} نقطة",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                     ),
                   ),
-                  const SizedBox(width: SizesResources.s2),
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: ColorsResources.green,
-                    ),
-                    onPressed: loading
-                        ? null
-                        : () async {
-                            setState(() {
-                              loading = true;
-                            });
-
-                            //
-                            await locator<PurchaseListOfItemUC>().call(items: [widget.test.toPurchaseItem()]).then((value) {
-                              value.fold(
-                                (l) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(l.text),
-                                    ),
-                                  );
-                                  Navigator.of(context).pop();
-                                },
-                                (r) async {
-                                  //
-                                  await context.read<AuthCubit>().refresh();
-                                  //
-                                  Navigator.of(context).pop();
-                                  //
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("تمت عملية الشراء بنجاح"),
-                                    ),
-                                  );
-                                },
-                              );
-                            });
-                          },
-                    child: loading
-                        ? const CupertinoActivityIndicator()
-                        : const Text(
-                            "شراء",
+                  const SizedBox(height: SizesResources.s2),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: ColorsResources.primary,
+                        backgroundColor: ColorsResources.primary.withOpacity(0.04),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: BorderSide(
+                          color: ColorsResources.primary.withOpacity(0.6),
+                          width: 1,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: loading
+                          ? null
+                          : () {
+                              Navigator.of(context).pop();
+                            },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.close_rounded,
+                            size: 18,
+                            color: ColorsResources.blackText2,
                           ),
+                          const SizedBox(width: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: const Text(
+                              "إلغاء",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -642,5 +819,63 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
   String parsOptionExcitabilityText(String text, bool allowed) {
     String result = allowed ? "" : "لا ";
     return result + text;
+  }
+
+  Widget _buildOptionRow({
+    required IconData icon,
+    required Color color,
+    required String text,
+    required bool isEnabled,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(
+            icon,
+            size: 16,
+            color: color,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              text,
+              style: TextStyle(
+                color: isEnabled ? ColorsResources.blackText1 : ColorsResources.blackText2,
+                fontWeight: isEnabled ? FontWeight.w500 : FontWeight.w400,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  bool _isDownloadable() {
+    return widget.test.properties.downloadable == true;
+  }
+
+  bool _hasVideos() {
+    return widget.test.information.videos != null && widget.test.information.videos!.isNotEmpty;
+  }
+
+  bool _hasFiles() {
+    return widget.test.information.files != null && widget.test.information.files!.isNotEmpty;
+  }
+
+  bool _hasImages() {
+    return widget.test.information.images != null && widget.test.information.images!.isNotEmpty;
+  }
+
+  bool _hasAnyMedia() {
+    return (_hasVideos() || _hasFiles() || _hasImages()) && _isDownloadable();
   }
 }

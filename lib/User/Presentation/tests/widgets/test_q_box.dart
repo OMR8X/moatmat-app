@@ -17,7 +17,8 @@ import '../../../Features/auth/domain/entites/user_data.dart';
 import '../../../Features/tests/domain/entities/question.dart';
 
 class TestQuestionBox extends StatefulWidget {
-  const TestQuestionBox({
+  const 
+  TestQuestionBox({
     super.key,
     required this.question,
     this.didAnswer = false,
@@ -187,7 +188,7 @@ class TopItems extends StatelessWidget {
 
 class ExploreImage extends StatelessWidget {
   const ExploreImage({super.key, required this.image});
-  final String image;
+  final Image image;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,9 +206,7 @@ class ExploreImage extends StatelessWidget {
             boundaryMargin: const EdgeInsets.all(100),
             minScale: 0.5,
             maxScale: 2,
-            child: Image.network(
-              image,
-            ),
+            child: image,
           ),
         ),
       ),

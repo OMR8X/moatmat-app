@@ -37,4 +37,15 @@ class WrongPasswordException implements Exception {}
 class CrossMaxSizeException implements Exception {}
 
 class CacheException implements Exception {}
+class InvalidCacheException implements Exception {}
+
 class MissingUserDataException implements Exception {}
+
+// Asset caching specific exceptions
+class AssetCacheException implements Exception {}
+
+class AssetDownloadException implements Exception {}
+
+class AssetFileCorruptedException implements Exception {}
+
+class AssetInvalidUrlException implements Exception {}

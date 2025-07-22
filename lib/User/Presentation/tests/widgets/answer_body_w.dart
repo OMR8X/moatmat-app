@@ -1,8 +1,14 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Features/buckets/domain/requests/retrieve_asset_request.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../Core/injection/app_inj.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
 import '../../../Core/widgets/math/question_body_w.dart';
+import '../../../Features/buckets/domain/usecases/retrieve_asset_uc.dart';
 import '../../../Features/tests/domain/entities/answer.dart';
 import 'test_q_box.dart';
 
@@ -66,7 +72,7 @@ class AnswerImageBuilderWidget extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ExploreImage(image: image),
+              builder: (context) => ExploreImage(image: Image.network(image)),
             ),
           );
         },
@@ -88,6 +94,35 @@ class AnswerImageBuilderWidget extends StatelessWidget {
                 ),
               );
             },
+            errorBuilder: (context, url, error) {
+              return FutureBuilder(
+                future: locator<RetrieveAssetUC>().call(
+                  request: RetrieveAssetRequest.fromSupabaseLink(image),
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      return snapshot.data!.fold(
+                        (failure) {
+                          return const SizedBox(
+                            child: Icon(Icons.error),
+                          );
+                        },
+                        (asset) => Image.file(
+                          asset,
+                          width: SpacingResources.mainWidth(context) - 50,
+                        ),
+                      );
+                    } else {
+                      return const SizedBox(
+                        child: Icon(Icons.error),
+                      );
+                    }
+                  }
+                  return CupertinoActivityIndicator();
+                },
+              );
+            },
             width: SpacingResources.mainWidth(context) - 120,
           ),
         ),
@@ -97,7 +132,7 @@ class AnswerImageBuilderWidget extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ExploreImage(image: image),
+              builder: (context) => ExploreImage(image: Image.asset(image)),
             ),
           );
         },

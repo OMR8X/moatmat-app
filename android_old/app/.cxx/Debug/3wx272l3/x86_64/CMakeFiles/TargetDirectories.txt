@@ -1,2 +1,0 @@
-/Users/omr8x/Projects/flutter/work/moatmat-project/moatmat_app/android/app/.cxx/Debug/3wx272l3/x86_64/CMakeFiles/edit_cache.dir
-/Users/omr8x/Projects/flutter/work/moatmat-project/moatmat_app/android/app/.cxx/Debug/3wx272l3/x86_64/CMakeFiles/rebuild_cache.dir

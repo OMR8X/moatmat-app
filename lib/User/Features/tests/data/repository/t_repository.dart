@@ -62,8 +62,16 @@ class TestsRepositoryImpl implements TestsRepository {
   }
 
   @override
-  Future<Either<Failure, Test>> getTestById({required int id}) async {
+  Future<Either<Failure, Test>> getTestById({required int id, bool isOffline = false}) async {
     try {
+      if (isOffline) {
+        // Try to get from cache first
+        final cachedTests = await dataSource.getCachedTests();
+        final cachedTest = cachedTests.where((test) => test.id == id).firstOrNull;
+        if (cachedTest != null) {
+          return right(cachedTest);
+        }
+      }
       var res = await dataSource.getTestById(id: id);
       return right(res);
     } on Exception catch (e) {
@@ -94,10 +102,10 @@ class TestsRepositoryImpl implements TestsRepository {
   @override
   Future<Either<Failure, List<(String, int)>>> getSchoolTestClasses({
     required String schoolId,
-    required String material ,
+    required String material,
   }) async {
     try {
-      var res = await dataSource.getSchoolTestClasses(schoolId: schoolId,material:material);
+      var res = await dataSource.getSchoolTestClasses(schoolId: schoolId, material: material);
       return right(res);
     } on Exception catch (e) {
       return left(const AnonFailure());
@@ -118,6 +126,61 @@ class TestsRepositoryImpl implements TestsRepository {
       );
       return right(res);
     } on Exception catch (e) {
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> cacheTest({required Test test}) async {
+    try {
+      var res = await dataSource.cacheTest(test: test);
+      return right(res);
+    } on CacheException catch (e) {
+      debugPrint("Cache test exception: $e");
+      return left(const CacheFailure());
+    } on Exception catch (e) {
+      debugPrint("Cache test exception: $e");
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Test>>> getCachedTests() async {
+    try {
+      var res = await dataSource.getCachedTests();
+      return right(res);
+    } on InvalidCacheException {
+      return left(const InvalidCacheFailure());
+    } on CacheException {
+      return left(const CacheFailure());
+    } on Exception catch (e) {
+      debugPrint("Get cached tests exception: $e");
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> clearCachedTests() async {
+    try {
+      var res = await dataSource.clearCachedTests();
+      return right(res);
+    } on CacheException {
+      return left(const CacheFailure());
+    } on Exception catch (e) {
+      debugPrint("Clear cached tests exception: $e");
+      return left(const AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteCachedTest({required int testId}) async {
+    try {
+      var res = await dataSource.deleteCachedTest(testId: testId);
+      return right(res);
+    } on CacheException {
+      return left(const CacheFailure());
+    } on Exception catch (e) {
+      debugPrint("Delete cached test exception: $e");
       return left(const AnonFailure());
     }
   }

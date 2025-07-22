@@ -1,15 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:moatmat_app/User/Features/auth/data/models/teacher_data_m.dart';
-import 'package:moatmat_app/User/Features/tests/data/models/test_m.dart';
+import 'package:moatmat_app/User/Features/tests/data/models/test_model.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/mini_test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../Core/errors/exceptions.dart';
 import '../../../../Core/injection/app_inj.dart';
+import '../../../../Core/services/cache/cache_manager.dart';
+import '../../../../Core/services/cache/cache_constant.dart';
 import '../../../auth/domain/entites/teacher_data.dart';
 import '../../../auth/domain/entites/user_data.dart';
+import '../../../buckets/data/datasources/local_asset_data_source.dart';
 import '../../domain/entities/outer_test.dart';
 import '../models/outer_test_model.dart';
+import 'package:dartz/dartz.dart';
 
 abstract class TestsDataSource {
   // material teachers
@@ -49,12 +53,24 @@ abstract class TestsDataSource {
   });
   //
   Future<bool> canDoTest({required MiniTest test});
+  //
+  // Cache methods
+  Future<Unit> cacheTest({required Test test});
+  Future<List<Test>> getCachedTests();
+  Future<Unit> clearCachedTests();
+  Future<Unit> deleteCachedTest({required int testId});
 }
 
 class TestsDataSourceImpl implements TestsDataSource {
   final SupabaseClient client;
+  final CacheManager cacheManager;
+  final LocalAssetDataSource localAssetDataSource;
 
-  TestsDataSourceImpl({required this.client});
+  TestsDataSourceImpl({
+    required this.client,
+    required this.cacheManager,
+    required this.localAssetDataSource,
+  });
   @override
   Future<List<(String, int)>> getSchoolTestClasses({
     required String schoolId,
@@ -104,8 +120,7 @@ class TestsDataSourceImpl implements TestsDataSource {
     //
     List<TeacherData> teachers = [];
     //
-    var query1 = client.from("tests")
-    .select("teacher_email").eq("information->>material", material).eq("information->>classs", clas).or(
+    var query1 = client.from("tests").select("teacher_email").eq("information->>material", material).eq("information->>classs", clas).or(
           "properties->>visible.eq.true,properties->>visible.is.null",
         );
 
@@ -155,8 +170,7 @@ class TestsDataSourceImpl implements TestsDataSource {
   @override
   Future<Test> getTestById({required int id}) async {
     List<Test> tests = [];
-    var res = await client.from("tests")
-    .select().eq("id", id);
+    var res = await client.from("tests").select().eq("id", id);
     tests = res.map<Test>((e) => TestModel.fromJson(e)).toList();
     if (tests.isEmpty) throw Exception();
     return (tests.first);
@@ -174,11 +188,9 @@ class TestsDataSourceImpl implements TestsDataSource {
     List<Map<String, dynamic>> res = [];
     //
     if (showHidden) {
-      res = await client.from("tests")
-      .select().inFilter("id", ids);
+      res = await client.from("tests").select().inFilter("id", ids);
     } else {
-      res = await client.from("tests")
-      .select().inFilter("id", ids).eq("properties->>visible", "true");
+      res = await client.from("tests").select().inFilter("id", ids).eq("properties->>visible", "true");
     }
     //
     if (res.isNotEmpty) {
@@ -243,6 +255,118 @@ class TestsDataSourceImpl implements TestsDataSource {
     teachers = res2.map((e) => TeacherDataModel.fromJson(e)).toList();
 
     return listTeacherToListWithCount(teachers, teachersEmails);
+  }
+
+  @override
+  Future<Unit> cacheTest({required Test test}) async {
+    try {
+      // Get existing cached tests
+      List<Map<dynamic, dynamic>> cachedTestsJson = [];
+      if (cacheManager().exist(CacheConstant.cachedTestsDataKey)) {
+        final existing = await cacheManager().read(CacheConstant.cachedTestsDataKey);
+        cachedTestsJson = List<Map<dynamic, dynamic>>.from(existing ?? []);
+      }
+
+      // Check if test is already cached (prevent duplicates)
+      final existingIndex = cachedTestsJson.indexWhere((cached) => cached['id'] == test.id);
+
+      // Convert test to JSON
+      final testJson = TestModel.fromClass(test).toJson();
+      testJson['id'] = test.id; // Ensure ID is included
+
+      if (existingIndex != -1) {
+        // Update existing cached test
+        cachedTestsJson[existingIndex] = testJson;
+      } else {
+        // Add new cached test
+        cachedTestsJson.add(testJson);
+      }
+
+      // Save to cache
+      await cacheManager().write(CacheConstant.cachedTestsDataKey, cachedTestsJson);
+      await cacheManager().write(CacheConstant.cachedTestsCreateKey, DateTime.now().toString());
+
+      return unit;
+    } catch (e) {
+      debugPrint("Cache test exception: $e");
+      throw CacheException();
+    }
+  }
+
+  @override
+  Future<List<Test>> getCachedTests() async {
+    try {
+      // Check if cache is valid
+      final isValid = await cacheManager.isValid(
+        createdKey: CacheConstant.cachedTestsCreateKey,
+        dataKey: CacheConstant.cachedTestsDataKey,
+        duration: const Duration(days: 15),
+      );
+
+      if (!isValid) {
+        throw InvalidCacheException();
+      }
+
+      // Read cached tests
+      final cachedData = await cacheManager().read(CacheConstant.cachedTestsDataKey);
+      if (cachedData == null) {
+        return [];
+      }
+
+      // Convert JSON to Test objects
+      final cachedTestsJson = List<Map<dynamic, dynamic>>.from(cachedData);
+      return cachedTestsJson.map((testJson) => TestModel.fromJson(testJson)).toList();
+    } on InvalidCacheException catch (e) {
+      throw InvalidCacheException();
+    } catch (e) {
+      debugPrint("Get cached tests exception: $e");
+      throw CacheException();
+    }
+  }
+
+  @override
+  Future<Unit> clearCachedTests() async {
+    try {
+      // Remove cached tests data and create keys
+      await cacheManager().remove(CacheConstant.cachedTestsDataKey);
+      await cacheManager().remove(CacheConstant.cachedTestsCreateKey);
+
+      return unit;
+    } catch (e) {
+      throw CacheException();
+    }
+  }
+
+  @override
+  Future<Unit> deleteCachedTest({required int testId}) async {
+    try {
+      // Get existing cached tests
+      List<Map<dynamic, dynamic>> cachedTestsJson = [];
+      if (cacheManager().exist(CacheConstant.cachedTestsDataKey)) {
+        final existing = await cacheManager().read(CacheConstant.cachedTestsDataKey);
+        cachedTestsJson = List<Map<dynamic, dynamic>>.from(existing ?? []);
+      }
+
+      // Remove the test with the specified ID
+      cachedTestsJson.removeWhere((test) => test['id'] == testId);
+
+      // Save the updated list back to cache
+      await cacheManager().write(CacheConstant.cachedTestsDataKey, cachedTestsJson);
+
+      // Delete all assets associated with this test ID
+      try {
+        await localAssetDataSource.deleteAssetsByID(repositoryId: testId.toString());
+        debugPrint("Successfully deleted assets for test ID: $testId");
+      } catch (e) {
+        debugPrint("Warning: Failed to delete assets for test ID $testId: $e");
+        // Continue execution even if asset deletion fails
+      }
+
+      return unit;
+    } catch (e) {
+      debugPrint("Delete cached test exception: $e");
+      throw CacheException();
+    }
   }
 }
 

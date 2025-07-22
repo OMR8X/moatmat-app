@@ -62,6 +62,10 @@ class Test {
 
   bool isPurchased() {
     //
+    if (!locator.isRegistered<List<PurchaseItem>>()) {
+      return false;
+    }
+    //
     bool purchased = false;
     //
     var items = locator<List<PurchaseItem>>().toSet().toList();

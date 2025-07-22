@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/teacher_data.dart';
 import 'package:moatmat_app/User/Features/school/domain/entities/school.dart';
-import 'package:moatmat_app/User/Features/school/domain/usecases/get_school_uc.dart';
+import 'package:moatmat_app/User/Features/school/domain/usecases/get_schools_usecase.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_school_test_classes_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_school_tests_teacher_uc.dart';
 

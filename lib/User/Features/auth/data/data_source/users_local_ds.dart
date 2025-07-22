@@ -26,8 +26,8 @@ class UserLocalDataSourceImplement implements UserLocalDataSource {
   }) async {
     //
     final valid = await cacheManager.isValid(
-      CacheConstant.userCreateKey(uuid),
-      CacheConstant.userDataKey(uuid),
+      createdKey: CacheConstant.userCreateKey(uuid),
+      dataKey: CacheConstant.userDataKey(uuid),
     );
     if (!valid && !force) {
       throw CacheException();

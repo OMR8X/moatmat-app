@@ -67,7 +67,7 @@ class AnswerImageBuilderWidget extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ExploreImage(image: image),
+              builder: (context) => ExploreImage(image: Image.network(image)),
             ),
           );
         },
@@ -94,7 +94,7 @@ class AnswerImageBuilderWidget extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ExploreImage(image: image),
+              builder: (context) => ExploreImage(image: Image.asset(image)),
             ),
           );
         },

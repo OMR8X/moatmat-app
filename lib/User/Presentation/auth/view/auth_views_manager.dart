@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/enter_user_data_view.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/error_v.dart';
-import 'package:moatmat_app/User/Presentation/auth/view/offline_view.dart';
+import 'package:moatmat_app/User/Presentation/offline/views/offline_view.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/signed_out_v.dart';
 import 'package:moatmat_app/User/Presentation/auth/view/update_view.dart';
 

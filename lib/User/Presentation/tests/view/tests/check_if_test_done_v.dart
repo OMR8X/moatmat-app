@@ -13,7 +13,8 @@ import '../exploring/full_time_explore_v.dart';
 import '../exploring/per_question_explore_v.dart';
 
 class CheckIfTestDone extends StatefulWidget {
-  const CheckIfTestDone({super.key, required this.test});
+  const CheckIfTestDone({super.key, required this.test, this.isOffline = false});
+  final bool isOffline;
   final Test test;
   @override
   State<CheckIfTestDone> createState() => _CheckIfTestDoneState();
@@ -23,6 +24,10 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (widget.isOffline) {
+        onOpen();
+        return;
+      }
       if (widget.test.information.previous != null) {
         locator<CanDoTestUC>().call(test: widget.test.information.previous!).then((v) {
           v.fold(
@@ -64,8 +69,6 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
 
   Future checking() async {
     //
-
-    //
     if (widget.test.properties.repeatable ?? false) {
       onOpen();
       return;
@@ -99,6 +102,7 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
         MaterialPageRoute(
           builder: (context) => TestAssetsView(
             test: widget.test,
+            isOffline: widget.isOffline,
           ),
         ),
       );

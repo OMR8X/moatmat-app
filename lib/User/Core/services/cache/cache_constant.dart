@@ -11,4 +11,7 @@ class CacheConstant {
   //
   static String get purchasedItemsCreateKey => 'purchased_items_create_key';
   static String get purchasedItemsDataKey => 'purchased_items_data_key';
+  // cached tests
+  static String get cachedTestsCreateKey => 'cached_tests_create_key';
+  static String get cachedTestsDataKey => 'cached_tests_data_key';
 }

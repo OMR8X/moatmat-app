@@ -61,11 +61,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
       return;
     }
-    //
-    // if (kDebugMode) {
-    //   emit(const AuthOfflineMode());
-    //   return;
-    // }
+
     //
     final res = await locator<CheckUpdateStateUC>().call();
     //
@@ -80,8 +76,7 @@ class AuthCubit extends Cubit<AuthState> {
       },
       (r) {
         injectUpdateInfo(r);
-        if (r.appVersion < r.currentVersion ||
-            r.appVersion < r.minimumVersion) {
+        if (r.appVersion < r.currentVersion || r.appVersion < r.minimumVersion) {
           emit(AuthUpdate(updateInfo: r));
         } else {
           //
@@ -112,8 +107,7 @@ class AuthCubit extends Cubit<AuthState> {
           debugPrint(l.toString());
         },
         (userData) async {
-          if (userData.deviceId == DeviceService().deviceId ||
-              userData.deviceId.isEmpty) {
+          if (userData.deviceId == DeviceService().deviceId || userData.deviceId.isEmpty) {
             injectUserData(userData);
           } else {
             if (timer != null && (timer?.isActive ?? false)) {
@@ -151,8 +145,7 @@ class AuthCubit extends Cubit<AuthState> {
           }
         },
         (userData) async {
-          if (userData.deviceId == DeviceService().deviceId ||
-              userData.deviceId.isEmpty) {
+          if (userData.deviceId == DeviceService().deviceId || userData.deviceId.isEmpty) {
             injectUserData(userData);
             var res = await locator<GetUserPurchasedItemsUC>().call();
             res.fold(
@@ -317,8 +310,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   //
   startOfflineMode() async {
-    final response = await locator<GetUserDataUC>()
-        .call(uuid: Supabase.instance.client.auth.currentUser!.id, force: true);
+    final response = await locator<GetUserDataUC>().call(uuid: Supabase.instance.client.auth.currentUser!.id, force: true);
     response.fold(
       (l) {
         emit(const AuthError(error: "لا يوجد اتصال بالانترنت"));

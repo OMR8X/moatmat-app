@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Core/injection/app_inj.dart';
+import 'package:moatmat_app/User/Features/buckets/domain/requests/retrieve_asset_request.dart';
+import 'package:moatmat_app/User/Features/buckets/domain/usecases/retrieve_asset_uc.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../Core/resources/spacing_resources.dart';
 import '../../../Features/tests/domain/entities/question.dart';
@@ -82,25 +88,56 @@ class QuestionImageBuilderWidget extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ExploreImage(image: image),
+              builder: (context) => ExploreImage(image: Image.network(image)),
             ),
           );
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: CachedNetworkImage(
+          child: Image.network(
+            image,
             width: SpacingResources.mainWidth(context) - 50,
-            imageUrl: image,
-            placeholder: (context, url) => Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: Container(
-                width: SpacingResources.mainWidth(context) - 50,
-                height: 150,
-                color: Colors.grey[300],
-              ),
-            ),
-            errorWidget: (context, url, error) => Image.network(image),
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              }
+              return Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: SpacingResources.mainWidth(context) - 50,
+                  height: 150,
+                  color: Colors.grey[300],
+                ),
+              );
+            },
+            errorBuilder: (context, url, error) {
+              return FutureBuilder(
+                future: locator<RetrieveAssetUC>().call(request: RetrieveAssetRequest.fromSupabaseLink(image)),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      return snapshot.data!.fold(
+                        (failure) {
+                          return const SizedBox(
+                            child: Icon(Icons.error),
+                          );
+                        },
+                        (asset) => Image.file(
+                          asset,
+                          width: SpacingResources.mainWidth(context) - 50,
+                        ),
+                      );
+                    } else {
+                      return const SizedBox(
+                        child: Icon(Icons.error),
+                      );
+                    }
+                  }
+                  return CupertinoActivityIndicator();
+                },
+              );
+            },
           ),
         ),
       );

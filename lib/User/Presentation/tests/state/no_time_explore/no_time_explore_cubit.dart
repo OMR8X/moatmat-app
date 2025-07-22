@@ -117,7 +117,10 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
         if (correctIndex.contains(q.$2)) {
           correct.add((q.$1, q.$2!));
         } else {
-          wrongAnswers[q.$1.id - 1] = userAnswers[q.$1.id - 1];
+          int index = q.$1.id - 1;
+          if (index >= 0 && index < wrongAnswers.length && index < userAnswers.length) {
+            wrongAnswers[index] = userAnswers[index];
+          }
           wrong.add((q.$1, q.$2!));
         }
       } else {
@@ -125,7 +128,10 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
         for (int i = 0; i < q.$1.answers.length; i++) {
           (q.$1.answers[i].trueAnswer ?? false) ? correctIndex = i : null;
         }
-        wrongAnswers[q.$1.id - 1] = null;
+        int index = q.$1.id - 1;
+        if (index >= 0 && index < wrongAnswers.length) {
+          wrongAnswers[index] = null;
+        }
         wrong.add((q.$1, correctIndex));
       }
     }

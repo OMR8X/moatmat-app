@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/functions/coders/decode.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
@@ -11,10 +12,12 @@ class VideoCardWidget extends StatelessWidget {
     required this.video,
     required this.videoNumber,
     required this.onTap,
+    this.isLoading = false,
   });
 
   final Video video;
   final int videoNumber;
+  final bool isLoading;
   final VoidCallback onTap;
 
   @override
@@ -39,7 +42,7 @@ class VideoCardWidget extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap: onTap,
+          onTap: isLoading ? null : onTap,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(SizesResources.s3),
@@ -50,7 +53,7 @@ class VideoCardWidget extends StatelessWidget {
                 Expanded(
                   child: _VideoInfo(video: video, videoNumber: videoNumber),
                 ),
-                _PlayButton(),
+                _PlayButton(isLoading: isLoading),
               ],
             ),
           ),
@@ -121,12 +124,15 @@ class _VideoInfo extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
                 color: ColorsResources.primary.withOpacity(0.1),
               ),
-              child: const Text(
-                "مقطع فيديو",
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: ColorsResources.primary,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: const Text(
+                  "مقطع فيديو",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: ColorsResources.primary,
+                  ),
                 ),
               ),
             ),
@@ -176,8 +182,8 @@ class _VideoInfo extends StatelessWidget {
 }
 
 class _PlayButton extends StatelessWidget {
-  const _PlayButton({super.key});
-
+  const _PlayButton({super.key, required this.isLoading});
+  final bool isLoading;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -186,14 +192,22 @@ class _PlayButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         color: ColorsResources.primary.withOpacity(0.1),
       ),
-      child: Transform.flip(
-        flipX: true,
-        child: const Icon(
-          Icons.play_arrow,
-          color: ColorsResources.primary,
-          size: 24,
-        ),
-      ),
+      child: isLoading
+          ? SizedBox(
+              width: 24,
+              height: 24,
+              child: const CupertinoActivityIndicator(
+                color: ColorsResources.darkPrimary,
+              ),
+            )
+          : Transform.flip(
+              flipX: true,
+              child: const Icon(
+                Icons.play_arrow,
+                color: ColorsResources.primary,
+                size: 24,
+              ),
+            ),
     );
   }
 }

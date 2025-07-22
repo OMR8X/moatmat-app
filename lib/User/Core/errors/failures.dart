@@ -71,3 +71,40 @@ class MissingUserDataFailure extends Failure {
   @override
   List<Object?> get props => [];
 }
+
+class FileNotFoundFailure extends Failure {
+  const FileNotFoundFailure() : super("لم يتم العثور على الملف المطلوب.");
+  @override
+  List<Object?> get props => [];
+}
+
+// Asset caching specific failures
+class AssetCacheFailure extends Failure {
+  const AssetCacheFailure() : super("حدث خطأ أثناء حفظ الملف في ذاكرة التخزين المؤقت.");
+  @override
+  List<Object?> get props => [];
+}
+
+class AssetDownloadFailure extends Failure {
+  const AssetDownloadFailure() : super("حدث خطأ أثناء تحميل الملف من الإنترنت.");
+  @override
+  List<Object?> get props => [];
+}
+
+class AssetFileCorruptedFailure extends Failure {
+  const AssetFileCorruptedFailure() : super("الملف المحفوظ تالف أو غير قابل للقراءة.");
+  @override
+  List<Object?> get props => [];
+}
+
+class AssetInvalidUrlFailure extends Failure {
+  const AssetInvalidUrlFailure() : super("رابط الملف غير صحيح أو غير صالح.");
+  @override
+  List<Object?> get props => [];
+}
+
+class InvalidCacheFailure extends Failure {
+  const InvalidCacheFailure() : super("لم يتم حفظ اي محتويات.");
+  @override
+  List<Object?> get props => [];
+}

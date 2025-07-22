@@ -7,7 +7,10 @@ class GetTestByIdUC {
   final TestsRepository repository;
 
   GetTestByIdUC({required this.repository});
-  Future<Either<Failure, Test>> call({required int id}) async {
+  Future<Either<Failure, Test>> call({
+    required int id,
+    bool isOffline = false,
+  }) async {
     return repository.getTestById(id: id);
   }
 }

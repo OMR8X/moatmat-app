@@ -11,9 +11,11 @@ class MaterialPickerView extends StatefulWidget {
     super.key,
     required this.material,
     required this.onPick,
+    this.hideAppBar = false,
   });
   final List<String> material;
   final Function(String) onPick;
+  final bool hideAppBar;
   @override
   State<MaterialPickerView> createState() => _MaterialPickerViewState();
 }
@@ -23,18 +25,20 @@ class _MaterialPickerViewState extends State<MaterialPickerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorsResources.primary,
-      appBar: AppBar(
-        title: Text(
-          "اختر مدرسك بحسب كل مادة",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: ColorsResources.whiteText1,
-          ),
-        ),
-        backgroundColor: ColorsResources.primary,
-        foregroundColor: ColorsResources.whiteText1,
-      ),
+      appBar: widget.hideAppBar
+          ? null
+          : AppBar(
+              title: Text(
+                "اختر مدرسك بحسب كل مادة",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: ColorsResources.whiteText1,
+                ),
+              ),
+              backgroundColor: ColorsResources.primary,
+              foregroundColor: ColorsResources.whiteText1,
+            ),
       body: SingleChildScrollView(
         child: Column(
           children: [

@@ -34,33 +34,36 @@ void main() async {
   //
   WidgetsFlutterBinding.ensureInitialized();
   //
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  //
-  await SupabaseServices.init();
-  //
-  await initGetIt();
-  //
-  await DeviceService().init();
-  //
-  /// init app cache
-  await locator<CacheManager>().init();
-  //
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    //
+    await SupabaseServices.init();
+    //
+    await initGetIt();
+    //
+    await DeviceService().init();
 
-  // bloc observer -> for debugging only
-  if (kDebugMode) {
-    Bloc.observer = MyBlocObserver();
+    /// init app cache
+    await locator<CacheManager>().init();
+    //
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    //
+    // bloc observer -> for debugging only
+    if (kDebugMode) {
+      Bloc.observer = MyBlocObserver();
+    }
+    // if (!kDebugMode) {
+    await NoScreenshot.instance.screenshotOff();
+  } on Exception catch (e) {
+    debugPrint("error: $e");
   }
-  // if (!kDebugMode) {
-  await NoScreenshot.instance.screenshotOff();
-  // }
   //
   runApp(
     MultiBlocProvider(
@@ -85,6 +88,7 @@ void main() async {
       child: const AppRoot(),
     ),
   );
+  debugPrint("app root initialized");
 }
 /*
 ---

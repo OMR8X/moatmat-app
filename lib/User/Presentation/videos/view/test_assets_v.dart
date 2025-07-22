@@ -1,13 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:moatmat_app/User/Core/functions/coders/decode.dart';
+import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Core/widgets/fields/elevated_button_widget.dart';
+import 'package:moatmat_app/User/Features/buckets/domain/requests/retrieve_asset_request.dart';
+import 'package:moatmat_app/User/Features/buckets/domain/usecases/retrieve_asset_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
-import 'package:moatmat_app/User/Presentation/videos/view/video_play_view.dart';
+import 'package:moatmat_app/User/Presentation/tests/state/download_test/downloadable_asset.dart';
+import 'package:moatmat_app/User/Presentation/videos/view/offline_video_v.dart';
 import 'package:moatmat_app/User/Presentation/videos/view/video_v.dart';
 import 'package:moatmat_app/User/Presentation/videos/widgets/file_card_widget.dart';
 import 'package:moatmat_app/User/Presentation/videos/widgets/video_card_widget.dart';
@@ -20,7 +26,9 @@ class TestAssetsView extends StatefulWidget {
   const TestAssetsView({
     super.key,
     required this.test,
+    this.isOffline = false,
   });
+  final bool isOffline;
   final Test test;
 
   @override
@@ -28,8 +36,9 @@ class TestAssetsView extends StatefulWidget {
 }
 
 class _TestAssetsViewState extends State<TestAssetsView> {
-  late String? video;
-
+  bool isLoading = false;
+  // (index,type)
+  List<(int, AssetType)> loadingAssets = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,12 +78,36 @@ class _TestAssetsViewState extends State<TestAssetsView> {
               itemBuilder: (context, index) {
                 final image = widget.test.information.images![index];
                 return InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ExploreImage(image: image),
-                      ),
-                    );
+                  onTap: () async {
+                    if (widget.isOffline) {
+                      final result = await locator<RetrieveAssetUC>().call(request: RetrieveAssetRequest.fromSupabaseLink(image));
+                      result.fold(
+                        (l) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l.toString()),
+                            ),
+                          );
+                        },
+                        (r) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ExploreImage(
+                                image: Image.file(r),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ExploreImage(
+                            image: Image.network(image),
+                          ),
+                        ),
+                      );
+                    }
                   },
                   borderRadius: BorderRadius.circular(10),
                   child: ClipRRect(
@@ -82,11 +115,32 @@ class _TestAssetsViewState extends State<TestAssetsView> {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        Image.network(
-                          image,
-                          fit: BoxFit.fill,
-                          width: 500,
-                        ),
+                        if (widget.isOffline)
+                          FutureBuilder(
+                            future: locator<RetrieveAssetUC>().call(request: RetrieveAssetRequest.fromSupabaseLink(image)),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(snapshot.error.toString()),
+                                  ),
+                                );
+                              }
+                              if (snapshot.connectionState == ConnectionState.done) {
+                                return snapshot.data!.fold(
+                                  (l) => const SizedBox.shrink(),
+                                  (r) => Image.file(r, fit: BoxFit.fill, width: 500),
+                                );
+                              }
+                              return const Center(child: CircularProgressIndicator());
+                            },
+                          )
+                        else
+                          Image.network(
+                            image,
+                            fit: BoxFit.fill,
+                            width: 500,
+                          ),
                         if (widget.test.information.images?.length != 1)
                           Container(
                             color: Colors.black.withOpacity(0.3),
@@ -117,9 +171,33 @@ class _TestAssetsViewState extends State<TestAssetsView> {
                 final video = widget.test.information.videos![index];
                 return VideoCardWidget(
                   video: video,
+                  isLoading: loadingAssets.contains((index, AssetType.video)),
                   videoNumber: index + 1,
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => VideoView(videoId: video.id)));
+                  onTap: () async {
+                    if (isLoading) return;
+                    if (widget.isOffline) {
+                      setState(() {
+                        isLoading = true;
+                        loadingAssets.add((index, AssetType.video));
+                      });
+                      final response = await locator<RetrieveAssetUC>().call(request: RetrieveAssetRequest.fromSupabaseLink(video.url));
+                      response.fold(
+                        (l) => ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l.toString()),
+                          ),
+                        ),
+                        (path) {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => OfflineVideoView(videoPath: path.path)));
+                        },
+                      );
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => VideoView(videoId: video.id)));
+                    }
+                    setState(() {
+                      isLoading = false;
+                      loadingAssets.removeWhere((e) => e.$1 == index);
+                    });
                   },
                 );
               },
@@ -137,16 +215,35 @@ class _TestAssetsViewState extends State<TestAssetsView> {
               itemCount: widget.test.information.files!.length,
               itemBuilder: (context, index) {
                 final file = widget.test.information.files![index];
-
                 return FileCardWidget(
+                  isLoading: loadingAssets.contains((index, AssetType.file)),
                   fileNumber: index + 1,
                   fileUrl: file,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PDFViewerFromUrl(url: file),
-                      ),
-                    );
+                  onTap: () async {
+                    if (isLoading) return;
+                    if (widget.isOffline) {
+                      setState(() {
+                        isLoading = true;
+                        loadingAssets.add((index, AssetType.file));
+                      });
+                      final response = await locator<RetrieveAssetUC>().call(request: RetrieveAssetRequest.fromSupabaseLink(file));
+                      response.fold(
+                        (l) => ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l.toString()),
+                          ),
+                        ),
+                        (path) {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => PDFViewerFromAssetPath(path: path.path)));
+                        },
+                      );
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => PDFViewerFromUrl(url: file)));
+                    }
+                    setState(() {
+                      isLoading = false;
+                      loadingAssets.removeWhere((e) => e.$1 == index);
+                    });
                   },
                 );
               },
@@ -344,6 +441,24 @@ class PDFViewerFromUrl extends StatelessWidget {
           ));
         },
         errorWidget: (dynamic error) => Center(child: Text(error.toString())),
+      ),
+    );
+  }
+}
+
+class PDFViewerFromAssetPath extends StatelessWidget {
+  const PDFViewerFromAssetPath({super.key, required this.path});
+
+  final String path;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('تفاصيل الملف'),
+      ),
+      body: const PDF().fromPath(
+        path,
       ),
     );
   }

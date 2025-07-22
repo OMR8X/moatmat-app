@@ -14,7 +14,7 @@ abstract class TestsRepository {
   // material teachers
   Future<Either<Failure, List<(String, int)>>> getSchoolTestClasses({
     required String schoolId,
-      required String material,
+    required String material,
   });
   // material teachers
   Future<Either<Failure, List<(TeacherData, int)>>> getMaterialTestsTeachers({
@@ -40,6 +40,7 @@ abstract class TestsRepository {
   // test by id
   Future<Either<Failure, Test>> getTestById({
     required int id,
+    bool isOffline = false,
   });
   //
   Future<Either<Failure, List<Test>>> getTestsByIds({
@@ -48,4 +49,10 @@ abstract class TestsRepository {
   });
   //
   Future<Either<Failure, bool>> canDoTest(MiniTest test);
+  //
+  // Cache methods
+  Future<Either<Failure, Unit>> cacheTest({required Test test});
+  Future<Either<Failure, List<Test>>> getCachedTests();
+  Future<Either<Failure, Unit>> clearCachedTests();
+  Future<Either<Failure, Unit>> deleteCachedTest({required int testId});
 }
