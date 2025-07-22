@@ -130,7 +130,6 @@ class _TestFullTimeExploreViewState extends State<TestFullTimeExploreView> {
             } else if (state is FullTimeExploreResult) {
               submit = false;
               return TestResultView(
-                sendResultCompleter: cubit.sendResultCompleter,
                 explorable: widget.test.properties.exploreAnswers ?? false,
                 canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {

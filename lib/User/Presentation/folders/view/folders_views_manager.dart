@@ -15,7 +15,8 @@ class FoldersViewManager extends StatefulWidget {
     required this.title,
     required this.openContent,
     required this.directories,
-    this.onPop, required this.teacher,
+    this.onPop,
+    required this.teacher,
   });
 
   final String title;
@@ -49,6 +50,7 @@ class _FoldersViewManagerState extends State<FoldersViewManager> {
         builder: (context, state) {
           final cubit = context.read<FoldersManagerCubit>();
           if (state is FoldersManagerExploreFolder) {
+       
             return PopScope(
               canPop: false,
               onPopInvokedWithResult: (didPop, result) {

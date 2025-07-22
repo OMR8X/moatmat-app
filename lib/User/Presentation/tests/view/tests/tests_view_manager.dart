@@ -92,12 +92,16 @@ class _TestsViewManagerState extends State<TestsViewManager> {
               categories: state.teachers.map((e) {
                 return e.$1.name;
               }).toList(),
+              values: state.teachers.map((e) {
+                return e.$1.email;
+              }).toList(),
               subCategories: state.teachers.map((e) {
                 return "عدد الاختبارات : ${e.$2}";
               }).toList(),
-              onPick: (clas) {
+              onPick: (teacher) {
+                print(teacher);
                 context.read<GetTestCubit>().selectTeacher(
-                      state.teachers.firstWhere((e) => e.$1.name == clas).$1,
+                      state.teachers.firstWhere((e) => e.$1.email == teacher).$1,
                     );
               },
               onPop: () {

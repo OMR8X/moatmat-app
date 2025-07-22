@@ -91,7 +91,6 @@ class _TestExploreNoTimeViewState extends State<TestExploreNoTimeView> {
             }
             if (state is NoTimeExploreResult) {
               return TestResultView(
-                sendResultCompleter: cubit.sendResultCompleter,
                 explorable: widget.test.properties.exploreAnswers ?? false,
                 canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {
