@@ -21,7 +21,6 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   late List<(Question, int?)> didNotAnswer;
   late int currentQuestion;
   late int seconds;
-  Completer<void>? sendResultCompleter;
   late Duration counter;
   Timer? _timer;
   late Duration time;
@@ -164,7 +163,6 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
   }
 
   void finish({bool force = false}) async {
-    sendResultCompleter = Completer<void>();
     //
     if (!force) {
       //
@@ -242,7 +240,6 @@ class TestFullTimeExploreCubit extends Cubit<FullTimeExploreState> {
       result: result,
     ));
     await submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
-    sendResultCompleter?.complete();
   }
 
   submitResult(List<int?> wrongAnswers, double result) async {

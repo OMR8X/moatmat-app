@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
-
-import '../../../../Core/functions/show_alert.dart';
 import '../../../../Core/resources/sizes_resources.dart';
 import '../../../auth/state/auth_c/auth_cubit_cubit.dart';
 import '../../../auth/view/auth_views_manager.dart';
@@ -73,7 +71,6 @@ class _TestPerQuestionExploreViewState extends State<TestPerQuestionExploreView>
               );
             } else if (state is PerQuestionExploreResult) {
               return TestResultView(
-                sendResultCompleter: cubit.sendResultCompleter,
                 explorable: widget.test.properties.exploreAnswers ?? false,
                 canReTest: widget.test.properties.repeatable ?? false,
                 showCorrectAnswers: () {

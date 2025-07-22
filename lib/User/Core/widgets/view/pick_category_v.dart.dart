@@ -16,10 +16,12 @@ class PickCategoryView extends StatefulWidget {
     this.subCategories,
     this.onPop,
     this.actions,
+    this.values,
   });
   final String title;
   final List<String>? subCategories;
   final List<String> categories;
+  final List<String>? values;
   final Function(String) onPick;
   final VoidCallback? onPop;
   final List<Widget>? actions;
@@ -67,7 +69,11 @@ class _PickCategoryViewState extends State<PickCategoryView> {
                   subTitle: widget.subCategories != null ? widget.subCategories![index] : null,
                   iconData: Icons.arrow_forward_ios,
                   onTap: () {
-                    widget.onPick(widget.categories[index]);
+                    if (widget.values != null) {
+                      widget.onPick(widget.values![index]);
+                    } else {
+                      widget.onPick(widget.categories[index]);
+                    }
                   },
                 ),
               ),

@@ -21,7 +21,6 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
   late List<int?> userAnswers;
   late int currentQuestion;
   late Duration period;
-  Completer<void>? sendResultCompleter;
   List<int?> wrongAnswers = [];
   Timer? _timer;
   bool didSubmit = false;
@@ -90,8 +89,6 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
 
   void finish({bool force = false}) async {
     //
-    sendResultCompleter = Completer<void>();
-    //
     if (test.properties.scrollable == true && !force) {
       //
       bool leftQuestion = false;
@@ -142,7 +139,6 @@ class TestNoTimeExploreCubit extends Cubit<NoTimeExploreState> {
       result: result,
     ));
     await submitResult(wrongAnswers, double.tryParse(result) ?? 0.0);
-    sendResultCompleter?.complete();
     if (_timer?.isActive ?? false) {
       _timer!.cancel();
     }
