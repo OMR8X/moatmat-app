@@ -47,15 +47,7 @@ class UserData {
   });
 
   String toQrValue() {
-    if (kDebugMode) {
-      final value = Random().nextInt(1000);
-      String str = json.encode({
-        "id": value,
-        "name": "student $value",
-      });
-      str = EncryptionService.encryptData(str);
-      return str;
-    }
+
     String str = json.encode({
       "id": id,
       "name": name,

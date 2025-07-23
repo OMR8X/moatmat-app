@@ -620,7 +620,7 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
                       ),
                     ),
                   ),
-                  if (_hasAnyMedia()) ...[
+                  if (_hasAnyMedia() && _isDownloadable()) ...[
                     const SizedBox(height: SizesResources.s1),
                     SizedBox(
                       width: double.infinity,
@@ -876,6 +876,6 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
   }
 
   bool _hasAnyMedia() {
-    return (_hasVideos() || _hasFiles() || _hasImages()) && _isDownloadable();
+    return (_hasVideos() || _hasFiles() || _hasImages());
   }
 }

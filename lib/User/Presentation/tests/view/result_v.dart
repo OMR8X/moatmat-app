@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
@@ -81,7 +82,7 @@ class TestResultView extends StatelessWidget {
                             color: ColorsResources.blackText1,
                           ),
                         ),
-                        if (correctAnswers != '0' && explorable == true)
+                        if ((correctAnswers != '0' && (explorable == true)) || kDebugMode)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -136,7 +137,7 @@ class TestResultView extends StatelessWidget {
                             color: ColorsResources.blackText1,
                           ),
                         ),
-                        if (wrongAnswers != '0' && explorable == true)
+                        if (wrongAnswers != '0' && explorable == true || kDebugMode)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
