@@ -13,7 +13,6 @@ import 'package:moatmat_app/User/Presentation/videos/widget/add_reply_bottom_she
 import 'package:moatmat_app/User/Presentation/videos/widget/under_video_w.dart';
 import 'package:moatmat_app/User/Presentation/videos/widget/video_comment_w.dart';
 
-
 class VideoView extends StatefulWidget {
   const VideoView({super.key, required this.videoId});
   final int videoId;
@@ -33,6 +32,7 @@ class _VideoViewState extends State<VideoView> {
         //
         child: BlocBuilder<VideoBloc, VideoState>(
           builder: (context, state) {
+            //
             //
             if (state.isLoading[Loading.video] == true || state.isLoading[Loading.rating] == true) {
               return Center(
