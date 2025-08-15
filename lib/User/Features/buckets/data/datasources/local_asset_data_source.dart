@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/User/Core/services/cache/cache_constant.dart';
 import 'package:moatmat_app/User/Features/buckets/domain/requests/cache_asset_request.dart';
 import '../../../../Core/errors/exceptions.dart';
+import '../../../../Core/services/cache/cache_manager.dart';
 import '../../../../Core/services/encryption_s.dart';
 
 abstract class LocalAssetDataSource {
@@ -29,13 +31,17 @@ abstract class LocalAssetDataSource {
 
   /// Delete all assets for a specific ID
   Future<void> deleteAssetsByID({required String repositoryId});
+
+  /// Clear all cached assets
+  Future<void> clearCachedAssets();
 }
 
 class LocalAssetDataSourceImpl implements LocalAssetDataSource {
   static const String _cacheDirectoryName = 'cached_assets';
   late final Directory _cacheDirectorPath;
+  final CacheManager cacheManager;
 
-  LocalAssetDataSourceImpl({required Directory cacheDirectoryPath}) : _cacheDirectorPath = cacheDirectoryPath;
+  LocalAssetDataSourceImpl({required Directory cacheDirectoryPath, required this.cacheManager}) : _cacheDirectorPath = cacheDirectoryPath;
 
   @override
   Future<String> saveAsset({
@@ -85,7 +91,6 @@ class LocalAssetDataSourceImpl implements LocalAssetDataSource {
         // Read encrypted data and decrypt it (in background thread)
         final encryptedData = await file.readAsBytes();
         final decryptedData = await EncryptionService.decryptBinaryDataAsync(encryptedData);
-
         // Create a temporary file with decrypted data
         final tempDir = Directory.systemTemp;
         final tempFilePath = '${tempDir.path}/temp_${DateTime.now().millisecondsSinceEpoch}_$fileName';
@@ -93,7 +98,6 @@ class LocalAssetDataSourceImpl implements LocalAssetDataSource {
         await tempFile.writeAsBytes(decryptedData);
         return tempFile;
       }
-
       return file;
     } catch (e) {
       debugPrint('Failed to get cached asset: ${e.toString()}');
@@ -128,6 +132,17 @@ class LocalAssetDataSourceImpl implements LocalAssetDataSource {
         // Delete the entire ID directory and all its contents
         await idDir.delete(recursive: true);
       }
+    } catch (e) {
+      throw AssetCacheException();
+    }
+  }
+
+  @override
+  Future<void> clearCachedAssets() async {
+    try {
+      final cacheDir = await _getCacheDirectory();
+      await cacheManager().remove(CacheConstant.cachedTestsDataKey);
+      await cacheDir.delete(recursive: true);
     } catch (e) {
       throw AssetCacheException();
     }

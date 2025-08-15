@@ -6,9 +6,7 @@ import 'package:moatmat_app/User/Core/resources/images_r.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
 import 'package:moatmat_app/User/Presentation/folders/state/cubit/folders_manager_cubit.dart';
 import 'package:moatmat_app/User/Presentation/tests/view/downloading/download_test_view.dart';
-
 import '../../../Core/resources/colors_r.dart';
-import '../../../Core/resources/shadows_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
 import '../../../Core/resources/spacing_resources.dart';
 import '../../../Features/tests/domain/entities/test.dart';
@@ -126,6 +124,10 @@ class TestTileWidget extends StatelessWidget {
   }
 
   onTap(BuildContext context) {
+    if (kDebugMode) {
+      onPick();
+      return;
+    }
     if (test.isPurchased() || isCached) {
       //
       if (test.information.password != null && test.information.password!.isNotEmpty) {

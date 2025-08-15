@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/auth/domain/entites/user_data.dart';
@@ -68,6 +69,10 @@ class _CheckIfTestDoneState extends State<CheckIfTestDone> {
   }
 
   Future checking() async {
+    if (kDebugMode) {
+      onOpen();
+      return;
+    }
     //
     if (widget.test.properties.repeatable ?? false) {
       onOpen();

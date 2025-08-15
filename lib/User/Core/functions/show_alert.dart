@@ -27,9 +27,11 @@ showAlert({
             color: iconColor ?? ColorsResources.red,
           ),
           const SizedBox(width: SizesResources.s3),
-          Padding(
-            padding: const EdgeInsets.only(top: 7),
-            child: Text(title),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 7),
+              child: Text(title),
+            ),
           ),
         ],
       ),

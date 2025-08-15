@@ -76,12 +76,12 @@ class NotificationCard extends StatelessWidget {
             recognizer: TapGestureRecognizer()
               ..onTap = () async {
                 final Uri uri = Uri.parse(url);
-                if (await canLaunchUrl(uri)) {
+                try {
                   await launchUrl(uri);
-                } else {
+                } on Exception catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Could not launch $url')),
+                      SnackBar(content: Text('Could not launch the url\n$e')),
                     );
                   }
                 }

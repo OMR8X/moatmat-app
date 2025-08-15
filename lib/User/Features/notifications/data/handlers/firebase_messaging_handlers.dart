@@ -15,10 +15,9 @@ import 'package:moatmat_app/User/Presentation/notifications/views/notifications_
 import 'package:moatmat_app/firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
- debugPrint('A background message was received in flutter_background_service plugin: ${message.messageId}');
+  debugPrint('A background message was received: ${message.messageId}');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -28,22 +27,21 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     url: SupabaseResources.url,
     anonKey: SupabaseResources.key,
   );
-  
+
   debugPrint('Supabase initialized');
 
   if (!locator.isRegistered<DisplayFirebaseNotificationUsecase>()) {
     await initGetIt();
   }
-      locator<NotificationsBloc>().add(GetNotifications());
 
+  locator<NotificationsBloc>().add(GetNotifications());
   await locator<DisplayFirebaseNotificationUsecase>().call(message: message);
   debugPrint('DisplayFirebaseNotificationUsecase called');
 }
 
 @pragma('vm:entry-point')
-void onDidReceiveBackgroundNotificationResponse(
-    NotificationResponse? response) async {
-    await Firebase.initializeApp(
+void onDidReceiveBackgroundNotificationResponse(NotificationResponse? response) async {
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   debugPrint('Firebase initialized');
@@ -52,31 +50,33 @@ void onDidReceiveBackgroundNotificationResponse(
     url: SupabaseResources.url,
     anonKey: SupabaseResources.key,
   );
-  
+
   debugPrint('Supabase initialized');
 
   if (!locator.isRegistered<DisplayFirebaseNotificationUsecase>()) {
     await initGetIt();
   }
 
-    locator<NotificationsBloc>().add(GetNotifications());
+  locator<NotificationsBloc>().add(GetNotifications());
+
+  await Future.delayed(const Duration(milliseconds: 500));
+
+  if (navigatorKey.currentState != null) {
     navigatorKey.currentState?.push(
       MaterialPageRoute(builder: (_) => const NotificationsView()),
     );
-
+  }
 }
 
 class FirebaseMessagingHandlers {
   ///
   /// [firebase messaging foreground handler]
   Future<void> onData(RemoteMessage message) async {
-    // debugPrint('A foreground message was received in flutter_background_service plugin: ${message.messageId}');
+    debugPrint('A foreground message was received: ${message.messageId}');
     await locator<DisplayFirebaseNotificationUsecase>().call(message: message);
     locator<NotificationsBloc>().add(GetNotifications());
     debugPrint('DisplayFirebaseNotificationUsecase called');
-    locator<NotificationsBloc>().add(GetNotifications());
   }
-
 
   ///
   Future<void> onTokenRefreshed(String newToken) async {
@@ -97,24 +97,41 @@ class FirebaseMessagingHandlers {
   void onError(error) {}
 
   Future<void> onNotificationOpened(RemoteMessage message) async {
-    //if (message.data['screen'] == 'notifications') {
+    debugPrint('Notification opened from background/terminated state: ${message.messageId}');
+
+    // Refresh notifications
     locator<NotificationsBloc>().add(GetNotifications());
-    navigatorKey.currentState?.push(
-      MaterialPageRoute(builder: (_) => const NotificationsView()),
-    );
-    //}
+
+    // Add delay to ensure the app is fully resumed and navigation context is ready
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    // Check if navigator is ready
+    if (navigatorKey.currentState?.mounted == true) {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(builder: (_) => const NotificationsView()),
+      );
+    } else {
+      // If navigator is not ready, wait and try again
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (navigatorKey.currentState?.mounted == true) {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(builder: (_) => const NotificationsView()),
+        );
+      } else {
+        debugPrint('Navigator not ready for notification navigation');
+      }
+    }
   }
 
   /// [firebase notification initial handler]
   Future<void> onInitialNotification() async {
-    final RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    final RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
+      debugPrint('App opened from terminated state via notification: ${initialMessage.messageId}');
+      // Add delay to ensure app is fully initialized
+      await Future.delayed(const Duration(milliseconds: 1000));
       await onNotificationOpened(initialMessage);
     }
   }
 }
-
-////
-

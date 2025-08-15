@@ -78,6 +78,12 @@ class FileNotFoundFailure extends Failure {
   List<Object?> get props => [];
 }
 
+class AssetNotExistsFailure extends Failure {
+  const AssetNotExistsFailure() : super("ملف تالف او غير موجود.");
+  @override
+  List<Object?> get props => [];
+}
+
 // Asset caching specific failures
 class AssetCacheFailure extends Failure {
   const AssetCacheFailure() : super("حدث خطأ أثناء حفظ الملف في ذاكرة التخزين المؤقت.");

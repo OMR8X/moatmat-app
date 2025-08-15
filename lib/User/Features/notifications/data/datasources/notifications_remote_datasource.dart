@@ -29,13 +29,11 @@ abstract class NotificationsRemoteDatasource {
   Future<Unit> unsubscribeToTopic(String topic);
   Future<String> getDeviceToken();
   Future<Unit> deleteDeviceToken();
-  Future<Unit> registerDeviceToken(
-      {required String deviceToken, required String platform});
+  Future<Unit> registerDeviceToken({required String deviceToken, required String platform});
   Future<List<AppNotification>> getNotifications();
 }
 
-class NotificationsRemoteDatasourceImpl
-    implements NotificationsRemoteDatasource {
+class NotificationsRemoteDatasourceImpl implements NotificationsRemoteDatasource {
   final _supabase = Supabase.instance.client;
   final _firebaseMessaging = FirebaseMessaging.instance;
   final _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -51,8 +49,7 @@ class NotificationsRemoteDatasourceImpl
     await _localNotificationsPlugin.initialize(
       AppLocalNotificationsSettings.settings,
       onDidReceiveNotificationResponse: (response) {},
-      onDidReceiveBackgroundNotificationResponse:
-          onDidReceiveBackgroundNotificationResponse,
+      onDidReceiveBackgroundNotificationResponse: onDidReceiveBackgroundNotificationResponse,
     );
 
     return unit;
@@ -70,13 +67,16 @@ class NotificationsRemoteDatasourceImpl
 
     final handlers = FirebaseMessagingHandlers();
 
+    // Set up handlers
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.onMessage.listen(handlers.onData,
-        onDone: handlers.onDone, onError: handlers.onError);
+    FirebaseMessaging.onMessage.listen(handlers.onData, onDone: handlers.onDone, onError: handlers.onError);
     FirebaseMessaging.instance.onTokenRefresh.listen(handlers.onTokenRefreshed);
     FirebaseMessaging.onMessageOpenedApp.listen(handlers.onNotificationOpened);
 
+    // Handle initial notification (when app is opened from terminated state)
+    await handlers.onInitialNotification();
 
+    // Subscribe to topics
     for (var topic in AppRemoteNotificationsSettings.defaultTopicList) {
       await subscribeToTopic(topic);
     }
@@ -86,11 +86,8 @@ class NotificationsRemoteDatasourceImpl
   }
 
   @override
-  Future<Unit> createNotificationsChannel(
-      AndroidNotificationChannel channel) async {
-    final androidImplementation =
-        _localNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+  Future<Unit> createNotificationsChannel(AndroidNotificationChannel channel) async {
+    final androidImplementation = _localNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     await androidImplementation?.createNotificationChannel(channel);
     return unit;
   }
@@ -104,7 +101,7 @@ class NotificationsRemoteDatasourceImpl
     if (!notification.isValid()) return unit;
 
     await _localNotificationsPlugin.show(
-       DateTime.now().millisecond,
+      DateTime.now().millisecond,
       notification.title,
       notification.body,
       details ?? AppLocalNotificationsSettings.defaultNotificationsDetails(),
@@ -152,9 +149,7 @@ class NotificationsRemoteDatasourceImpl
 
   @override
   Future<String> getDeviceToken() async {
-    final token = Platform.isIOS
-        ? await _firebaseMessaging.getAPNSToken()
-        : await _firebaseMessaging.getToken();
+    final token = Platform.isIOS ? await _firebaseMessaging.getAPNSToken() : await _firebaseMessaging.getToken();
 
     if (token == null) throw Exception("FCM token is null");
     return token;
@@ -170,8 +165,7 @@ class NotificationsRemoteDatasourceImpl
   }
 
   @override
-  Future<Unit> registerDeviceToken(
-      {required String deviceToken, required String platform}) async {
+  Future<Unit> registerDeviceToken({required String deviceToken, required String platform}) async {
     final user = _supabase.auth.currentUser;
     if (user == null) {
       debugPrint('User is null');
@@ -185,11 +179,7 @@ class NotificationsRemoteDatasourceImpl
     );
 
     try {
-      await _supabase
-          .from('device_tokens')
-          .delete()
-          .eq('user_id', model.userId)
-          .eq('platform', model.platform);
+      await _supabase.from('device_tokens').delete().eq('user_id', model.userId).eq('platform', model.platform);
 
       await _supabase.from('device_tokens').insert(model.toMap());
       debugPrint("✅ Device token registered successfully to Supabase");
@@ -203,31 +193,30 @@ class NotificationsRemoteDatasourceImpl
     }
   }
 
- @override
-Future<List<AppNotification>> getNotifications() async {
-  try {
-    final user = _supabase.auth.currentUser;
-    final userId = user?.id;
-    final subscribedTopics = AppRemoteNotificationsSettings.defaultTopicList;
+  @override
+  Future<List<AppNotification>> getNotifications() async {
+    try {
+      final user = _supabase.auth.currentUser;
+      final userId = user?.id;
+      final subscribedTopics = AppRemoteNotificationsSettings.defaultTopicList;
 
-    if (userId == null) return [];
+      if (userId == null) return [];
 
-    final response = await _supabase
-        .from('notifications2')
-        .select()
-        .or(
-          'and(type.eq.user,target_user_ids.cs.{$userId}),'
-          'and(type.eq.topic,target_topics.cs.{${subscribedTopics.join(',')}})',
-        )
-        .order('created_at', ascending: false) 
-        as List;
+      final response = await _supabase
+          .from('notifications2')
+          .select()
+          .or(
+            'and(type.eq.user,target_user_ids.cs.{$userId}),'
+            'and(type.eq.topic,target_topics.cs.{${subscribedTopics.join(',')}})',
+          )
+          .order('created_at', ascending: false) as List;
 
-    return response.map((e) {
-      return AppNotification.fromJson(e as Map<String, dynamic>);
-    }).toList();
-  } catch (e) {
-    debugPrint('Unexpected error while trying to get notifications: $e');
-    throw ServerException();
+      return response.map((e) {
+        return AppNotification.fromJson(e as Map<String, dynamic>);
+      }).toList();
+    } catch (e) {
+      debugPrint('Unexpected error while trying to get notifications: $e');
+      throw ServerException();
+    }
   }
-}
 }

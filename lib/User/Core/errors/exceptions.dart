@@ -45,6 +45,7 @@ class MissingUserDataException implements Exception {}
 class AssetCacheException implements Exception {}
 
 class AssetDownloadException implements Exception {}
+class AssetNotExistsException implements Exception {}
 
 class AssetFileCorruptedException implements Exception {}
 

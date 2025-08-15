@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:moatmat_app/User/Core/services/api/api_manager.dart';
 import 'package:moatmat_app/User/Features/buckets/domain/requests/cache_asset_request.dart';
 
@@ -17,6 +18,7 @@ class RemoteAssetDataSourceImpl implements RemoteAssetDataSource {
 
   @override
   Future<Uint8List> downloadAsset({required CacheAssetRequest request}) async {
+    debugPrint("error ${request.fileUrl}");
     try {
       final uri = Uri.tryParse(request.fileUrl);
       if (uri == null || !uri.hasScheme || (!uri.isScheme('http') && !uri.isScheme('https'))) {
@@ -30,7 +32,7 @@ class RemoteAssetDataSourceImpl implements RemoteAssetDataSource {
       );
 
       if (response.statusCode != 200) {
-        if (response.statusCode == 404) throw NotFoundException();
+        if ([404, 403, 401, 400].contains(response.statusCode)) throw AssetNotExistsException();
         throw AssetDownloadException();
       }
 
@@ -49,11 +51,11 @@ class RemoteAssetDataSourceImpl implements RemoteAssetDataSource {
       }
       final bytes = bytesBuilder.toBytes();
       return bytes;
-    } on AssetInvalidUrlException {
-      rethrow;
-    } on NotFoundException {
+    } on AssetNotExistsException {
+      debugPrint("error not found");
       rethrow;
     } catch (e) {
+      debugPrint("error $e");
       throw AssetDownloadException();
     }
   }

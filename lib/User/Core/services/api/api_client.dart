@@ -5,7 +5,7 @@ import 'dio_factory.dart';
 
 abstract class ApiClient {
   /// get request
-  Future<dynamic> get(
+  Future<Response> get(
     String uri, {
     Map<String, dynamic>? headers,
     Map<String, dynamic> queryParameters = const {},
@@ -14,7 +14,7 @@ abstract class ApiClient {
   });
 
   /// post request
-  Future<dynamic> post(
+  Future<Response> post(
     String uri, {
     Object? body,
     Map<String, dynamic>? headers,
@@ -25,7 +25,7 @@ abstract class ApiClient {
   });
 
   /// update request
-  Future<dynamic> put(
+  Future<Response> put(
     String uri, {
     Object? body,
     Map<String, dynamic>? headers,
@@ -35,7 +35,7 @@ abstract class ApiClient {
   });
 
   /// delete request
-  Future<dynamic> delete(
+  Future<Response> delete(
     String uri, {
     Object? body,
     Map<String, dynamic>? headers,

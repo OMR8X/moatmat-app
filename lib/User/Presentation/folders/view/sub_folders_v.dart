@@ -13,14 +13,12 @@ import '../../../Core/resources/fonts_r.dart';
 import '../../../Core/widgets/view/pick_folder_v.dart';
 import '../../../Features/banks/domain/entites/bank.dart';
 import '../../../Features/tests/domain/entities/test.dart';
-import '../../banks/state/get_bank_c/get_bank_cubit.dart';
 import '../../banks/views/bank_tile_w.dart';
 import '../../tests/state/download_test/download_test_bloc.dart';
 import '../../tests/view/downloading/download_test_view.dart';
 import '../../tests/view/tests/check_if_test_done_v.dart';
 import '../../tests/view/tests/pick_test_v.dart';
 import '../../tests/widgets/test_tile_w.dart';
-import '../state/cubit/folders_manager_cubit.dart';
 
 class SubFoldersView extends StatelessWidget {
   const SubFoldersView({

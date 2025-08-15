@@ -1,9 +1,11 @@
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/services/api/api_manager.dart';
+import 'package:moatmat_app/User/Core/services/cache/cache_manager.dart';
 import 'package:moatmat_app/User/Features/buckets/data/datasources/local_asset_data_source.dart';
 import 'package:moatmat_app/User/Features/buckets/data/datasources/remote_asset_data_source.dart';
 import 'package:moatmat_app/User/Features/buckets/data/repository/asset_cache_repository_impl.dart';
 import 'package:moatmat_app/User/Features/buckets/domain/usecases/cache_asset_uc.dart';
+import 'package:moatmat_app/User/Features/buckets/domain/usecases/clear_cache_uc.dart';
 import 'package:moatmat_app/User/Features/buckets/domain/usecases/retrieve_asset_uc.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -26,6 +28,11 @@ Future<void> injectUC() async {
       repository: locator<AssetCacheRepository>(),
     ),
   );
+  locator.registerFactory<ClearCacheUC>(
+    () => ClearCacheUC(
+      repository: locator<AssetCacheRepository>(),
+    ),
+  );
   // locator.registerFactory<GetMaterialBankClassesUC>(
   //   () => GetMaterialBankClassesUC(
   //     repository: locator(),
@@ -44,10 +51,11 @@ Future<void> injectRepo() async {
 
 Future<void> injectDS() async {
   final appDir = await getApplicationDocumentsDirectory();
-  
+
   locator.registerFactory<LocalAssetDataSource>(
     () => LocalAssetDataSourceImpl(
       cacheDirectoryPath: appDir,
+      cacheManager: locator<CacheManager>(),
     ),
   );
   locator.registerFactory<RemoteAssetDataSource>(

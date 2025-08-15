@@ -312,14 +312,12 @@ class TestsDataSourceImpl implements TestsDataSource {
       if (cachedData == null) {
         return [];
       }
-
       // Convert JSON to Test objects
       final cachedTestsJson = List<Map<dynamic, dynamic>>.from(cachedData);
       return cachedTestsJson.map((testJson) => TestModel.fromJson(testJson)).toList();
     } on InvalidCacheException catch (e) {
       throw InvalidCacheException();
     } catch (e) {
-      debugPrint("Get cached tests exception: $e");
       throw CacheException();
     }
   }

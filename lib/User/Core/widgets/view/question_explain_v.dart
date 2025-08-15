@@ -119,24 +119,13 @@ class QuestionExplainMiniView extends StatefulWidget {
 }
 
 class _QuestionExplainMiniViewState extends State<QuestionExplainMiniView> {
-  late FlickManager? _flickManager;
   @override
   void initState() {
-    if (widget.question.video != null) {
-      _flickManager = FlickManager(
-        videoPlayerController: VideoPlayerController.networkUrl(
-          Uri.parse(widget.question.video ?? ""),
-        ),
-      );
-    } else {
-      _flickManager = null;
-    }
     super.initState();
   }
 
   @override
   void dispose() {
-    _flickManager?.dispose();
     super.dispose();
   }
 
@@ -144,23 +133,17 @@ class _QuestionExplainMiniViewState extends State<QuestionExplainMiniView> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
         if (didPop) {
           return;
         }
-        final NavigatorState navigator = Navigator.of(context);
-        final bool? shouldPop = _flickManager?.flickControlManager?.isFullscreen;
-        if (shouldPop ?? false) {
-          _flickManager?.flickControlManager?.exitFullscreen();
-        } else {
-          navigator.pop();
-        }
+        Navigator.of(context).pop();
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           //
-          if (_flickManager != null)
+          if (widget.question.video != null)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -172,24 +155,10 @@ class _QuestionExplainMiniViewState extends State<QuestionExplainMiniView> {
                 ),
               ],
             ),
+
           if (widget.question.explainImage != null) ...[
             const SizedBox(height: SizesResources.s4),
-            SizedBox(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(19),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.question.explainImage!,
-                    placeholder: (context, url) {
-                      return const CupertinoActivityIndicator(
-                        color: ColorsResources.primary,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
+            QuestionImageBuilderWidget(image: widget.question.explainImage!),
           ],
           if (widget.question.explain != null) ...[
             const SizedBox(height: SizesResources.s4),

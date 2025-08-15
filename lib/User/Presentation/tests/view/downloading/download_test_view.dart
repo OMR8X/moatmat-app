@@ -21,40 +21,39 @@ class DownloadTestView extends StatefulWidget {
 
 class _DownloadTestViewState extends State<DownloadTestView> {
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => context.read<DownloadTestBloc>()..add(InitializeDownloadTest(testId: widget.testId)),
-      child: Scaffold(
-        backgroundColor: ColorsResources.background,
-        appBar: AppBar(
-          title: Text('تحميل الاختبار'),
-          backgroundColor: ColorsResources.background,
-          leading: IconButton(
-            onPressed: () {
-              if ([DownloadTestStatus.loading, DownloadTestStatus.success, DownloadTestStatus.failure].contains(context.read<DownloadTestBloc>().state.status)) {
-                Navigator.of(context).pop();
-                return;
-              }
-              showAlert(
-                context: context,
-                title: "تأكيد الإلغاء",
-                body: "هل تريد إلغاء تحميل الاختبار؟",
-                onAgree: () {
-                  context.read<DownloadTestBloc>().add(const CancelDownloadTest());
-                  Navigator.of(context).pop();
-                },
-              );
-            },
-            icon: const Icon(Icons.close),
-          ),
-        ),
-        body: BlocListener<DownloadTestBloc, DownloadTestState>(
-          listenWhen: (previous, current) => previous.status != current.status && current.status == DownloadTestStatus.failure && current.errorMessage == 'تم إلغاء التحميل',
-          listener: (context, state) {
-            // Auto-navigate back when download is cancelled
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if ([DownloadTestStatus.loading, DownloadTestStatus.success, DownloadTestStatus.failure].contains(context.read<DownloadTestBloc>().state.status)) {
+          Navigator.of(context).pop();
+          return;
+        }
+        showAlert(
+          context: context,
+          title: "تأكيد الإلغاء",
+          body: "هل تريد إلغاء تحميل الاختبار؟",
+          onAgree: () {
+            context.read<DownloadTestBloc>().add(const CancelDownloadTest());
             Navigator.of(context).pop();
           },
-          child: BlocBuilder<DownloadTestBloc, DownloadTestState>(
+        );
+      },
+      child: BlocProvider(
+        create: (context) => context.read<DownloadTestBloc>()..add(InitializeDownloadTest(testId: widget.testId)),
+        child: Scaffold(
+          backgroundColor: ColorsResources.background,
+          appBar: AppBar(
+            title: Text('تحميل الاختبار'),
+            backgroundColor: ColorsResources.background,
+          ),
+          body: BlocBuilder<DownloadTestBloc, DownloadTestState>(
             buildWhen: (previous, current) => previous.status != current.status || previous.errorMessage != current.errorMessage,
             builder: (context, state) {
               switch (state.status) {

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
@@ -525,6 +526,13 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
                     text: parsOptionExcitabilityText("يوجد اختبار شرطي", widget.test.information.previous != null),
                     isEnabled: widget.test.information.previous != null,
                   ),
+                  const SizedBox(height: 10),
+                  _buildOptionRow(
+                    icon: widget.test.properties.downloadable == true ? Icons.download_rounded : Icons.download_outlined,
+                    color: widget.test.properties.downloadable == true ? ColorsResources.darkPrimary : ColorsResources.borders,
+                    text: parsOptionExcitabilityText("يمكن تنزيل الاختبار", widget.test.properties.downloadable != null),
+                    isEnabled: widget.test.properties.downloadable != null,
+                  ),
                 ],
               ),
             ),
@@ -533,7 +541,7 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
             const SizedBox(height: SizesResources.s3),
 
             ///
-            if (_hasAnyMedia())
+            if (_hasAnyAssets())
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -620,7 +628,7 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
                       ),
                     ),
                   ),
-                  if (_hasAnyMedia() && _isDownloadable()) ...[
+                  if (_isDownloadable()) ...[
                     const SizedBox(height: SizesResources.s1),
                     SizedBox(
                       width: double.infinity,
@@ -860,6 +868,7 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
   }
 
   bool _isDownloadable() {
+    // if (kDebugMode) return true;
     return widget.test.properties.downloadable == true;
   }
 
@@ -875,7 +884,7 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
     return widget.test.information.images != null && widget.test.information.images!.isNotEmpty;
   }
 
-  bool _hasAnyMedia() {
+  bool _hasAnyAssets() {
     return (_hasVideos() || _hasFiles() || _hasImages());
   }
 }

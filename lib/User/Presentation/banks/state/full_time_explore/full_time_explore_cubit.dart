@@ -126,13 +126,13 @@ class FullTimeExploreCubit extends Cubit<FullTimeExploreState> {
           finish();
           return;
         }
-        // Check if all questions are answered - auto finish
-        if (questions.isNotEmpty && questions.every((q) => q.$2 != null)) {
-          cancelTimer();
-          debugPrint("Auto-finishing: All questions answered");
-          finish();
-          return;
-        }
+        // // Check if all questions are answered - auto finish
+        // if (questions.isNotEmpty && questions.every((q) => q.$2 != null)) {
+        //   cancelTimer();
+        //   debugPrint("Auto-finishing: All questions answered");
+        //   finish();
+        //   return;
+        // }
 
         time = Duration(milliseconds: time.inMilliseconds - milliseconds);
         //

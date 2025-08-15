@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import '../../../../Core/errors/exceptions.dart';
 import '../../domain/entities/cached_asset.dart';
 import '../../domain/repository/asset_cache_repository.dart';
@@ -38,20 +39,8 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
       final cachedAssetModel = await localDataSource.saveAsset(data: assetData, request: request);
       //
       return Right(cachedAssetModel);
-    } on AssetInvalidUrlException {
-      return const Left(AssetInvalidUrlFailure());
-    } on AssetDownloadException {
-      return const Left(AssetDownloadFailure());
-    } on AssetCacheException {
-      return const Left(AssetCacheFailure());
-    } on InvalidDataException {
-      return const Left(InvalidDataFailure());
-    } on NotFoundException {
-      return const Left(FileNotFoundFailure());
-    } on ServerException {
-      return const Left(ServerFailure());
-    } on CacheException {
-      return const Left(CacheFailure());
+    } on AssetNotExistsException {
+      return const Left(AssetNotExistsFailure());
     } catch (e) {
       return const Left(AnonFailure());
     }
@@ -93,6 +82,16 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
       return const Left(AssetCacheFailure());
     } on CacheException {
       return const Left(CacheFailure());
+    } catch (e) {
+      return const Left(AnonFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> clearCachedAssets() async {
+    try {
+      await localDataSource.clearCachedAssets();
+      return const Right(unit);
     } catch (e) {
       return const Left(AnonFailure());
     }

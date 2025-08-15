@@ -62,7 +62,6 @@ class VideoRemoteDataSourceImpl extends VideoRemoteDataSource {
   Future<Unit> addComments({
     required Comment comment,
   }) async {
-    print("comment : ${comment.videoId}");
     Map commentJson = CommentModel.fromClass(comment).toJson();
     //
     try {

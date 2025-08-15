@@ -24,4 +24,7 @@ abstract class AssetCacheRepository {
   Future<Either<Failure, bool>> isAssetCached({
     required RetrieveAssetRequest request,
   });
+
+  /// Clear all cached assets
+  Future<Either<Failure, Unit>> clearCachedAssets();
 }

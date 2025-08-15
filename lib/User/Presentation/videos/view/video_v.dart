@@ -24,6 +24,7 @@ class VideoView extends StatefulWidget {
 class _VideoViewState extends State<VideoView> {
   @override
   Widget build(BuildContext context) {
+    print("videoId : ${widget.videoId}");
     return Scaffold(
       body: BlocProvider(
         create: (_) => VideoBloc()

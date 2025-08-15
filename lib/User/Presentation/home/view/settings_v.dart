@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moatmat_app/User/Core/functions/show_alert.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
 import 'package:moatmat_app/User/Core/widgets/toucheable_tile_widget.dart';
+import 'package:moatmat_app/User/Features/buckets/domain/usecases/clear_cache_uc.dart';
 import 'package:moatmat_app/User/Features/update/domain/entites/update_info.dart';
 import 'package:moatmat_app/User/Presentation/home/view/about_us_v.dart';
 import 'package:moatmat_app/User/Presentation/home/view/communicate_with_us_v.dart';
@@ -64,6 +66,26 @@ class _SettingsViewState extends State<SettingsView> {
                       userData: locator<UserData>(),
                     ),
                   ),
+                );
+              },
+            ),
+            TouchableTileWidget(
+              title: "حذف ذاكرة التخزين المحلية",
+              iconData: Icons.delete_outline,
+              onTap: () {
+                showAlert(
+                  context: context,
+                  title: "حذف ذاكرة التخزين المحلية",
+                  body: "هل أنت متأكد من حذف ذاكرة التخزين المحلية؟",
+                  onAgree: () {
+                    locator<ClearCacheUC>().call().then((value) {
+                      if (value.isRight()) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("تم حذف ذاكرة التخزين المحلية بنجاح")),
+                        );
+                      }
+                    });
+                  },
                 );
               },
             ),
