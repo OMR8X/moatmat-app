@@ -45,6 +45,6 @@ abstract class NotificationsRepository {
     required String deviceToken,
     required String platform,
   });
-  
-    Future<Either<Failure, Unit>> markNotificationAsSeen(String notificationId);
+
+  Future<Either<Failure, Unit>> markNotificationAsSeen(String notificationId);
 }

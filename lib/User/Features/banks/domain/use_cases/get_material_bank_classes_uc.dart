@@ -7,7 +7,7 @@ class GetMaterialBankClassesUC {
   final BanksRepository repository;
 
   GetMaterialBankClassesUC({required this.repository});
-  Future<Either<Failure, List<(String, int)>>>  call({required String material}) async {
+  Future<Either<Failure, List<(String, int)>>> call({required String material}) async {
     return await repository.getMaterialBankClasses(material: material);
   }
 }

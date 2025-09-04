@@ -169,6 +169,15 @@ class TestTileWidget extends StatelessWidget {
   }
 
   Widget getSubTitle() {
+    if (kDebugMode) {
+      return Text(
+        "${test.information.videos?.length.toString() ?? "0"} , ${test.information.files?.length.toString() ?? "0"}",
+        style: const TextStyle(
+          fontSize: 10,
+          color: Colors.white54,
+        ),
+      );
+    }
     if (test.information.password != null && test.information.password!.isNotEmpty) {
       return const Text(
         "كلمة السر مطلوبة",

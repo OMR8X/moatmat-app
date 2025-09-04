@@ -1,11 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+import 'package:moatmat_app/User/Core/errors/exceptions_mapper.dart';
 import 'package:moatmat_app/User/Features/tests/data/datasources/tests_ds.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/mini_test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/repository/t_repository.dart';
 
 import '../../../../Core/errors/exceptions.dart';
+import '../../../../Core/errors/failures.dart';
 import '../../../auth/domain/entites/teacher_data.dart';
 import '../../domain/entities/outer_test.dart';
 
@@ -19,7 +21,7 @@ class TestsRepositoryImpl implements TestsRepository {
       var res = await dataSource.getMaterialTestClasses(material: material);
       return right(res);
     } on Exception catch (e) {
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -28,8 +30,8 @@ class TestsRepositoryImpl implements TestsRepository {
     try {
       final res = await dataSource.getOuterTestById(id: id);
       return right(res);
-    } on Exception {
-      return left(const AnonFailure());
+    } on Exception catch (e) {
+      return left(e.toFailure);
     }
   }
 
@@ -43,7 +45,7 @@ class TestsRepositoryImpl implements TestsRepository {
       return right(res);
     } on Exception catch (e) {
       debugPrint("Anon Exception: $e");
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -56,8 +58,8 @@ class TestsRepositoryImpl implements TestsRepository {
         material: material,
       );
       return right(res);
-    } on Exception {
-      return left(const AnonFailure());
+    } on Exception catch (e) {
+      return left(e.toFailure);
     }
   }
 
@@ -75,7 +77,7 @@ class TestsRepositoryImpl implements TestsRepository {
       var res = await dataSource.getTestById(id: id);
       return right(res);
     } on Exception catch (e) {
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -84,8 +86,8 @@ class TestsRepositoryImpl implements TestsRepository {
     try {
       var r = await dataSource.canDoTest(test: test);
       return right(r);
-    } on Exception {
-      return left(const AnonFailure());
+    } on Exception catch (e) {
+      return left(e.toFailure);
     }
   }
 
@@ -95,7 +97,7 @@ class TestsRepositoryImpl implements TestsRepository {
       final res = await dataSource.getTestsByIds(ids: ids, showHidden: showHidden);
       return right(res);
     } on Exception catch (e) {
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -108,7 +110,7 @@ class TestsRepositoryImpl implements TestsRepository {
       var res = await dataSource.getSchoolTestClasses(schoolId: schoolId, material: material);
       return right(res);
     } on Exception catch (e) {
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -126,7 +128,7 @@ class TestsRepositoryImpl implements TestsRepository {
       );
       return right(res);
     } on Exception catch (e) {
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -140,7 +142,7 @@ class TestsRepositoryImpl implements TestsRepository {
       return left(const CacheFailure());
     } on Exception catch (e) {
       debugPrint("Cache test exception: $e");
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -149,13 +151,8 @@ class TestsRepositoryImpl implements TestsRepository {
     try {
       var res = await dataSource.getCachedTests();
       return right(res);
-    } on InvalidCacheException {
-      return left(const InvalidCacheFailure());
-    } on CacheException {
-      return left(const CacheFailure());
     } on Exception catch (e) {
-      debugPrint("Get cached tests exception: $e");
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -164,11 +161,9 @@ class TestsRepositoryImpl implements TestsRepository {
     try {
       var res = await dataSource.clearCachedTests();
       return right(res);
-    } on CacheException {
-      return left(const CacheFailure());
     } on Exception catch (e) {
       debugPrint("Clear cached tests exception: $e");
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 
@@ -177,11 +172,8 @@ class TestsRepositoryImpl implements TestsRepository {
     try {
       var res = await dataSource.deleteCachedTest(testId: testId);
       return right(res);
-    } on CacheException {
-      return left(const CacheFailure());
     } on Exception catch (e) {
-      debugPrint("Delete cached test exception: $e");
-      return left(const AnonFailure());
+      return left(e.toFailure);
     }
   }
 }

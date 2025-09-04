@@ -9,6 +9,9 @@ import '../../../../Core/errors/exceptions.dart';
 abstract class RemoteAssetDataSource {
   /// Download asset from URL
   Future<Uint8List> downloadAsset({required CacheAssetRequest request});
+
+  /// Get file size (content length) from URL
+  Future<int> getFileSize({required String fileUrl});
 }
 
 class RemoteAssetDataSourceImpl implements RemoteAssetDataSource {
@@ -52,10 +55,38 @@ class RemoteAssetDataSourceImpl implements RemoteAssetDataSource {
       final bytes = bytesBuilder.toBytes();
       return bytes;
     } on AssetNotExistsException {
-      debugPrint("error not found");
+      debugPrint("failure not found");
       rethrow;
     } catch (e) {
-      debugPrint("error $e");
+      debugPrint("failure $e");
+      throw AssetDownloadException();
+    }
+  }
+
+  @override
+  Future<int> getFileSize({required String fileUrl}) async {
+    try {
+      final uri = Uri.tryParse(fileUrl);
+      if (uri == null || !uri.hasScheme || (!uri.isScheme('http') && !uri.isScheme('https'))) {
+        throw AssetInvalidUrlException();
+      }
+
+      final response = await manager().head(
+        fileUrl,
+      );
+
+      if (response.statusCode != 200) {
+        if ([404, 403, 401, 400].contains(response.statusCode)) throw AssetNotExistsException();
+        throw AssetDownloadException();
+      }
+
+      final contentLength = response.headers.value('content-length');
+      return contentLength != null ? int.parse(contentLength) : 0;
+    } on AssetNotExistsException {
+      debugPrint("failure not found");
+      rethrow;
+    } catch (e) {
+      debugPrint("failure getting file size: $e");
       throw AssetDownloadException();
     }
   }

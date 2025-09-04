@@ -7,15 +7,25 @@ abstract class DownloadTestEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class InitializeDownloadTest extends DownloadTestEvent {
+class InitializeDownloadTestEvent extends DownloadTestEvent {
+  final int testId;
+  final bool? forceDownload;
+
+  const InitializeDownloadTestEvent({required this.testId, this.forceDownload = false});
+
+  @override
+  List<Object?> get props => [testId, forceDownload];
+}
+
+class RetryDownloadTestEvent extends DownloadTestEvent {
   final int testId;
 
-  const InitializeDownloadTest({required this.testId});
+  const RetryDownloadTestEvent({required this.testId});
 
   @override
   List<Object?> get props => [testId];
 }
 
-class CancelDownloadTest extends DownloadTestEvent {
-  const CancelDownloadTest();
+class CancelDownloadTestEvent extends DownloadTestEvent {
+  const CancelDownloadTestEvent();
 }

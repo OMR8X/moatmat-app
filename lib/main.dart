@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/services/device_s.dart';
+import 'package:moatmat_app/User/Features/notifications/domain/usecases/initialize_firebase_notifications_usecase.dart';
+import 'package:moatmat_app/User/Features/notifications/domain/usecases/initialize_local_notifications_usecase.dart';
 
 import 'package:moatmat_app/User/Presentation/app_root.dart';
 import 'package:moatmat_app/User/Presentation/banks/state/full_time_explore/full_time_explore_cubit.dart';
@@ -11,6 +13,7 @@ import 'package:moatmat_app/User/Presentation/banks/state/get_bank_c/get_bank_cu
 import 'package:moatmat_app/User/Presentation/banks/state/no_time_explore/no_time_explore_cubit.dart';
 import 'package:moatmat_app/User/Presentation/banks/state/per_question_explore/per_question_explore_cubit.dart';
 import 'package:moatmat_app/User/Presentation/home/state/cubit/notifications_cubit.dart';
+import 'package:moatmat_app/User/Presentation/notifications/state/initialize_notifications_cubit/initialize_notifications_cubit.dart';
 import 'package:moatmat_app/User/Presentation/notifications/state/notifications_bloc/notifications_bloc.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/get_test_c/get_test_cubit.dart';
 import 'package:no_screenshot/no_screenshot.dart';
@@ -35,13 +38,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
     //
     await SupabaseServices.init();
     //
     await initGetIt();
+    //
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     //
     await DeviceService().init();
 
@@ -61,7 +65,9 @@ void main() async {
     }
     // if (!kDebugMode) {
     await NoScreenshot.instance.screenshotOff();
-  } on Exception catch (e) {
+  } on Exception catch (e, stackTrace) {
+    final String errorDump = 'Exception: $e\n$stackTrace';
+    await Clipboard.setData(ClipboardData(text: errorDump));
     debugPrint("error: $e");
   }
   //
@@ -83,6 +89,7 @@ void main() async {
         BlocProvider(create: (context) => CodesCentersCubit()),
         BlocProvider(create: (context) => MyResultsCubit()),
         BlocProvider(create: (context) => SchoolCubit()),
+        BlocProvider(create: (context) => locator<InitializeNotificationsCubit>()..initialize()),
         BlocProvider(create: (context) => locator<NotificationsBloc>()),
       ],
       child: const AppRoot(),

@@ -10,8 +10,7 @@ class BanksRepositoryImpl implements BanksRepository {
 
   BanksRepositoryImpl({required this.dataSource});
   @override
-  Future<Either<Failure, List<(String, int)>>> getMaterialBankClasses(
-      {required String material}) async {
+  Future<Either<Failure, List<(String, int)>>> getMaterialBankClasses({required String material}) async {
     try {
       var res = await dataSource.getMaterialBankClasses(material: material);
       return right(res);
@@ -22,8 +21,7 @@ class BanksRepositoryImpl implements BanksRepository {
   }
 
   @override
-  Future<Either<Failure, List<(TeacherData, int)>>> getMaterialBanksTeachers(
-      {required String clas, required String material}) async {
+  Future<Either<Failure, List<(TeacherData, int)>>> getMaterialBanksTeachers({required String clas, required String material}) async {
     try {
       var res = await dataSource.getMaterialBanksTeachers(
         clas: clas,
@@ -36,10 +34,7 @@ class BanksRepositoryImpl implements BanksRepository {
   }
 
   @override
-  Future<Either<Failure, List<(Bank, int)>>> getTeacherBanks(
-      {required String teacherEmail,
-      required String clas,
-      required String material}) async {
+  Future<Either<Failure, List<(Bank, int)>>> getTeacherBanks({required String teacherEmail, required String clas, required String material}) async {
     try {
       var res = await dataSource.getTeacherBanks(
         teacherEmail: teacherEmail,
@@ -63,9 +58,8 @@ class BanksRepositoryImpl implements BanksRepository {
     }
   }
 
-    @override
-  Future<Either<Exception, List<Bank>>> getBanksByIds(
-      {required List<int> ids}) async {
+  @override
+  Future<Either<Exception, List<Bank>>> getBanksByIds({required List<int> ids}) async {
     try {
       var res = await dataSource.getBanksByIds(ids: ids);
       return right(res);

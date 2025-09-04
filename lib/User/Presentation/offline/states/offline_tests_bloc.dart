@@ -48,7 +48,7 @@ class OfflineTestsBloc extends Bloc<OfflineTestsEvent, OfflineTestsState> {
       (failure) => emit(OfflineTestsInitial(
         selectedMaterial: event.material,
         cachedTests: [],
-        message: failure.text,
+        message: failure.message,
       )),
       (allTests) {
         // Filter tests by selected material

@@ -141,7 +141,6 @@ class UserRepositoryImpl implements UserRepository {
       var res = await remoteDataSource.insertUserData(userData: userData);
       return right(res);
     } on Exception catch (e) {
-   
       return left(const AnonFailure());
     }
   }

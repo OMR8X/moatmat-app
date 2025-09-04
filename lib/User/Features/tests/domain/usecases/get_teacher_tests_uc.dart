@@ -3,6 +3,7 @@ import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/repository/t_repository.dart';
 
 import '../../../../Core/errors/exceptions.dart';
+import '../../../../Core/errors/failures.dart';
 
 class GetTeacherTestsUC {
   final TestsRepository repository;

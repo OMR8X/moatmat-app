@@ -9,7 +9,7 @@ abstract class NotificationLocalDataSource {
 }
 
 class NotificationLocalDataSourceImpl implements NotificationLocalDataSource {
-static const String _key = 'seen_notification_ids';
+  static const String _key = 'seen_notification_ids';
 
   final SharedPreferences sharedPreferences;
 

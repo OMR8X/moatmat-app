@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../Core/errors/exceptions.dart';
+import '../../../../Core/errors/failures.dart';
 import '../entities/test.dart';
 import '../repository/t_repository.dart';
 

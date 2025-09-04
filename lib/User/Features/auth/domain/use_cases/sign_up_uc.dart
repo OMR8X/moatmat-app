@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../Core/errors/exceptions.dart';
 import '../entites/user_data.dart';
 import '../repository/users_repository.dart';
+
 class SignUpUC {
   final UserRepository repository;
 

@@ -57,8 +57,6 @@ class CodesDataSourceImpl implements CodesDataSource {
     }
   }
 
-
-
   Future<void> increaseBalance(int amount) async {
     //
     var userData = locator<UserData>();

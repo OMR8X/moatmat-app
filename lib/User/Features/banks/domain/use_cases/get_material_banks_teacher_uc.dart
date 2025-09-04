@@ -8,11 +8,10 @@ class GetMaterialBanksTeachersUC {
   final BanksRepository repository;
 
   GetMaterialBanksTeachersUC({required this.repository});
-  Future<Either<Failure, List<(TeacherData,int)>>>  call({
+  Future<Either<Failure, List<(TeacherData, int)>>> call({
     required String clas,
     required String material,
   }) async {
-    return await repository.getMaterialBanksTeachers(
-        clas: clas, material: material);
+    return await repository.getMaterialBanksTeachers(clas: clas, material: material);
   }
 }

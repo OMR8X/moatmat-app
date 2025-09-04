@@ -6,6 +6,7 @@ import 'package:moatmat_app/User/Core/functions/coders/encode.dart';
 import 'package:moatmat_app/User/Core/functions/show_alert.dart';
 import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Core/resources/colors_r.dart';
+import 'package:moatmat_app/User/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/User/Core/resources/spacing_resources.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/download_test/download_test_bloc.dart';
 import 'package:moatmat_app/User/Presentation/tests/state/download_test/download_test_event.dart';
@@ -40,13 +41,13 @@ class _DownloadTestViewState extends State<DownloadTestView> {
           title: "تأكيد الإلغاء",
           body: "هل تريد إلغاء تحميل الاختبار؟",
           onAgree: () {
-            context.read<DownloadTestBloc>().add(const CancelDownloadTest());
+            context.read<DownloadTestBloc>().add(const CancelDownloadTestEvent());
             Navigator.of(context).pop();
           },
         );
       },
       child: BlocProvider(
-        create: (context) => context.read<DownloadTestBloc>()..add(InitializeDownloadTest(testId: widget.testId)),
+        create: (context) => context.read<DownloadTestBloc>()..add(InitializeDownloadTestEvent(testId: widget.testId)),
         child: Scaffold(
           backgroundColor: ColorsResources.background,
           appBar: AppBar(
@@ -64,7 +65,7 @@ class _DownloadTestViewState extends State<DownloadTestView> {
                     errorMessage: state.errorMessage,
                     onRetry: () {
                       context.read<DownloadTestBloc>().add(
-                            InitializeDownloadTest(testId: widget.testId),
+                            InitializeDownloadTestEvent(testId: widget.testId),
                           );
                     },
                   );
@@ -283,7 +284,7 @@ class DownloadingStateWidget extends StatelessWidget {
             title: "تأكيد الإلغاء",
             body: "هل تريد إلغاء تحميل الاختبار؟",
             onAgree: () {
-              context.read<DownloadTestBloc>().add(const CancelDownloadTest());
+              context.read<DownloadTestBloc>().add(const CancelDownloadTestEvent());
             },
           );
         },
@@ -545,28 +546,62 @@ class SuccessStateWidget extends StatelessWidget {
           ),
           const SizedBox(height: 40),
           // Enhanced back button
-          SizedBox(
-            width: 200,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorsResources.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorsResources.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
+              elevation: 2,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 10),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.arrow_back_ios, size: 16),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 4),
+                    child: Icon(Icons.arrow_back_ios, size: 16),
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'العودة',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: SizesResources.s4),
+          OutlinedButton(
+            onPressed: () {
+              context.read<DownloadTestBloc>().add(InitializeDownloadTestEvent(testId: context.read<DownloadTestBloc>().state.test!.id, forceDownload: true));
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 2,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 10),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 3),
+                    child: Icon(Icons.refresh, size: 16),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'اعادة تحميل الاختبار',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

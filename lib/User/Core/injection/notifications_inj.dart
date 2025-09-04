@@ -29,10 +29,6 @@ Future<void> injectNotifications() async {
   await injectPlugins();
   await injectBlocs();
   //
-  if (await checkInternetConnection()) {
-    await locator<InitializeLocalNotificationsUsecase>().call();
-    await locator<InitializeFirebaseNotificationsUsecase>().call();
-  }
 }
 
 Future<void> injectUC() async {

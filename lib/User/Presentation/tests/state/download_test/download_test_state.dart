@@ -36,6 +36,18 @@ class DownloadTestState extends Equatable {
     );
   }
 
+  DownloadTestState toFailure(String errorMessage) {
+    return copyWith(status: DownloadTestStatus.failure, errorMessage: errorMessage);
+  }
+
+  DownloadTestState toSuccess() {
+    return copyWith(status: DownloadTestStatus.success);
+  }
+
+  DownloadTestState toLoading() {
+    return copyWith(status: DownloadTestStatus.loading);
+  }
+
   @override
   List<Object?> get props => [
         status,

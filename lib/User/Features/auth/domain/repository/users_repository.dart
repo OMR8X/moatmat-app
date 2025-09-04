@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:moatmat_app/User/Core/errors/exceptions.dart';
+import 'package:moatmat_app/User/Core/errors/export_erros.dart';
 
 import '../entites/teacher_data.dart';
 import '../entites/user_data.dart';

@@ -38,7 +38,7 @@ class GetTestCubit extends Cubit<GetTestState> {
         (l) {
           emit(GetTestSelectMaterial(
             materials: materials,
-            error: l.text,
+            error: l.message,
           ));
         },
         (r) {
@@ -60,7 +60,7 @@ class GetTestCubit extends Cubit<GetTestState> {
     await res.then((value) {
       value.fold(
         (l) {
-          emit(GetTestSelectClass(classes: classes, error: l.text));
+          emit(GetTestSelectClass(classes: classes, error: l.message));
         },
         (r) {
           teachers = r;
@@ -84,7 +84,7 @@ class GetTestCubit extends Cubit<GetTestState> {
     await res.then((value) {
       value.fold(
         (l) {
-          emit(GetTestSelectTeacher(teachers: teachers, error: l.text));
+          emit(GetTestSelectTeacher(teachers: teachers, error: l.message));
         },
         (r) {
           tests = r;

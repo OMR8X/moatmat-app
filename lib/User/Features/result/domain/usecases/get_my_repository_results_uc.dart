@@ -9,7 +9,10 @@ class GetMyRepositoryResultsUc {
 
   GetMyRepositoryResultsUc({required this.repository});
 
-  Future<Either<Failure, List<Result>>> call({int? testId, int? bankId,}) {
+  Future<Either<Failure, List<Result>>> call({
+    int? testId,
+    int? bankId,
+  }) {
     return repository.getMyRepositoryResults(
       testId: testId,
       bankId: bankId,

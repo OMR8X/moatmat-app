@@ -191,7 +191,7 @@ class MyResultsCubit extends Cubit<MyResultsState> {
 
   bool isTestPurchased(Test? test) {
     //
-    if (test == null ) {
+    if (test == null) {
       return false;
     }
     //
@@ -213,7 +213,7 @@ class MyResultsCubit extends Cubit<MyResultsState> {
 
   bool isBankPurchased(Bank? bank) {
     //
-    if (bank == null ) {
+    if (bank == null) {
       return false;
     }
     //

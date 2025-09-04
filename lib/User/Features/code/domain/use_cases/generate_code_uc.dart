@@ -4,11 +4,11 @@ import '../../../../Core/errors/exceptions.dart';
 import '../entites/code_data.dart';
 import '../repository/codes_repository.dart';
 
-class GenerateCodeUC{
+class GenerateCodeUC {
   final CodesRepository repository;
 
   GenerateCodeUC({required this.repository});
-    Future<Either<Failure, CodeData>>  call({required int amount})async{
-      return repository.generateCode(amount:amount);
-    }
+  Future<Either<Failure, CodeData>> call({required int amount}) async {
+    return repository.generateCode(amount: amount);
+  }
 }

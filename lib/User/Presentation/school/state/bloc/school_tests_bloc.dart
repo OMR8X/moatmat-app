@@ -51,7 +51,7 @@ class SchoolTestsBloc extends Bloc<SchoolTestsEvent, SchoolTestsState> {
     emit(SchoolTestsLoading());
     await _getSchoolTestClassesUC.call(schoolId: (selectedSchoolId).toString(), material: selectedMaterial).then((value) async {
       value.fold((l) async {
-        await Fluttertoast.showToast(msg: l.text);
+        await Fluttertoast.showToast(msg: l.message);
         emit(SchoolTestsLoading());
       }, (r) {
         emit(PickClassState(classes: r));
@@ -63,7 +63,7 @@ class SchoolTestsBloc extends Bloc<SchoolTestsEvent, SchoolTestsState> {
     emit(SchoolTestsLoading());
     await _getSchoolTestsTeacherUC.call(schoolId: selectedSchoolId, clas: event.className, material: selectedMaterial).then((value) async {
       value.fold((l) async {
-        await Fluttertoast.showToast(msg: l.text);
+        await Fluttertoast.showToast(msg: l.message);
         emit(SchoolTestsLoading());
       }, (r) {
         selectedClass = event.className;

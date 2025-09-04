@@ -3,6 +3,7 @@ import 'package:moatmat_app/User/Features/tests/domain/entities/mini_test.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
 
 import '../../../../Core/errors/exceptions.dart';
+import '../../../../Core/errors/failures.dart';
 import '../../../auth/domain/entites/teacher_data.dart';
 import '../entities/outer_test.dart';
 

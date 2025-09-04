@@ -1,13 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/User/Core/errors/exceptions.dart';
+import 'package:moatmat_app/User/Core/injection/app_inj.dart';
 import 'package:moatmat_app/User/Features/buckets/domain/requests/cache_asset_request.dart';
 import 'package:moatmat_app/User/Features/buckets/domain/usecases/cache_asset_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/cache_test_uc.dart';
+import 'package:moatmat_app/User/Features/tests/domain/usecases/delete_cached_test_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_cached_tests_uc.dart';
 import 'package:moatmat_app/User/Features/tests/domain/usecases/get_test_by_id.dart';
 import 'package:moatmat_app/User/Features/tests/domain/entities/test.dart';
+import 'package:moatmat_app/User/Presentation/offline/states/offline_tests_bloc.dart';
 import 'download_test_event.dart';
 import 'download_test_state.dart';
 import 'downloadable_asset.dart';
@@ -19,8 +23,8 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
   final GetCachedTestsUC _getCachedTestsUsecase;
 
   DownloadTestBloc(this._getTestByIdUsecase, this._cacheAssetUsecase, this._cacheTestUsecase, this._getCachedTestsUsecase) : super(const DownloadTestState()) {
-    on<InitializeDownloadTest>(_onInitializeDownloadTest);
-    on<CancelDownloadTest>(_onCancelDownloadTest);
+    on<InitializeDownloadTestEvent>(_onInitializeDownloadTestEvent);
+    on<CancelDownloadTestEvent>(_onCancelDownloadTestEvent);
   }
 
   @override
@@ -38,83 +42,76 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
     }
   }
 
-  Future<void> _onInitializeDownloadTest(
-    InitializeDownloadTest event,
+  Future<void> _onInitializeDownloadTestEvent(
+    InitializeDownloadTestEvent event,
     Emitter<DownloadTestState> emit,
   ) async {
-    print(event.testId);
     try {
-      emit(state.copyWith(
-        status: DownloadTestStatus.loading,
-        assets: [],
-        errorMessage: null,
-        test: null,
-      ));
+      ///
+      emit(state.copyWith(status: DownloadTestStatus.loading, assets: [], errorMessage: null, test: null));
 
-      // First, check if the test is already cached
-      final cachedTestsResult = await _getCachedTestsUsecase();
-
-      await cachedTestsResult.fold(
-        (failure) async {
-          // If we can't get cached tests, continue with normal flow
-          await _downloadTestFlow(event.testId, emit);
-        },
-        (cachedTests) async {
-          // Check if the test is already cached
-          final matchingTests = cachedTests.where((test) => test.id == event.testId);
-          final cachedTest = matchingTests.isNotEmpty ? matchingTests.first : null;
-
-          if (cachedTest != null && !kDebugMode) {
-            // Test is already cached, emit success immediately
-            if (!emit.isDone) {
-              emit(state.copyWith(
-                status: DownloadTestStatus.success,
-                test: cachedTest,
-                assets: [], // No assets need to be downloaded
-              ));
-            }
-          } else {
-            // Test is not cached, proceed with download
-            await _downloadTestFlow(event.testId, emit);
-          }
-        },
-      );
+      ///
+      await _checkIfTestIsCached(event, emit);
     } catch (error) {
-      debugPrint("debug: error: $error");
-      if (!emit.isDone) {
-        emit(state.copyWith(
-          status: DownloadTestStatus.failure,
-          errorMessage: error.toString(),
-        ));
-      }
+      if (emit.isDone) return;
+      emit(state.copyWith(
+        status: DownloadTestStatus.failure,
+        errorMessage: error.toString(),
+      ));
     }
+  }
+
+  Future<void> _checkIfTestIsCached(
+    InitializeDownloadTestEvent event,
+    Emitter<DownloadTestState> emit,
+  ) async {
+    final cachedTestsResult = await _getCachedTestsUsecase();
+
+    await cachedTestsResult.fold(
+      (failure) async => await _downloadTestFlow(event.testId, emit),
+      (cachedTests) async {
+        //
+        final cachedTest = cachedTests.firstWhereOrNull((test) => test.id == event.testId);
+        //
+        if (cachedTest != null && event.forceDownload != true) {
+          if (!emit.isDone) {
+            emit(state.copyWith(
+              status: DownloadTestStatus.success,
+              test: cachedTest,
+              assets: [],
+            ));
+          }
+        } else {
+          await _downloadTestFlow(event.testId, emit);
+        }
+      },
+    );
   }
 
   Future<void> _downloadTestFlow(int testId, Emitter<DownloadTestState> emit) async {
     final result = await _getTestByIdUsecase(id: testId);
-
     await result.fold(
       (failure) async {
-        if (!emit.isDone) {
-          emit(state.copyWith(
-            status: DownloadTestStatus.failure,
-            errorMessage: failure.toString(),
-          ));
-        }
+        if (emit.isDone) return;
+        emit(state.copyWith(
+          status: DownloadTestStatus.failure,
+          errorMessage: failure.toString(),
+        ));
       },
       (test) async {
+        ///
         final newAssets = _extractAllAssets(test);
         // Preserve existing asset states if this is a retry
         final assetsWithPreservedStates = _preserveAssetStates(newAssets, state.assets);
+        //
         emit(state.copyWith(
           status: DownloadTestStatus.downloading,
           test: test,
           assets: assetsWithPreservedStates,
         ));
 
-        // Start downloading immediately
+        /// Start downloading
         if (assetsWithPreservedStates.isEmpty) {
-          // Cache the test even if there are no assets to download
           final cacheResult = await _cacheTestUsecase(test: test);
           await cacheResult.fold(
             (failure) async {
@@ -126,11 +123,10 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
               }
             },
             (_) async {
-              if (!emit.isDone) {
-                emit(state.copyWith(
-                  status: DownloadTestStatus.success,
-                ));
-              }
+              if (emit.isDone) return;
+              emit(state.copyWith(
+                status: DownloadTestStatus.success,
+              ));
             },
           );
           return;
@@ -140,11 +136,13 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
         final updatedAssets = List<DownloadableAsset>.from(assetsWithPreservedStates);
 
         for (int i = 0; i < assetsWithPreservedStates.length; i++) {
+          ///
           if (emit.isDone) return;
 
+          ///
           final asset = assetsWithPreservedStates[i];
 
-          // Skip assets that are already completed from previous attempts
+          // skip assets that are already completed
           if (asset.state == DownloadState.completed) {
             continue;
           }
@@ -160,13 +158,12 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
             cancelToken: asset.cancelToken,
             onProgress: (received, total) {
               if (!isClosed && !emit.isDone) {
-                final assetProgress = (received / total) * 100;
-                final newAssets = List<DownloadableAsset>.from(state.assets);
-                newAssets[i] = asset.copyWith(
+                final assets = List<DownloadableAsset>.from(state.assets);
+                assets[i] = asset.copyWith(
                   state: DownloadState.downloading,
-                  progress: assetProgress,
+                  progress: (received / total) * 100,
                 );
-                emit(state.copyWith(assets: newAssets));
+                emit(state.copyWith(assets: assets));
               }
             },
           );
@@ -178,35 +175,15 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
           if (!isClosed && !emit.isDone) {
             await result.fold(
               (failure) async {
-                if (failure is CancelFailure) {
-                  return;
-                }
-                if (failure is AssetNotExistsFailure) {
-                  // Mark asset as failed
-                  updatedAssets[i] = asset.copyWith(
-                    state: DownloadState.failed,
-                    progress: 100.0,
-                  );
-                  if (!emit.isDone) {
-                    emit(state.copyWith(assets: updatedAssets));
-                  }
-                } else {
-                  // Stop all downloads and emit failure state
-                  _cancelAllDownloads();
-                  if (!emit.isDone) {
-                    emit(state.copyWith(
-                      status: DownloadTestStatus.failure,
-                      errorMessage: 'فشل تحميل الملف: ${_getAssetName(asset.url)}',
-                    ));
-                  }
+                debugPrint("failure: $failure");
+                if (failure is CancelFailure) return;
+                updatedAssets[i] = asset.copyWith(state: DownloadState.failed);
+                if (!emit.isDone) {
+                  emit(state.copyWith(assets: updatedAssets));
                 }
               },
               (cachedAsset) async {
-                // Mark asset as completed
-                updatedAssets[i] = asset.copyWith(
-                  state: DownloadState.completed,
-                  progress: 100.0,
-                );
+                updatedAssets[i] = asset.copyWith(state: DownloadState.completed, progress: 100.0);
                 if (!emit.isDone) {
                   emit(state.copyWith(assets: updatedAssets));
                 }
@@ -215,53 +192,37 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
           }
         }
 
-        // Cache test and emit success regardless of individual asset failures
-        // Only fail if ALL assets failed or if there's a critical error
+        // Cache test and emit success
         if (!isClosed && !emit.isDone) {
-          final successfulAssets = updatedAssets.where((asset) => asset.state == DownloadState.completed && asset.errorMessage == null).length;
           final failedAssets = updatedAssets.where((asset) => asset.state == DownloadState.failed).length;
-          final failedButMarkedCompleted = updatedAssets.where((asset) => asset.state == DownloadState.completed && asset.errorMessage != null).length;
-          // Continue with caching if at least some assets were successfully downloaded
-          // or if there were no assets to download, or if only non-critical failures occurred
-          final totalRealFailures = failedAssets + failedButMarkedCompleted;
-          final shouldProceed = assetsWithPreservedStates.isEmpty || successfulAssets > 0 || totalRealFailures < assetsWithPreservedStates.length;
 
-          if (shouldProceed) {
+          if (failedAssets <= 0) {
             // Cache the test after processing all assets
             final cacheResult = await _cacheTestUsecase(test: test);
 
             await cacheResult.fold(
               (failure) async {
-                if (!emit.isDone) {
-                  emit(state.copyWith(
-                    status: DownloadTestStatus.failure,
-                    errorMessage: 'فشل حفظ الاختبار: ${failure.toString()}',
-                  ));
-                }
+                if (emit.isDone) return;
+                emit(state.copyWith(
+                  status: DownloadTestStatus.failure,
+                  errorMessage: 'فشل حفظ الاختبار: ${failure.toString()}',
+                ));
               },
               (_) async {
-                if (!emit.isDone) {
-                  emit(state.copyWith(
-                    status: DownloadTestStatus.success,
-                  ));
-                }
+                if (emit.isDone) return;
+                emit(state.copyWith(status: DownloadTestStatus.success));
               },
             );
           } else {
-            // Only fail if ALL assets failed with network/critical errors
-            if (!emit.isDone) {
-              final networkFailures = failedAssets;
-              if (networkFailures > 0) {
-                emit(state.copyWith(
-                  status: DownloadTestStatus.failure,
-                  errorMessage: 'فشل تحميل الملفات بسبب مشاكل في الاتصال. يرجى المحاولة مرة أخرى.',
-                ));
-              } else {
-                // All files were unavailable but not due to network issues
-                emit(state.copyWith(
-                  status: DownloadTestStatus.success,
-                ));
-              }
+            if (emit.isDone) return;
+            final networkFailures = failedAssets;
+            if (networkFailures > 0) {
+              emit(state.copyWith(
+                status: DownloadTestStatus.failure,
+                errorMessage: 'فشل تحميل الملفات بسبب مشاكل في الاتصال. يرجى المحاولة مرة أخرى.',
+              ));
+            } else {
+              emit(state.copyWith(status: DownloadTestStatus.success));
             }
           }
         }
@@ -276,15 +237,11 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
 
   /// Preserve asset states from previous download attempts
   List<DownloadableAsset> _preserveAssetStates(List<DownloadableAsset> newAssets, List<DownloadableAsset> existingAssets) {
-    if (existingAssets.isEmpty) return newAssets;
-
     return newAssets.map((newAsset) {
-      // Find matching existing asset by URL
       final matchingAssets = existingAssets.where((existing) => existing.url == newAsset.url);
       final existingAsset = matchingAssets.isNotEmpty ? matchingAssets.first : null;
 
       if (existingAsset != null) {
-        // Preserve the state and progress from the existing asset
         return newAsset.copyWith(
           state: existingAsset.state,
           progress: existingAsset.progress,
@@ -296,8 +253,8 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
     }).toList();
   }
 
-  void _onCancelDownloadTest(
-    CancelDownloadTest event,
+  void _onCancelDownloadTestEvent(
+    CancelDownloadTestEvent event,
     Emitter<DownloadTestState> emit,
   ) {
     try {

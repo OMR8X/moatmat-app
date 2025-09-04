@@ -22,6 +22,7 @@ abstract class LocalAssetDataSource {
 
   /// Check if asset exists in cache
   Future<bool> isAssetCached({
+    required int fileSize,
     required String fileName,
     required String repositoryId,
   });
@@ -107,13 +108,30 @@ class LocalAssetDataSourceImpl implements LocalAssetDataSource {
 
   @override
   Future<bool> isAssetCached({
+    required int fileSize,
     required String fileName,
     required String repositoryId,
   }) async {
-    final cacheDir = await _getCacheDirectory();
-    final idDir = Directory('${cacheDir.path}/$repositoryId');
-    final filePath = '${idDir.path}/$fileName';
-    return await File(filePath).exists();
+    try {
+      final cacheDir = await _getCacheDirectory();
+      final idDir = Directory('${cacheDir.path}/$repositoryId');
+      final filePath = '${idDir.path}/$fileName';
+      final file = File(filePath);
+
+      if (!await file.exists()) {
+        return false;
+      }
+
+      // Check if file size matches the expected size
+      final fileStats = await file.stat();
+      final localFileSize = fileStats.size;
+
+      // Return true only if file exists AND sizes match
+      return localFileSize == fileSize;
+    } catch (e) {
+      debugPrint('Error checking cached asset: ${e.toString()}');
+      return false;
+    }
   }
 
   @override

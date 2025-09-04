@@ -26,7 +26,12 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
   }) async {
     try {
       // Check if asset is already cached to prevent duplicates
-      final isAlreadyCached = await localDataSource.isAssetCached(fileName: request.fileName, repositoryId: request.fileRepositoryId);
+      final fileSize = await remoteDataSource.getFileSize(fileUrl: request.fileUrl);
+      final isAlreadyCached = await localDataSource.isAssetCached(
+        fileName: request.fileName,
+        repositoryId: request.fileRepositoryId,
+        fileSize: fileSize,
+      );
       if (isAlreadyCached) {
         final cachedAsset = await localDataSource.getCachedAsset(fileName: request.fileName, repositoryId: request.fileRepositoryId);
         return Right(cachedAsset.path);
@@ -76,7 +81,22 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
     required RetrieveAssetRequest request,
   }) async {
     try {
-      final isCached = await localDataSource.isAssetCached(fileName: request.fileName, repositoryId: request.fileRepositoryId);
+      // Get the expected file size from remote source
+      int fileSize = 0;
+      if (request.fileUrl != null) {
+        try {
+          fileSize = await remoteDataSource.getFileSize(fileUrl: request.fileUrl!);
+        } catch (e) {
+          debugPrint("Could not get file size: $e");
+          // Continue with size 0 if we can't get the file size
+        }
+      }
+
+      final isCached = await localDataSource.isAssetCached(
+        fileName: request.fileName,
+        repositoryId: request.fileRepositoryId,
+        fileSize: fileSize,
+      );
       return Right(isCached);
     } on AssetCacheException {
       return const Left(AssetCacheFailure());

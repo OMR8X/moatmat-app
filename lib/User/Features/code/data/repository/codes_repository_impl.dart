@@ -40,8 +40,7 @@ class CodesRepositoryImpl implements CodesRepository {
   }
 
   @override
-  Future<Either<Exception, List<CodeCenter>>> getCodesCenters(
-      {required String governorate}) async {
+  Future<Either<Exception, List<CodeCenter>>> getCodesCenters({required String governorate}) async {
     try {
       var res = await dataSource.getCodesCenters(governorate: governorate);
       return right(res);

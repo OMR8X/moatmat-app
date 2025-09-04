@@ -20,7 +20,6 @@ class PurchasesReporisotyrImpl implements PurchasesRepository {
       return right(response);
       //
     } catch (e) {
-      
       debugPrint(e.toString());
       //
       try {
