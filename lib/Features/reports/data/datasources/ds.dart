@@ -1,0 +1,115 @@
+import 'package:dartz/dartz.dart';
+import 'package:moatmat_app/Core/injection/app_inj.dart';
+import 'package:moatmat_app/Features/auth/domain/entites/user_data.dart';
+import 'package:moatmat_app/Features/reports/data/models/report_d_m.dart';
+import 'package:moatmat_app/Features/reports/domain/entities/reposrt_data.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+abstract class ReportsDataSource {
+  Future<Unit> reportOnTest({
+    required String message,
+    required String teacher,
+    required String name,
+    required int testID,
+    required int questionID,
+  });
+  Future<Unit> reportOnBank({
+    required String message,
+    required String teacher,
+    required String name,
+    required int bankID,
+    required int questionID,
+  });
+  Future<List<ReportData>> getReports();
+}
+
+class ReportsDataSourceImple implements ReportsDataSource {
+  final SupabaseClient client;
+
+  ReportsDataSourceImple({required this.client});
+
+  @override
+  Future<Unit> reportOnBank({
+    required String message,
+    required String teacher,
+    required String name,
+    required int bankID,
+    required int questionID,
+  }) async {
+    ReportData report = ReportData(
+      id: 0,
+      message: message,
+      userName: locator<UserData>().name,
+      questionID: questionID,
+      testId: null,
+      bankId: bankID,
+      name: name,
+      teacher: teacher,
+    );
+    //
+    var teacherId = await client
+        .from("teachers_data")
+        .select("auth_user_id")
+        .eq("email", teacher)
+        .single();
+    //
+
+    print("this is teacherId[id] :  ${teacherId["auth_user_id"]} ");
+    //
+    var data =
+        ReportDataModel.fromClass(report).toJson(teacherId["auth_user_id"] as String);
+    //
+    await client.from("reports").insert(data);
+    //
+    return unit;
+  }
+
+  @override
+  Future<Unit> reportOnTest({
+    required String message,
+    required String teacher,
+    required String name,
+    required int testID,
+    required int questionID,
+  }) async {
+    try {
+      ReportData report = ReportData(
+        id: 0,
+        message: message,
+        userName: locator<UserData>().name,
+        questionID: questionID,
+        testId: testID,
+        bankId: null,
+        name: name,
+        teacher: teacher,
+      );
+
+      var teacherId = await client
+          .from("teachers_data")
+          .select("auth_user_id")
+          .eq("email", teacher)
+          .single();
+
+      //
+      
+      var data =
+          ReportDataModel.fromClass(report).toJson(teacherId["auth_user_id"] as String);
+      //
+      await client.from("reports").insert(data);
+      //
+
+      return unit;
+    } catch (e) {
+      print("Errrrrrrrorrrrr : ${e.toString()}");
+      return throw Exception(e);
+    }
+  }
+
+  @override
+  Future<List<ReportData>> getReports() async {
+    var res = await client.from("reports").select();
+    List<ReportData> reports = [];
+    reports = res.map((e) => ReportDataModel.fromJson(e)).toList();
+    return reports;
+  }
+}

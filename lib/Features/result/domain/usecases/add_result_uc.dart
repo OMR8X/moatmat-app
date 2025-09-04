@@ -1,0 +1,16 @@
+import 'package:dartz/dartz.dart';
+import 'package:moatmat_app/Features/result/domain/repository/repository.dart';
+
+import '../../../../Core/errors/export_errors.dart';
+import '../../../tests/domain/entities/test.dart';
+import '../entities/result.dart';
+
+class AddResultUC {
+  final ResultsRepository repository;
+
+  AddResultUC({required this.repository});
+
+  Future<Either<Failure, Unit>> call({required Result result}) async {
+    return await repository.addResult(result: result);
+  }
+}

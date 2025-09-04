@@ -1,0 +1,21 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:moatmat_app/Core/injection/app_inj.dart';
+import 'package:moatmat_app/Features/school/domain/entities/school.dart';
+import 'package:moatmat_app/Features/school/domain/usecases/get_schools_usecase.dart';
+
+part 'school_state.dart';
+
+class SchoolCubit extends Cubit<SchoolState> {
+  SchoolCubit() : super(SchoolInitial());
+  init() {
+    emit(SchoolLoading());
+    locator<GetSchoolUc>().call().then((value) {
+      value.fold((l) {
+        emit(SchoolFailed(msg: l.message));
+      }, (r) {
+        emit(SchoolLoaded(schools: r));
+      });
+    });
+  }
+}

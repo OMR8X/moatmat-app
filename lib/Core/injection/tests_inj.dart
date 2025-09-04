@@ -1,0 +1,110 @@
+import 'package:moatmat_app/Features/tests/data/datasources/tests_ds.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/get_school_test_classes_uc.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/get_school_tests_teacher_uc.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/get_tests_by_ids_uc.dart';
+import 'package:moatmat_app/Features/tests/domain/repository/t_repository.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/can_do_test_uc.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/get_outer_test_by_id_uc.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/get_test_by_id.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/cache_test_uc.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/get_cached_tests_uc.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/clear_cached_tests_uc.dart';
+import 'package:moatmat_app/Features/tests/domain/usecases/delete_cached_test_uc.dart';
+
+import '../../Features/tests/data/repository/t_repository.dart';
+import '../../Features/tests/domain/usecases/get_material_test_classes_uc.dart';
+import '../../Features/tests/domain/usecases/get_material_tests_teacher_uc.dart';
+import '../../Features/tests/domain/usecases/get_teacher_tests_uc.dart';
+import 'app_inj.dart';
+
+injectTests() {
+  injectDS();
+  injectRepo();
+  injectUC();
+}
+
+void injectUC() {
+  locator.registerFactory<GetMaterialTestClassesUC>(
+    () => GetMaterialTestClassesUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetSchoolTestClassesUC>(
+    () => GetSchoolTestClassesUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetSchoolTestsTeacherUC>(
+    () => GetSchoolTestsTeacherUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetTestsByIdsUC>(
+    () => GetTestsByIdsUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetMaterialTestsTeachersUC>(
+    () => GetMaterialTestsTeachersUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetTeacherTestsUC>(
+    () => GetTeacherTestsUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetTestByIdUC>(
+    () => GetTestByIdUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<CanDoTestUC>(
+    () => CanDoTestUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetOuterTestByIdUseCase>(
+    () => GetOuterTestByIdUseCase(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<CacheTestUC>(
+    () => CacheTestUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<GetCachedTestsUC>(
+    () => GetCachedTestsUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<ClearCachedTestsUC>(
+    () => ClearCachedTestsUC(
+      repository: locator(),
+    ),
+  );
+  locator.registerFactory<DeleteCachedTestUC>(
+    () => DeleteCachedTestUC(
+      repository: locator(),
+    ),
+  );
+}
+
+void injectRepo() {
+  locator.registerFactory<TestsRepository>(
+    () => TestsRepositoryImpl(
+      dataSource: locator(),
+    ),
+  );
+}
+
+void injectDS() {
+  locator.registerFactory<TestsDataSource>(
+    () => TestsDataSourceImpl(
+      client: locator(),
+      cacheManager: locator(),
+      localAssetDataSource: locator(),
+    ),
+  );
+}
