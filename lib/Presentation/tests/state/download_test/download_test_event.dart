@@ -29,3 +29,12 @@ class RetryDownloadTestEvent extends DownloadTestEvent {
 class CancelDownloadTestEvent extends DownloadTestEvent {
   const CancelDownloadTestEvent();
 }
+
+class DeleteCachedTestEvent extends DownloadTestEvent {
+  final int testId;
+
+  const DeleteCachedTestEvent({required this.testId});
+
+  @override
+  List<Object?> get props => [testId];
+}

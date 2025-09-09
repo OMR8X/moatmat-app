@@ -28,6 +28,7 @@ injectControllers() {
       locator<CacheAssetUC>(),
       locator<CacheTestUC>(),
       locator<GetCachedTestsUC>(),
+      locator<DeleteCachedTestUC>(),
     ),
   );
   locator.registerFactory(

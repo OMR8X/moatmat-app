@@ -27,12 +27,13 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
     try {
       // Check if asset is already cached to prevent duplicates
       final fileSize = await remoteDataSource.getFileSize(fileUrl: request.fileUrl);
-      final isAlreadyCached = await localDataSource.isAssetCached(
+      final File? cachedAssetResponse = await localDataSource.isAssetCached(
         fileName: request.fileName,
         repositoryId: request.fileRepositoryId,
         fileSize: fileSize,
       );
-      if (isAlreadyCached) {
+      debugPrint("debugging: isAlreadyCached $cachedAssetResponse");
+      if (cachedAssetResponse != null) {
         final cachedAsset = await localDataSource.getCachedAsset(fileName: request.fileName, repositoryId: request.fileRepositoryId);
         return Right(cachedAsset.path);
       }
@@ -45,6 +46,7 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
       //
       return Right(cachedAssetModel);
     } on Exception catch (e) {
+      debugPrint("debugging: cacheAsset error $e");
       return Left(e.toFailure);
     }
   }
@@ -69,7 +71,7 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> isAssetCached({
+  Future<Either<Failure, File?>> isAssetCached({
     required RetrieveAssetRequest request,
   }) async {
     try {
@@ -84,13 +86,14 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
         }
       }
 
-      final isCached = await localDataSource.isAssetCached(
+      final File? isCached = await localDataSource.isAssetCached(
         fileName: request.fileName,
         repositoryId: request.fileRepositoryId,
         fileSize: fileSize,
       );
       return Right(isCached);
     } on Exception catch (e) {
+      debugPrint("debugging: isAssetCached error $e");
       return Left(e.toFailure);
     }
   }

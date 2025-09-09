@@ -21,7 +21,7 @@ abstract class LocalAssetDataSource {
   });
 
   /// Check if asset exists in cache
-  Future<bool> isAssetCached({
+  Future<File?> isAssetCached({
     required int fileSize,
     required String fileName,
     required String repositoryId,
@@ -107,30 +107,25 @@ class LocalAssetDataSourceImpl implements LocalAssetDataSource {
   }
 
   @override
-  Future<bool> isAssetCached({
+  Future<File?> isAssetCached({
     required int fileSize,
     required String fileName,
     required String repositoryId,
   }) async {
     try {
-      final cacheDir = await _getCacheDirectory();
-      final idDir = Directory('${cacheDir.path}/$repositoryId');
-      final filePath = '${idDir.path}/$fileName';
-      final file = File(filePath);
-
-      if (!await file.exists()) {
-        return false;
-      }
+      final cachedAsset = await getCachedAsset(fileName: fileName, repositoryId: repositoryId);
 
       // Check if file size matches the expected size
-      final fileStats = await file.stat();
+      final fileStats = await cachedAsset.stat();
       final localFileSize = fileStats.size;
 
       // Return true only if file exists AND sizes match
-      return localFileSize == fileSize;
+      debugPrint("debugging: localFileSize $localFileSize");
+      debugPrint("debugging: fileSize $fileSize");
+      return localFileSize == fileSize ? cachedAsset : null;
     } catch (e) {
       debugPrint('Error checking cached asset: ${e.toString()}');
-      return false;
+      return null;
     }
   }
 

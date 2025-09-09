@@ -21,7 +21,7 @@ abstract class AssetCacheRepository {
   });
 
   /// Check if an asset is cached for the given URL
-  Future<Either<Failure, bool>> isAssetCached({
+  Future<Either<Failure, File?>> isAssetCached({
     required RetrieveAssetRequest request,
   });
 

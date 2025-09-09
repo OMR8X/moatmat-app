@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moatmat_app/Core/functions/coders/decode.dart';
-import 'package:moatmat_app/Core/functions/coders/encode.dart';
 import 'package:moatmat_app/Core/functions/show_alert.dart';
-import 'package:moatmat_app/Core/injection/app_inj.dart';
 import 'package:moatmat_app/Core/resources/colors_r.dart';
 import 'package:moatmat_app/Core/resources/sizes_resources.dart';
 import 'package:moatmat_app/Core/resources/spacing_resources.dart';
@@ -50,10 +48,6 @@ class _DownloadTestViewState extends State<DownloadTestView> {
         create: (context) => context.read<DownloadTestBloc>()..add(InitializeDownloadTestEvent(testId: widget.testId)),
         child: Scaffold(
           backgroundColor: ColorsResources.background,
-          appBar: AppBar(
-            title: Text('تحميل الاختبار'),
-            backgroundColor: ColorsResources.background,
-          ),
           body: BlocBuilder<DownloadTestBloc, DownloadTestState>(
             buildWhen: (previous, current) => previous.status != current.status || previous.errorMessage != current.errorMessage,
             builder: (context, state) {
@@ -62,6 +56,7 @@ class _DownloadTestViewState extends State<DownloadTestView> {
                   return const LoadingStateWidget();
                 case DownloadTestStatus.failure:
                   return FailureStateWidget(
+                    failedAssets: state.assets.where((asset) => asset.state == DownloadState.failed).toList(),
                     errorMessage: state.errorMessage,
                     onRetry: () {
                       context.read<DownloadTestBloc>().add(
@@ -73,8 +68,6 @@ class _DownloadTestViewState extends State<DownloadTestView> {
                   return DownloadingStateWidget(state: state);
                 case DownloadTestStatus.success:
                   return const SuccessStateWidget();
-                default:
-                  return const SizedBox();
               }
             },
           ),
@@ -89,9 +82,15 @@ class LoadingStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CupertinoActivityIndicator(
-        color: ColorsResources.primary,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('تحميل الاختبار'),
+        backgroundColor: ColorsResources.background,
+      ),
+      body: Center(
+        child: CupertinoActivityIndicator(
+          color: ColorsResources.primary,
+        ),
       ),
     );
   }
@@ -100,43 +99,76 @@ class LoadingStateWidget extends StatelessWidget {
 class FailureStateWidget extends StatelessWidget {
   const FailureStateWidget({
     super.key,
+    required this.failedAssets,
     required this.errorMessage,
     required this.onRetry,
   });
-
+  final List<DownloadableAsset> failedAssets;
   final String? errorMessage;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: SpacingResources.mainWidth(context),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error,
-              size: 64,
-              color: Colors.red,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'حدث خطأ',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "فشل تحميل بعض الملفات",
-              // errorMessage ?? 'خطأ غير معروف',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: onRetry,
-              child: Text('إعادة المحاولة'),
-            ),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('تحميل الاختبار'),
+        backgroundColor: ColorsResources.background,
+      ),
+      body: Center(
+        child: SizedBox(
+          width: SpacingResources.mainWidth(context),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error,
+                size: 64,
+                color: Colors.red,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'حدث خطأ',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "فشل تحميل بعض الملفات",
+                // errorMessage ?? 'خطأ غير معروف',
+                textAlign: TextAlign.center,
+              ),
+              TextButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('تفاصيل الخطأ'),
+                      content: SingleChildScrollView(
+                        child: Column(
+                          children: failedAssets
+                              .map(
+                                (asset) => Text('اسم الملف : ${decodeFileName(asset.url.split("/").last.split(".").first)}\nالخطأ : ${asset.errorMessage}'),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('حسنا'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: Text('تفاصيل'),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: onRetry,
+                child: Text('إعادة المحاولة'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -153,89 +185,52 @@ class DownloadingStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: ColorsResources.background,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            // Assets list
-            Expanded(
-              child: state.assets.isEmpty
-                  ? _buildEmptyState(context)
-                  : BlocBuilder<DownloadTestBloc, DownloadTestState>(
-                      buildWhen: (previous, current) => previous.assets != current.assets,
-                      builder: (context, state) {
-                        return ListView.separated(
-                          itemCount: 3, // Always 3 groups: videos, images, files
-                          separatorBuilder: (context, index) => const SizedBox(height: 12),
-                          itemBuilder: (context, index) {
-                            final AssetType type = AssetType.values[index];
-                            final typeAssets = state.assets.where((asset) => asset.type == type).toList();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('تحميل الاختبار'),
+        backgroundColor: ColorsResources.background,
+      ),
+      body: Container(
+        color: ColorsResources.background,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              // Assets list
+              Expanded(
+                child: state.assets.isEmpty
+                    ? _buildEmptyState(context)
+                    : BlocBuilder<DownloadTestBloc, DownloadTestState>(
+                        buildWhen: (previous, current) => previous.assets != current.assets,
+                        builder: (context, state) {
+                          return ListView.separated(
+                            itemCount: 3, // Always 3 groups: videos, images, files
+                            separatorBuilder: (context, index) => const SizedBox(height: 12),
+                            itemBuilder: (context, index) {
+                              final AssetType type = AssetType.values[index];
+                              final typeAssets = state.assets.where((asset) => asset.type == type).toList();
 
-                            if (typeAssets.isEmpty) {
-                              return const SizedBox.shrink(); // Hide empty groups
-                            }
+                              if (typeAssets.isEmpty) {
+                                return const SizedBox.shrink(); // Hide empty groups
+                              }
 
-                            return _AssetGroupCard(
-                              assetType: type,
-                              assets: typeAssets,
-                            );
-                          },
-                        );
-                      },
-                    ),
-            ),
+                              return _AssetGroupCard(
+                                assetType: type,
+                                assets: typeAssets,
+                              );
+                            },
+                          );
+                        },
+                      ),
+              ),
 
-            const SizedBox(height: 20),
-            // Cancel button
-            _buildCancelButton(context),
-          ],
+              const SizedBox(height: 20),
+              // Cancel button
+              _buildCancelButton(context),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildAssetsHeader(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.folder_open,
-            color: Colors.grey.shade700,
-            size: 20,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          'ملفات الاختبار',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade800,
-              ),
-        ),
-        const Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.blue.shade200),
-          ),
-          child: Text(
-            '${state.assets.length} ملف',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.blue.shade700,
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -484,134 +479,117 @@ class SuccessStateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Animated success icon
-          TweenAnimationBuilder(
-            duration: const Duration(milliseconds: 800),
-            tween: Tween<double>(begin: 0, end: 1),
-            builder: (context, double value, child) {
-              return Transform.scale(
-                scale: value,
-                child: child,
-              );
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('تحميل الاختبار'),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'redownload') {
+                context.read<DownloadTestBloc>().add(InitializeDownloadTestEvent(testId: context.read<DownloadTestBloc>().state.test!.id, forceDownload: true));
+              } else if (value == 'delete') {
+                showAlert(
+                  context: context,
+                  title: "تأكيد الحذف",
+                  body: "هل أنت متأكد أنك تريد حذف هذا الاختبار من ذاكرة التخزين المؤقت؟",
+                  onAgree: () {
+                    context.read<DownloadTestBloc>().add(DeleteCachedTestEvent(testId: context.read<DownloadTestBloc>().state.test!.id));
+                    Navigator.of(context).pop(); // Close the alert dialog
+                  },
+                );
+              }
             },
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                shape: BoxShape.circle,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'redownload',
+                child: Text('إعادة تحميل الاختبار'),
               ),
-              child: Icon(
-                Icons.check_circle_outline,
-                size: 80,
-                color: Colors.green.shade600,
+              const PopupMenuItem<String>(
+                value: 'delete',
+                child: Text('حذف الاختبار من الجهاز'),
               ),
-            ),
-          ),
-          const SizedBox(height: 32),
-          // Success message with fade animation
-          TweenAnimationBuilder(
-            duration: const Duration(milliseconds: 600),
-            tween: Tween<double>(begin: 0, end: 1),
-            builder: (context, double value, child) {
-              return Opacity(
-                opacity: value,
-                child: child,
-              );
-            },
-            child: Column(
-              children: [
-                Text(
-                  'تم التحميل بنجاح!',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.grey.shade800,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'يمكنك الآن الوصول إلى جميع محتويات الاختبار في وضع الغير متصل بالانترنت',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey.shade600,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 40),
-          // Enhanced back button
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorsResources.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 2,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 10),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Icon(Icons.arrow_back_ios, size: 16),
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'العودة',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: SizesResources.s4),
-          OutlinedButton(
-            onPressed: () {
-              context.read<DownloadTestBloc>().add(InitializeDownloadTestEvent(testId: context.read<DownloadTestBloc>().state.test!.id, forceDownload: true));
-            },
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 2,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 10),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 3),
-                    child: Icon(Icons.refresh, size: 16),
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'اعادة تحميل الاختبار',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
+            icon: const Icon(Icons.more_vert, color: Colors.black),
           ),
         ],
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Animated success icon
+              TweenAnimationBuilder(
+                duration: const Duration(milliseconds: 800),
+                tween: Tween<double>(begin: 0, end: 1),
+                builder: (context, double value, child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: child,
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_circle_outline,
+                    size: 80,
+                    color: Colors.green.shade600,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              // Success message with fade animation
+              TweenAnimationBuilder(
+                duration: const Duration(milliseconds: 600),
+                tween: Tween<double>(begin: 0, end: 1),
+                builder: (context, double value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: child,
+                  );
+                },
+                child: Column(
+                  children: [
+                    Text(
+                      'تم التحميل بنجاح!',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: Colors.grey.shade800,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'يمكنك الآن الوصول إلى جميع محتويات الاختبار في وضع الغير متصل بالانترنت',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey.shade600,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: SizesResources.s10),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('إغلاق'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

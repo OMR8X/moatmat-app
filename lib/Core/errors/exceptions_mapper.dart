@@ -9,8 +9,7 @@ import 'exceptions.dart';
 
 extension ErrorsMapper on Exception {
   Failure get toFailure {
-    debugPrint(toString());
-    switch (runtimeType) {
+    switch (this) {
       ///
       case DioException():
         return ServerFailure(message: (this as DioException).message);
@@ -145,6 +144,7 @@ extension ErrorsMapper on Exception {
 
       ///
       default:
+
         return UnknownFailure(message: toString());
     }
   }

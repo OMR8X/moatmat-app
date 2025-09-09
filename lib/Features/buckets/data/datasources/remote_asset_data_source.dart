@@ -35,7 +35,10 @@ class RemoteAssetDataSourceImpl implements RemoteAssetDataSource {
       );
 
       if (response.statusCode != 200) {
-        if ([404, 403, 401, 400].contains(response.statusCode)) throw AssetNotExistsException();
+        if ([404, 403, 401, 400].contains(response.statusCode)) {
+          debugPrint("debugging: failure not found");
+          throw AssetNotExistsException();
+        }
         throw AssetDownloadException();
       }
 
@@ -55,10 +58,10 @@ class RemoteAssetDataSourceImpl implements RemoteAssetDataSource {
       final bytes = bytesBuilder.toBytes();
       return bytes;
     } on AssetNotExistsException {
-      debugPrint("failure not found");
+      debugPrint("debugging: failure not found");
       rethrow;
     } catch (e) {
-      debugPrint("failure $e");
+      debugPrint("debugging: failure $e");
       throw AssetDownloadException();
     }
   }
@@ -76,14 +79,16 @@ class RemoteAssetDataSourceImpl implements RemoteAssetDataSource {
       );
 
       if (response.statusCode != 200) {
-        if ([404, 403, 401, 400].contains(response.statusCode)) throw AssetNotExistsException();
+        if ([404, 403, 401, 400].contains(response.statusCode)) {
+          throw AssetNotExistsException();
+        }
         throw AssetDownloadException();
       }
 
       final contentLength = response.headers.value('content-length');
       return contentLength != null ? int.parse(contentLength) : 0;
     } on AssetNotExistsException {
-      debugPrint("failure not found");
+      debugPrint("debugging: failure not found");
       rethrow;
     } catch (e) {
       debugPrint("failure getting file size: $e");

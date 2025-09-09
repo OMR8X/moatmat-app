@@ -2,9 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moatmat_app/Core/errors/exceptions.dart';
+import 'package:moatmat_app/Core/errors/export_errors.dart';
 import 'package:moatmat_app/Core/errors/failures.dart';
-import 'package:moatmat_app/Core/injection/app_inj.dart';
 import 'package:moatmat_app/Features/buckets/domain/requests/cache_asset_request.dart';
 import 'package:moatmat_app/Features/buckets/domain/usecases/cache_asset_uc.dart';
 import 'package:moatmat_app/Features/tests/domain/usecases/cache_test_uc.dart';
@@ -12,7 +11,6 @@ import 'package:moatmat_app/Features/tests/domain/usecases/delete_cached_test_uc
 import 'package:moatmat_app/Features/tests/domain/usecases/get_cached_tests_uc.dart';
 import 'package:moatmat_app/Features/tests/domain/usecases/get_test_by_id.dart';
 import 'package:moatmat_app/Features/tests/domain/entities/test.dart';
-import 'package:moatmat_app/Presentation/offline/states/offline_tests_bloc.dart';
 import 'download_test_event.dart';
 import 'download_test_state.dart';
 import 'downloadable_asset.dart';
@@ -22,10 +20,12 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
   final CacheAssetUC _cacheAssetUsecase;
   final CacheTestUC _cacheTestUsecase;
   final GetCachedTestsUC _getCachedTestsUsecase;
+  final DeleteCachedTestUC _deleteCachedTestUC;
 
-  DownloadTestBloc(this._getTestByIdUsecase, this._cacheAssetUsecase, this._cacheTestUsecase, this._getCachedTestsUsecase) : super(const DownloadTestState()) {
+  DownloadTestBloc(this._getTestByIdUsecase, this._cacheAssetUsecase, this._cacheTestUsecase, this._getCachedTestsUsecase, this._deleteCachedTestUC) : super(const DownloadTestState()) {
     on<InitializeDownloadTestEvent>(_onInitializeDownloadTestEvent);
     on<CancelDownloadTestEvent>(_onCancelDownloadTestEvent);
+    on<DeleteCachedTestEvent>(_onDeleteCachedTestEvent);
   }
 
   @override
@@ -178,13 +178,13 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
               (failure) async {
                 debugPrint("failure: $failure");
                 if (failure is CancelFailure) return;
-                updatedAssets[i] = asset.copyWith(state: DownloadState.failed);
+                updatedAssets[i] = asset.copyWith(state: DownloadState.failed, errorMessage: failure.message);
                 if (!emit.isDone) {
                   emit(state.copyWith(assets: updatedAssets));
                 }
               },
               (cachedAsset) async {
-                updatedAssets[i] = asset.copyWith(state: DownloadState.completed, progress: 100.0);
+                updatedAssets[i] = asset.copyWith(state: DownloadState.completed, progress: 100.0, errorMessage: null);
                 if (!emit.isDone) {
                   emit(state.copyWith(assets: updatedAssets));
                 }
@@ -206,7 +206,7 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
                 if (emit.isDone) return;
                 emit(state.copyWith(
                   status: DownloadTestStatus.failure,
-                  errorMessage: 'فشل حفظ الاختبار: ${failure.toString()}',
+                  errorMessage: 'فشل حفظ الاختبار: ${failure.message}',
                 ));
               },
               (_) async {
@@ -220,7 +220,7 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
             if (networkFailures > 0) {
               emit(state.copyWith(
                 status: DownloadTestStatus.failure,
-                errorMessage: 'فشل تحميل الملفات بسبب مشاكل في الاتصال. يرجى المحاولة مرة أخرى.',
+                errorMessage: 'فشل تحميل الملفات. يرجى المحاولة مرة أخرى.',
               ));
             } else {
               emit(state.copyWith(status: DownloadTestStatus.success));
@@ -229,11 +229,6 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
         }
       },
     );
-  }
-
-  String _getAssetName(String url) {
-    final uri = Uri.parse(url);
-    return uri.pathSegments.isNotEmpty ? uri.pathSegments.last : 'ملف غير معروف';
   }
 
   /// Preserve asset states from previous download attempts
@@ -286,6 +281,39 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
       emit(state.copyWith(
         status: DownloadTestStatus.failure,
         errorMessage: 'فشل إلغاء التحميل',
+      ));
+    }
+  }
+
+  Future<void> _onDeleteCachedTestEvent(
+    DeleteCachedTestEvent event,
+    Emitter<DownloadTestState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: DownloadTestStatus.loading, errorMessage: null));
+      final result = await _deleteCachedTestUC(testId: event.testId);
+
+      await result.fold(
+        (failure) async {
+          emit(state.copyWith(
+            status: DownloadTestStatus.failure,
+            errorMessage: failure.message,
+          ));
+        },
+        (_) async {
+          // Optionally, navigate back or update the list of cached tests
+          // For now, we'll just emit a success state and clear the test info
+          emit(state.copyWith(
+            status: DownloadTestStatus.loading,
+            test: null,
+            assets: [],
+          ));
+        },
+      );
+    } on Exception catch (e) {
+      emit(state.copyWith(
+        status: DownloadTestStatus.failure,
+        errorMessage: 'فشل حذف الاختبار: ${e.toFailure.message}',
       ));
     }
   }

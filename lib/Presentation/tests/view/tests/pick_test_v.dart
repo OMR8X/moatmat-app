@@ -868,7 +868,7 @@ class _BuyTestWidgetState extends State<BuyTestWidget> {
   }
 
   bool _isDownloadable() {
-    // if (kDebugMode) return true;
+    if (kDebugMode) return true;
     return widget.test.properties.downloadable == true;
   }
 

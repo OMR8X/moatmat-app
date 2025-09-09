@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
@@ -21,6 +19,7 @@ import '../../tests/view/exploring/explore_no_time_v.dart';
 import '../../tests/view/exploring/full_time_explore_v.dart';
 import '../../tests/view/exploring/per_question_explore_v.dart';
 import '../../tests/widgets/test_q_box.dart';
+import '../../tests/view/downloading/download_test_view.dart';
 
 class TestAssetsView extends StatefulWidget {
   const TestAssetsView({
@@ -53,6 +52,29 @@ class _TestAssetsViewState extends State<TestAssetsView> {
             ),
           ),
         ),
+        actions: [
+          if (widget.isOffline)
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("مشكلة في الملفات؟"),
+                    content: const Text(
+                      "إذا واجهت أي مشكلة في فتح أو استعراض المستندات، يمكنك حذف الاختبار وإعادة تنزيله من شاشة تنزيل الاختبارات.",
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text("حسناً"),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              icon: const Icon(Icons.info_outline),
+            ),
+        ],
       ),
       body: ListView(
         children: [
