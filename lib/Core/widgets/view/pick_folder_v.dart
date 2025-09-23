@@ -15,10 +15,8 @@ import '../../../Presentation/banks/state/get_bank_c/get_bank_cubit.dart';
 import '../../../Presentation/teachers/view/teacher_profile_v.dart';
 import '../../injection/app_inj.dart';
 import '../../resources/colors_r.dart';
-import '../../resources/shadows_r.dart';
 import '../../resources/sizes_resources.dart';
 import '../../resources/spacing_resources.dart';
-import '../ui/empty_list_text.dart';
 
 class PickFolderView extends StatefulWidget {
   const PickFolderView({
