@@ -95,23 +95,3 @@ void main() async {
   );
   debugPrint("app root initialized");
 }
-/*
----
-
-org.gradle.configuration-cache=false
-
----
-
-flutter clean
-rm -rf android/.gradle
-rm -rf android/build
-rm -rf build
-flutter pub get
-
-# 4. Rebuild the project
-cd android
-./gradlew clean
-./gradlew build
-
-flutter build apk --release
-*/
