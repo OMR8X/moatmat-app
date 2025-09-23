@@ -26,7 +26,7 @@ class PickFolderView extends StatefulWidget {
     this.onSearch,
     required this.afterPick,
     required this.teacher,
-     this.onPop,
+    this.onPop,
     required this.isTest,
     required this.material,
   });
