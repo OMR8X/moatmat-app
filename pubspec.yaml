@@ -26,6 +26,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_cached_pdfview: ^0.4.2
   flutter_local_notifications: ^19.3.0
+  syncfusion_flutter_pdfviewer: ^31.1.21
   flutter_localizations:
     sdk: flutter
   flutter_math_fork: ^0.7.4

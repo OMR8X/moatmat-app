@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:moatmat_app/Core/functions/coders/decode.dart';
 import 'package:moatmat_app/Core/injection/app_inj.dart';
 import 'package:moatmat_app/Core/resources/colors_r.dart';
@@ -19,7 +22,6 @@ import '../../tests/view/exploring/explore_no_time_v.dart';
 import '../../tests/view/exploring/full_time_explore_v.dart';
 import '../../tests/view/exploring/per_question_explore_v.dart';
 import '../../tests/widgets/test_q_box.dart';
-import '../../tests/view/downloading/download_test_view.dart';
 
 class TestAssetsView extends StatefulWidget {
   const TestAssetsView({
@@ -432,55 +434,154 @@ class MiniTestTitleWidget extends StatelessWidget {
   }
 }
 
-class PDFViewerFromUrl extends StatelessWidget {
+class PDFViewerFromUrl extends StatefulWidget {
   const PDFViewerFromUrl({super.key, required this.url});
 
   final String url;
 
   @override
+  State<PDFViewerFromUrl> createState() => _PDFViewerFromUrlState();
+}
+
+class _PDFViewerFromUrlState extends State<PDFViewerFromUrl> {
+  late PdfViewerController _pdfViewerController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfViewerController = PdfViewerController();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print(widget.url);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('تفاصيل الملف'),
+        backgroundColor: Colors.black,
+        centerTitle: false,
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.white70),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: const Text(
+            'تفاصيل الملف',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70),
+            onPressed: () {
+              if (_pdfViewerController.pageNumber > 1) {
+                _pdfViewerController.previousPage();
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70),
+            onPressed: () {
+              if (_pdfViewerController.pageNumber < _pdfViewerController.pageCount) {
+                _pdfViewerController.nextPage();
+              }
+            },
+          ),
+        ],
       ),
-      body: const PDF().fromUrl(
-        url,
-        placeholder: (double progress) {
-          return Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '$progress %',
-                style: const TextStyle(
-                  fontSize: 19,
-                ),
-              ),
-              const SizedBox(height: SizesResources.s4),
-              const Text('جار تجهيز الملف'),
-              const SizedBox(height: SizesResources.s4),
-            ],
-          ));
-        },
-        errorWidget: (dynamic error) => Center(child: Text(error.toString())),
+      body: SfPdfViewerTheme(
+        data: SfPdfViewerThemeData(
+          scrollStatusStyle: PdfScrollStatusStyle(
+            backgroundColor: Colors.transparent,
+            pageInfoTextStyle: const TextStyle(color: Colors.transparent),
+          ),
+          scrollHeadStyle: PdfScrollHeadStyle(
+            backgroundColor: Colors.black,
+            pageNumberTextStyle: const TextStyle(color: Colors.white),
+          ),
+        ),
+        child: SfPdfViewer.network(
+          widget.url,
+          controller: _pdfViewerController,
+        ),
       ),
     );
   }
 }
 
-class PDFViewerFromAssetPath extends StatelessWidget {
+class PDFViewerFromAssetPath extends StatefulWidget {
   const PDFViewerFromAssetPath({super.key, required this.path});
 
   final String path;
 
   @override
+  State<PDFViewerFromAssetPath> createState() => _PDFViewerFromAssetPathState();
+}
+
+class _PDFViewerFromAssetPathState extends State<PDFViewerFromAssetPath> {
+  late PdfViewerController _pdfViewerController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfViewerController = PdfViewerController();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('تفاصيل الملف'),
+        backgroundColor: Colors.black,
+        centerTitle: false,
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.white70),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: const Text(
+            'تفاصيل الملف',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70),
+            onPressed: () {
+              if (_pdfViewerController.pageNumber > 1) {
+                _pdfViewerController.previousPage();
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70),
+            onPressed: () {
+              if (_pdfViewerController.pageNumber < _pdfViewerController.pageCount) {
+                _pdfViewerController.nextPage();
+              }
+            },
+          ),
+        ],
       ),
-      body: const PDF().fromPath(
-        path,
+      body: SfPdfViewerTheme(
+        data: SfPdfViewerThemeData(
+          scrollStatusStyle: PdfScrollStatusStyle(
+            backgroundColor: Colors.transparent,
+            pageInfoTextStyle: const TextStyle(color: Colors.transparent),
+          ),
+          scrollHeadStyle: PdfScrollHeadStyle(
+            backgroundColor: Colors.black,
+            pageNumberTextStyle: const TextStyle(color: Colors.white),
+          ),
+        ),
+        child: SfPdfViewer.file(
+          File(widget.path),
+          controller: _pdfViewerController,
+        ),
       ),
     );
   }
