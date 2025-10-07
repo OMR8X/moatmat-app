@@ -236,7 +236,6 @@ class DownloadTestBloc extends Bloc<DownloadTestEvent, DownloadTestState> {
     return newAssets.map((newAsset) {
       final matchingAssets = existingAssets.where((existing) => existing.url == newAsset.url);
       final existingAsset = matchingAssets.isNotEmpty ? matchingAssets.first : null;
-
       if (existingAsset != null) {
         return newAsset.copyWith(
           state: existingAsset.state,

@@ -1,13 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
-import 'package:moatmat_app/Core/errors/exceptions.dart';
 import 'package:moatmat_app/Core/errors/failures.dart';
-
 import '../../../Core/injection/app_inj.dart';
 import '../../../Core/resources/colors_r.dart';
 import '../../../Core/resources/sizes_resources.dart';
@@ -16,7 +11,6 @@ import '../../../Core/validators/email_v.dart';
 import '../../../Core/validators/not_empty_v.dart';
 import '../../../Core/widgets/fields/elevated_button_widget.dart';
 import '../../../Core/widgets/fields/text_input_field.dart';
-import '../../../Features/auth/domain/entites/user_data.dart';
 import '../../../Features/auth/domain/use_cases/sign_in_uc.dart';
 import '../state/auth_c/auth_cubit_cubit.dart';
 

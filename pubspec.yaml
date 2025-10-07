@@ -6,7 +6,6 @@ environment:
   sdk: '>=3.2.3 <4.0.0'
 dependencies:
   audioplayers: ^6.1.0
-  better_player_plus: ^1.0.8
   cached_network_image: ^3.4.1
   chewie: ^1.11.3
   collection: ^1.19.1
@@ -24,7 +23,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
-  flutter_cached_pdfview: ^0.4.2
   flutter_local_notifications: ^19.3.0
   syncfusion_flutter_pdfviewer: ^31.1.21
   flutter_localizations:
@@ -37,7 +35,6 @@ dependencies:
   hive_flutter: ^1.1.0
   http: ^1.2.2
   intl: ^0.20.2
-  mocktail: ^1.0.4
   no_screenshot: ^0.3.1
   package_info_plus: ^8.3.0
   path_provider: ^2.1.4
@@ -45,7 +42,6 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   qr_code_scanner_plus: ^2.0.6
   qr_flutter: ^4.1.0
-  rename: ^3.0.1
   screenshot: ^3.0.0
   share_plus: ^11.0.0
   shared_preferences: ^2.2.2

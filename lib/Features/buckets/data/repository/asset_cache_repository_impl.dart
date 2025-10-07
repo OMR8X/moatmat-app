@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/Core/functions/coders/decode.dart';
 import '../../../../Core/errors/export_errors.dart';
 import '../../domain/entities/cached_asset.dart';
 import '../../domain/repository/asset_cache_repository.dart';
@@ -25,6 +26,8 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
     required CacheAssetRequest request,
   }) async {
     try {
+      debugPrint("debugging: caching asset -> ${request.fileName} -> ${request.fileRepositoryId}");
+      debugPrint("debugging: caching asset -> ${decodeFileName(request.fileName)} -> ${request.fileRepositoryId}");
       // Check if asset is already cached to prevent duplicates
       final fileSize = await remoteDataSource.getFileSize(fileUrl: request.fileUrl);
       final File? cachedAssetResponse = await localDataSource.isAssetCached(
@@ -32,7 +35,7 @@ class AssetCacheRepositoryImpl implements AssetCacheRepository {
         repositoryId: request.fileRepositoryId,
         fileSize: fileSize,
       );
-      debugPrint("debugging: isAlreadyCached $cachedAssetResponse");
+
       if (cachedAssetResponse != null) {
         final cachedAsset = await localDataSource.getCachedAsset(fileName: request.fileName, repositoryId: request.fileRepositoryId);
         return Right(cachedAsset.path);

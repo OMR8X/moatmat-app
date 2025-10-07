@@ -30,7 +30,7 @@ String decodeFileName(String fileName) {
   return result;
 }
 
-String decodeFileNameKeepExtension(String fileName) {
+String decodeFileNameKeepExtension(String fileName, String extension) {
   //
   if (!fileName.contains("____")) {
     fileName = fileName.replaceAll(".pdf", "");
@@ -54,5 +54,5 @@ String decodeFileNameKeepExtension(String fileName) {
       result = "$result $str";
     }
   }
-  return '${result.trim()}${fileName.split(".").last}';
+  return '${result.trim()}$extension';
 }

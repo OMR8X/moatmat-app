@@ -12,7 +12,7 @@ class RetrieveAssetRequest {
   });
 
   factory RetrieveAssetRequest.fromSupabaseLink(String supabaseLink) {
-    final fileName = decodeFileNameKeepExtension(supabaseLink.split("/").last);
+    final fileName = decodeFileNameKeepExtension(supabaseLink.split("/").last, supabaseLink.split(".").last);
     return RetrieveAssetRequest(
       fileRepositoryId: supabaseLink.split("/").firstWhere((e) => int.tryParse(e) != null),
       fileName: fileName,

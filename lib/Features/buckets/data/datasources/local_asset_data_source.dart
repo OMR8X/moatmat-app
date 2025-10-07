@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:moatmat_app/Core/functions/coders/decode.dart';
 import 'package:moatmat_app/Core/services/cache/cache_constant.dart';
 import 'package:moatmat_app/Features/buckets/domain/requests/cache_asset_request.dart';
 import '../../../../Core/errors/exceptions.dart';
@@ -50,24 +51,30 @@ class LocalAssetDataSourceImpl implements LocalAssetDataSource {
     required CacheAssetRequest request,
   }) async {
     try {
+      debugPrint("debugging: saving asset to local storage");
       final cacheDir = await _getCacheDirectory();
       final id = request.fileRepositoryId;
-      final fileName = request.fileName;
+      final fileName = decodeFileName(request.fileName);
 
       // Create ID-based directory structure
+      debugPrint("debugging: creating id directory");
       final idDir = Directory('${cacheDir.path}/$id');
       if (!await idDir.exists()) {
         await idDir.create(recursive: true);
       }
-
+      debugPrint("debugging: created id directory -> $idDir -> $fileName -> ${decodeFileName(request.fileName)}");
       final filePath = '${idDir.path}/$fileName';
 
       // Encrypt the file data before saving (in background thread)
+      debugPrint("debugging: encrypting data");
       final encryptedData = await EncryptionService.encryptBinaryDataAsync(data);
 
       // Save the encrypted asset file
+      debugPrint("debugging: saving encrypted data");
       final file = File(filePath);
       await file.writeAsBytes(encryptedData);
+
+      debugPrint("debugging: saved asset to local storage");
 
       return filePath;
     } catch (e) {

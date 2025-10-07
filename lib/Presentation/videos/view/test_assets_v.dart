@@ -454,7 +454,6 @@ class _PDFViewerFromUrlState extends State<PDFViewerFromUrl> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.url);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,

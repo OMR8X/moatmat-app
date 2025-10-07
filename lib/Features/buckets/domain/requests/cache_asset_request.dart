@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../Core/functions/coders/decode.dart';
 
@@ -24,7 +25,9 @@ class CacheAssetRequest {
   }) {
     final fileRepositoryId = link.split("/").firstWhere((e) => int.tryParse(e) != null);
     final originalFileName = link.split("/").last;
-    final fileName = decodeFileNameKeepExtension(originalFileName);
+    final fileName = decodeFileNameKeepExtension(originalFileName, link.split(".").last);
+    debugPrint("debugging: originalFileName -> $originalFileName");
+    debugPrint("debugging: fileName -> $fileName");
     return CacheAssetRequest(
       fileRepositoryId: fileRepositoryId,
       fileName: fileName,
